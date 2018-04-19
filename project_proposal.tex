@@ -1,9 +1,12 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage{cite}
+\usepackage{cancel}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
 \graphicspath{{images/}}
 \usepackage{textcomp}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -61,7 +64,7 @@ pdmitrano@wpi.edu}
 \section{Proposed Experiments and Expected Outcomes}
 
   Our first experiment will be to reproduce the work from \cite{gauci_self-organized_2014}. We want to demonstrate that the robots do in fact aggregate in a similar amount of time and with similar density as demonstrated by the original authors. We will evaluate the controller presented by \cite{gauci_self-organized_2014} for 10 trials with various starting distributions with ARGoS and Buzz on the Khepera IV. We are curious if there will be any difficulties or challenges in transferring from the e-puck platform used by the original authors. Additionally, we are interested in exploring the effect of starting distributions on the performance of the controller. In one set of tests, we will initialize the robots in several clusters spread throughout the arena. In another, we will put the robots in a single line.
-  
+
   Our second experiment will be to evolve a controller for homogeneous aggregation, since the original authors used a grid-search method. This will also allow us to test our genetic algorithm and multi-threaded system. Again, we will evaluate the robot dispersion metric and convergence time for the various distributions described previously. To measure convergence time, we will use the number of time steps before the cluster reached 95\% of it's minimum dispersion.
 
   Our third experiment will be to extend aggregation to the case where the robots need to segregate into multiple classes. Robots are assigned to different classes based on their ID number, and we assume robots do not change their class during a trial. We will design a simple fitness function for $n$-class segregation. Our goal is for this function to be fast to compute and elegant. We will attempt to evolve a controller for $n$-class segregation, starting with just two classes and testing with an increasing number of distinct classes of robots. We hypothesize that the controllers will need to contain 6 parameters for three sensor states, building immediately upon the 4 parameters binary sensor controllers. The three states will be nothing, kin, and non-kin. We will again explore how various starting distributions effects the dispersion and convergence time. In addition to the distributions described above (i.e. clusters, single line) we will initialize the robots in a single, heterogeneous square lattice. For the cluster initialization, the clusters will be heterogeneous, so robots will have to navigate out of their current cluster to form a cluster of robots of the same type. Again, convergence time will be defined as the number of time steps before the cluster reached 95\% of minimum dispersion.
@@ -69,7 +72,7 @@ pdmitrano@wpi.edu}
 \section{Methodology}
 
   We first extended the binary sensor presented in \cite{gauci_self-organized_2014} to be able to detect multiple types of robots. We again use the range and bearing sensor, this time with simulated FootBots, to detect whether a robot is in line of sight. If there is no robot, the sensor returns 0 like in \cite{gauci_self-organized_2014}. If there is a robot, then the sensor returns 1 if the robot is kin (in the same class), or non-kin (in any other class).
-  
+
   In order to avoid manually spending time picking parameters or spending tremendous compute time using grid-search time find parameters, we use a simple genetic algorithm to evolve controller parameters. In all our experiments, we use 6 parameters for nothing, kin and non-kin, where each parameter ranges from -1 to 1. In our controller, we then scale this parameter to range from -20cm/s to 20cm/s. We treat aggregation as a special case of 1 class segregation, in which case the final two parameters of the controller are never used. The genetic algorithm we used is unmodified from the example MPGA code provided with the ARGoS simulator. The mutation strategy is simply to mutate each of these 6 parameters with some probability p ($0.05$ in our experiments). If a parameter is selected to be mutated, a uniformly random number from -1 to 1 is picked for the new value. Selection is performed by picking the two most fit individuals (the ones with lowest cost in our formulation), and then forming the next population by crossing the parameters of these two individuals. The original two parents are always kept in the population so that the current fittest individual is never removed until a more fit genome is discovered.
 
   As with any genetic algorithm, it is important to have a fitness function that accurately assigns cost to behaviors. In this project, we plan to explore three different cost functions. The first is the cluster metric used by \cite{gauci_self-organized_2014}, which is the proportion of the number of robots in the largest cluster to the total number of robots. we will apply this for each class of robots and sum up the cost for each class to get the total cost. Further, we will determine the percentage of trials that reach one cluster per class by then end of some number of time steps.
@@ -88,9 +91,9 @@ pdmitrano@wpi.edu}
 
 
   \subsection{What Didn't Work}
-  
+
   When we implemented the centroid-of-centroids style cost function, we quickly found examples of configurations ranked in ways we did not like. One example is shown below in Figure \ref{fig:cost_function_fuckup}. The behavior that looks like aggregation was given lower cost of -8e9, versus the behavior that looks like segregation was given a cost of -5e9.
-  
+
   \begin{figure}
     \centering
     \includegraphics[width=0.49\linewidth]{./images/individual_0_gen_0.png}
@@ -98,8 +101,93 @@ pdmitrano@wpi.edu}
     \caption{The left picture was given lower cost than the right, which is not desirable.}
     \label{fig:cost_function_fuckup}
   \end{figure}
-  
-  
+
+
+
+\section{Controller Analysis}
+
+  We found imperically that the parameters $[0.5 -0.5 -0.2 0.6 0.6 0.2]$ successfully acheive segregatation. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a kin robot or cluster of kin robots. This proof is an extension of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a Kin robot is seen, $I=1$, so $v_l = v_{l_0} = -0.2$ and $v_r = v_{r_0} = 0.6$. This will cause the robot to turn with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distnace $W$, and that the controller is execute in small finite time steps. Our goal is to show that the distance between the positon of the robot after it reacts to the kin $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
+
+  \begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+      \draw[->] (0,0) -- (7,0);
+      \node at (7.2,.2) {x};
+      \draw[->] (0,0) -- (0,3);
+      \node at (-0.2,3.2) {y};
+
+       % c_i
+      \filldraw (0,0) circle (.05);
+      \node at (.2,.2) {$c_i$};
+      \draw[blue, dashed] (0,0) circle (2);
+
+       % p_i
+      \filldraw (0,-2) circle (.05);
+      \node at (.2,-2.2) {$p_i$};
+      \draw[blue] (0,-2) circle (0.85);
+      \node at (-.3,-.8) {$R$};
+      \draw[dashed] (0,0) -- (0,-2);
+
+       % p'_i
+      \filldraw (1.41,-1.41) circle (.05);
+      \node at (1.85,-1.25) {$p'_i$};
+      \draw[blue] (1.41,-1.41) circle (0.85);
+      \draw[dashed] (0,0) -- (1.41,-1.41);
+      \node at (.8,-.3) {$R$};
+
+       % p_j
+      \filldraw (5,-3.25) circle (.05);
+      \node at (5.2,-3.5) {$p_j$};
+      \draw[red] (5,-3.25) circle (1.25);
+      \draw (5,-3.25) -- (5,-2);
+      \node at (5.3,-2.625) {$r_j$};
+
+      % delta
+      \draw[blue] (0,-2) -- (5,-2);
+      \draw[blue] (1.41,-1.41) -- (5.3,-2.03);
+      \node at (2.5, -2.2) {$\delta$};
+
+      % theta
+      \draw (0,-.7) arc [radius=.7, start angle=-90, end angle=-45];
+      \node at (.36,-.85) {$\theta$};
+    \end{tikzpicture}
+    \caption{The robot will always move closer to its Kin.}
+    \label{fig:kin_aggregation}
+  \end{figure}
+
+  \begin{equation} \label{eq:agg}
+    \lVert p_j - p'_i \rVert < \lVert p_j - p_i \rVert
+  \end{equation}
+
+  With this coordinate system and assumptions stated, we can define the coordinate of $p_i$, $p_j$, and $p'_i$.
+
+  \begin{equation}
+    \begin{split}
+      p_i = \begin{bmatrix}0 \\ -R\end{bmatrix} \\
+      p_j = \begin{bmatrix}\delta \\ -(R+r_j)\end{bmatrix} \\
+      p'_i = \begin{bmatrix}R\sin(\theta) \\ -R\cos(\theta)\end{bmatrix}
+    \end{split}
+  \end{equation}
+
+  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. In short, the position of the robot is guaranteed to decrease until the point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+
+  \begin{equation*} \label{eq:agg_result}
+    \delta > (R + r_j)\tan\bigg(\frac{\theta}{2}\bigg)
+  \end{equation*}
+
+  \begin{align}
+    \begin{split} \label{eq:theta_and_r}
+      \theta &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.6 - (-0.2)}{W} = \frac{0.8\Delta t}{W} \\
+      R &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.6 + (-0.2)}{0.6 - (-0.2)}\bigg) = \frac{W}{4}
+    \end{split}
+  \end{align}
+
+  Combining \label{eq:theta_and_r} with \ref{eq:agg_result}, we get a useful expression that tells us the conditions under which aggregation is guaranteed.
+
+  \begin{equation*} \label{eq:agg_final_result}
+    \delta > \bigg(\frac{W}{4} + r_j\bigg)\tan\bigg(\frac{0.8\Delta t}{2W}\bigg)
+  \end{equation*}
+
 
 \section{Results}
 
@@ -117,7 +205,7 @@ pdmitrano@wpi.edu}
   \subsection{Evolving Aggregation}
 
   We have also successfully evolved no-compute one-class segregation, or simple aggregation policies. We have so far implemented only the third cluster cost function, but we have successfully used it to evolve aggregation. We show an example of this below. In this example, the cost (higher is less fit) of the bad individual had an average of 9.8659e+08 over 10 trials. The best individual in the second generation had an average cost of 1.0434e+07. This along with visual inspection shows our cost function and genetic algorithm are working.
-  
+
   \begin{figure}
     \centering
     \includegraphics[width=0.49\linewidth]{./images/0_steps.png}
@@ -130,7 +218,7 @@ pdmitrano@wpi.edu}
   \subsection{Evolving $N$-Class Segregation}
 
   We also have started testing no-compute segregation policies and have found promising results so far. For simple validation, we searched by hand for segregation policies were able to easily find several policies for segregation. The hand selected policy that we experimented with appears to generalize across $n$ classes of robots. However, the policies do not seem to be as robust to various starting configurations or work very well if different numbers of robots. In figures \ref{fig:handtuned-2class}, \ref{fig:handtuned-3class}, and \ref{fig:handtuned-5class}, a hand selected policy is applied to the segregation task with differing numbers of classes. In these initial experiments, the same policy was used for all 3 experiments. This demonstrates that a genetic algorithm should be able to find a policy that segregates robots by classes as long as the fitness measure is able to assign cost behaviors correctly.
-  
+
   \begin{figure}
     \centering
     \includegraphics[width=8cm]{handtuned-2class.png}
@@ -151,7 +239,7 @@ pdmitrano@wpi.edu}
     \caption{5 class Segregation with Hand Selected Policy}
     \label{fig:handtuned-5class}
   \end{figure}
-  
+
 In addition to the hand-selected policy, we have also started testing with our genetic algorithm to find a policy that segregates robots of multiple classes.  We implemented the third cost function in an attempt to evolve a behavior similar to the hand-selected policy.  The genetic algorithm is able to evolve a behavior, but we aren't yet getting the desired results.  For the genetic algorithm evaluated on 10 generations with several classes of robots, there appears to be a sort of circling behavior where robots of one class follow robots of another (fig. \ref{fig:ga-multiclass}).
 
   \begin{figure}
@@ -160,11 +248,39 @@ In addition to the hand-selected policy, we have also started testing with our g
     \caption{Genetic Algorithm Evolved Behavior}
     \label{fig:ga-multiclass}
   \end{figure}
-  
-% Future Work:
+
+\section{Future Work}
 %  - consider the radius of the robot, track width, etc...
+
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
+
+\onecolumn
+\section{Appendix}
+
+\subsection{Proof of Theorem 1}
+
+    \begin{align*}
+      \lVert p_j - p'_i \rVert &< \lVert p_j - p_i \rVert \\
+      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
+      (p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2 &< (p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2 \\
+      (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + (-(R+r_j) + R)^2 \\
+      (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + (r_j + R(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j(1 - \cos(\theta)) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - 2\cos(\theta) + \cos(\theta)^2) &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) + R^2\cos(\theta)^2 &< \delta^2 + r_j^2 \\
+      \delta^2 - 2R\delta\sin(\theta) + R^2(\sin(\theta)^2 + cos(\theta)^2) + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) &< \delta^2 + r_j^2 \\
+      \cancel{\delta^2} - 2R\delta\sin(\theta) + 2R^2 + \cancel{r_j^2} + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< \cancel{\delta^2} + \cancel{r_j^2} \\
+      -2R\delta\sin(\theta) + 2R^2 + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< 0 \\
+      -\delta\sin(\theta) + R + r_j - r_j\cos(\theta) - R\cos(\theta) &< 0 \qquad \text{assuming $R>0$}\\
+      R + r_j - r_j\cos(\theta) - R\cos(\theta) &< \delta\sin(\theta) \\
+      r_j(1 - \cos(\theta)) + R(1 - \cos(\theta)) &< \delta\sin(\theta) \\
+      (r_j+R)(1 - \cos(\theta)) &< \delta\sin(\theta) \\
+      (R+r_j)\bigg(\frac{1 - \cos(\theta)}{\sin(\theta)}\bigg) &< \delta \\
+      (R+r_j)\tan{\frac{\theta}{2}}  &< \delta \\
+    \end{align*}
 
 \end{document}
