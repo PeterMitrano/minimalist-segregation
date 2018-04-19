@@ -4,6 +4,7 @@
 \usepackage{cancel}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
+\usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{tikz}
@@ -169,7 +170,7 @@ pdmitrano@wpi.edu}
     \end{split}
   \end{equation}
 
-  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. In short, the position of the robot is guaranteed to decrease until the point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the position of the robot is guaranteed to decrease until the point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
 
   \begin{equation*} \label{eq:agg_result}
     \delta > (R + r_j)\tan\bigg(\frac{\theta}{2}\bigg)
@@ -188,12 +189,23 @@ pdmitrano@wpi.edu}
     \delta > \bigg(\frac{W}{4} + r_j\bigg)\tan\bigg(\frac{0.8\Delta t}{2W}\bigg)
   \end{equation*}
 
+  We can now consider the example of the Khephera IV robot in this scenario. The inner wheel distance for the Khephera IV is \SI{0.14}{\meter}, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.5714\;\text{rad}$, and so aggregation is guaranteed when the following is true.
+
+  \begin{equation} \label{eq:khephera_agg}
+    \begin{split}
+      \delta &> \bigg(0.035 + r_j\bigg)\tan\frac{0.5714}{2*0.14} \\
+      \delta &> -1.96904 r_j - 0.06892
+    \end{split}
+  \end{equation}
+
+  Further still, we can prove that this inequality always holds. The largest possible value on the right hand side is achieved when $r_j=0$, at which point it equals $-0.06892$. However, since the distance between two robots must always be positive, we can say that it is guaranteed that Equation \ref{eq:khephera_agg} holds true for any $p_j$ and $r_j$.
+
 
 \section{Results}
 
-  \subsection{Evaluating The Gauci Parameters on Kephera IV}
+  \subsection{Evaluating The Gauci Parameters on Khephera IV}
 
-  So far, we have completed our first proposed work of applying the aggregation parameters from \cite{gauci_self-organized_2014} to a simulation with the Kephera IV robot. We implemented the controller using Buzz. Our ``binary sensor'' was simulated by checking if any robots were within 15 degrees of line of sight according to the range and bearing sensors. We ran 10 trials with 10 robots each and plotted the dispersion metric used by the original authors over time below in Figure \ref{fig:dispersion_gauci}. The green line show the dispersion cost for an optimal packing (7.47). Over the 10 trials, the lowest dispersion we found was 19.06, which is close to the optimal packing. This illustrates that the policy reported in \cite{gauci_self-organized_2014} is effective on the Kephera IV, which most notably is a different size, with no modifications. However, it does not quite achieve as close to the optimal packing as the authors report for the e-puck using the same parameters.
+  So far, we have completed our first proposed work of applying the aggregation parameters from \cite{gauci_self-organized_2014} to a simulation with the Khephera IV robot. We implemented the controller using Buzz. Our ``binary sensor'' was simulated by checking if any robots were within 15 degrees of line of sight according to the range and bearing sensors. We ran 10 trials with 10 robots each and plotted the dispersion metric used by the original authors over time below in Figure \ref{fig:dispersion_gauci}. The green line show the dispersion cost for an optimal packing (7.47). Over the 10 trials, the lowest dispersion we found was 19.06, which is close to the optimal packing. This illustrates that the policy reported in \cite{gauci_self-organized_2014} is effective on the Khephera IV, which most notably is a different size, with no modifications. However, it does not quite achieve as close to the optimal packing as the authors report for the e-puck using the same parameters.
 
   \begin{figure}
     \centering
@@ -259,7 +271,7 @@ In addition to the hand-selected policy, we have also started testing with our g
 \onecolumn
 \section{Appendix}
 
-\subsection{Proof of Theorem 1}
+\subsection{Proof of Theorem 1} \label{thm:1}
 
     \begin{align*}
       \lVert p_j - p'_i \rVert &< \lVert p_j - p_i \rVert \\
