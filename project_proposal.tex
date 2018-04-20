@@ -107,7 +107,7 @@ pdmitrano@wpi.edu}
 
 \section{Controller Analysis}
 
-  We found imperically that the parameters $[0.5 -0.5 -0.2 0.6 0.6 0.2]$ successfully acheive segregatation. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a kin robot or cluster of kin robots. This proof is an extension of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a Kin robot is seen, $I=1$, so $v_l = v_{l_0} = -0.2$ and $v_r = v_{r_0} = 0.6$. This will cause the robot to turn with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distnace $W$, and that the controller is execute in small finite time steps. Our goal is to show that the distance between the positon of the robot after it reacts to the kin $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
+  We found imperically that the parameters $[0.5 -0.5 -0.2 0.6 0.6 0.2]$ successfully acheive segregatation. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a kin robot, or more importantly, a cluster of kin robots. This proof is an extension of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a Kin robot is seen, $I=1$, so $v_{l_1} = -0.2$ and $v_{r_1} = 0.6$. This will cause the robot to turn with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distnace $W$, and that the controller is executed in small finite time steps. Our goal is to show that the distance between the positon of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
 
   \begin{figure}[H]
     \centering
@@ -160,7 +160,7 @@ pdmitrano@wpi.edu}
     \lVert p_j - p'_i \rVert < \lVert p_j - p_i \rVert
   \end{equation}
 
-  With this coordinate system and assumptions stated, we can define the coordinate of $p_i$, $p_j$, and $p'_i$.
+  We emphisize that $r_j$ could be the radius of a single kin robot or the radius of a large cluster of kin robots. With this coordinate system and assumptions stated, we can define the coordinate of $p_i$, $p_j$, and $p'_i$.
 
   \begin{equation}
     \begin{split}
@@ -170,7 +170,7 @@ pdmitrano@wpi.edu}
     \end{split}
   \end{equation}
 
-  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the position of the robot is guaranteed to decrease until the point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the distance of the robot to its kin is guaranteed to decrease until a point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
 
   \begin{equation} \label{eq:agg_result}
     \delta > (R + r_j)\tan\bigg(\frac{\theta}{2}\bigg)
@@ -183,13 +183,13 @@ pdmitrano@wpi.edu}
     \end{split}
   \end{align}
 
-  Combining \ref{eq:theta_and_r} with \ref{eq:agg_result}, we get a useful expression that tells us the conditions under which aggregation is guaranteed.
+  Combining \ref{eq:theta_and_r} with \ref{eq:agg_result}, we get a useful expression that tells us the conditions under which aggregation is guaranteed. We emphasize that this does not mean aggregation to a kin is guaranteed for all values of $\Delta t$, $r_j$, and $W$. For example, if $\Delta t$ is increased to \SI{1}{\second} then aggregation is likely not guaranteed.
 
   \begin{equation*} \label{eq:agg_final_result}
     \delta > \bigg(\frac{W}{4} + r_j\bigg)\tan\bigg(\frac{0.8\Delta t}{2W}\bigg)
   \end{equation*}
 
-  We can now consider the example of the Khephera IV robot in this scenario. The inner wheel distance for the Khephera IV is \SI{0.14}{\meter}, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.5714\;\text{rad}$, and so aggregation is guaranteed when the following is true.
+  We can now consider an example with the Khephera IV robot, which we used in all our simulation. The inner wheel distance for the Khephera IV is \SI{0.14}{\meter}, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.5714\;\text{rad}$, and so aggregation is guaranteed when the following is true.
 
   \begin{equation} \label{eq:khephera_agg}
     \begin{split}
@@ -198,8 +198,7 @@ pdmitrano@wpi.edu}
     \end{split}
   \end{equation}
 
-  Further still, we can prove that this inequality always holds. The largest possible value on the right hand side is achieved when $r_j=0$, at which point it equals $-0.06892$. However, since the distance between two robots must always be positive, we can say that it is guaranteed that Equation \ref{eq:khephera_agg} holds true for any $p_j$ and $r_j$.
-
+   Note the largest possible value on the right hand side is achieved when $r_j=0$, at which point it equals $-0.06892$. However, since the distance between two robots $\delta$ must always be positive it will always be greater than $-0.06892$, we can say that it is guaranteed that Equation \ref{eq:khephera_agg} holds true for any $r_j$.
 
 \section{Results}
 
