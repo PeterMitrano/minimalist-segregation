@@ -78,7 +78,7 @@ pdmitrano@wpi.edu}
 
   As with any genetic algorithm, it is important to have a fitness function that accurately assigns cost to behaviors. In this project, we plan to explore three different cost functions. The first is the cluster metric used by \cite{gauci_self-organized_2014}, which is the proportion of the number of robots in the largest cluster to the total number of robots. we will apply this for each class of robots and sum up the cost for each class to get the total cost. Further, we will determine the percentage of trials that reach one cluster per class by then end of some number of time steps.
 
-  We also propose two new cluster metrics to use as fitness functions. The cluster metric described above is problematic because it considers a straight line of robots to be one cluster. In some scenarios, we care about how tightly the swarm is packed in its clusters. Consider the scenario where different classes of swarm robots needs to be collected after a mission, and the must be sorted into clusters so that they can be air-lifted easily. With this secnario im mind, we propose a new metric which uses the convex hull of the robots in each class. We want to penalize a large convex hull, so the first time is simply the area of the convex hull. The second term assigns cost to the presence of non-kin inside the convex hull. Computing the convex hull can be done with Garaham's Scan algorithm, and computing the area is the sum the cross products around each vertex.
+  We also propose two new cluster metrics to use as fitness functions. The cluster metric described above is problematic because it considers a straight line of robots to be one cluster. In some scenarios, we care about how tightly the swarm is packed in its clusters. Consider the scenario where different classes of swarm robots needs to be collected after a mission, and the must be sorted into clusters so that they can be air-lifted easily. With this scenario in mind, we propose a new metric which uses the convex hull of the robots in each class. We want to penalize a large convex hull, so the first time is simply the area of the convex hull. The second term assigns cost to the presence of non-kin inside the convex hull. Computing the convex hull can be done with Graham's Scan algorithm, and computing the area is the sum the cross products around each vertex.
 
   $$ c_{\text{pack}} = A_\text{convex hull} + \frac{\text{number of non-kin robots inside convex hull}}{\text{number of non-kin robots}}$$
 
@@ -107,7 +107,7 @@ pdmitrano@wpi.edu}
 
 \section{Controller Analysis}
 
-  We found imperically that the parameters [0.5 -0.5 -0.2 0.6 0.6 0.2] successfully acheive segregatation. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a kin robot, or more importantly, a cluster of kin robots. This proof is an extension of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a Kin robot is seen, $I=1$, so $v_{l_1} = -0.2$ and $v_{r_1} = 0.6$. This will cause the robot to turn with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distnace $W$, and that the controller is executed in small finite time steps. Our goal is to show that the distance between the positon of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
+We found empirically that the parameters [0.5 -0.5 -0.2 0.6 0.6 0.2] successfully achieve segregation. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a kin robot, or more importantly, a cluster of kin robots. This proof is an extension of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a Kin robot is seen, $I=1$, so $v_{l_1} = -0.2$ and $v_{r_1} = 0.6$. This will cause the robot to turn with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distance $W$, and that the controller is executed in small finite time steps. Our goal is to show that the distance between the position of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
 
   \begin{figure}[H]
     \centering
@@ -160,7 +160,7 @@ pdmitrano@wpi.edu}
     \lVert p_j - p'_i \rVert < \lVert p_j - p_i \rVert
   \end{equation}
 
-  We emphisize that $r_j$ could be the radius of a single kin robot or the radius of a large cluster of kin robots. With this coordinate system and assumptions stated, we can define the coordinate of $p_i$, $p_j$, and $p'_i$.
+  We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large cluster of kin robots. With this coordinate system and assumptions stated, we can define the coordinate of $p_i$, $p_j$, and $p'_i$.
 
   \begin{equation}
     \begin{split}
@@ -170,7 +170,7 @@ pdmitrano@wpi.edu}
     \end{split}
   \end{equation}
 
-  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the distance of the robot to its kin is guaranteed to decrease until a point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependant variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+  We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the distance of the robot to its kin is guaranteed to decrease until a point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$. The dependent variables $\theta$ and $R$ are themselves a function of the inter wheel diameter $W$ and the wheels speeds of the controller $v_{l_1}$ and $v_{l_1}$, which are shown in Equation \ref{eq:theta_and_r}.
 
   \begin{equation} \label{eq:agg_result}
     \delta > (R + r_j)\tan\bigg(\frac{\theta}{2}\bigg)
@@ -189,7 +189,7 @@ pdmitrano@wpi.edu}
     \delta > \bigg(\frac{W}{4} + r_j\bigg)\tan\bigg(\frac{0.8\Delta t}{2W}\bigg)
   \end{equation*}
 
-  We can now consider an example with the Khephera IV robot, which we used in all our simulation. The inner wheel distance for the Khephera IV is \SI{0.14}{\meter}, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.5714\;\text{rad}$, and so aggregation is guaranteed when the following is true.
+  We can now consider an example with the Khepera IV robot, which we used in all our simulation. The inner wheel distance for the Khepera IV is \SI{0.14}{\meter}, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.5714\;\text{rad}$, and so aggregation is guaranteed when the following is true.
 
   \begin{equation} \label{eq:khephera_agg}
     \begin{split}
@@ -202,9 +202,9 @@ pdmitrano@wpi.edu}
 
 \section{Results}
 
-  \subsection{Evaluating The Gauci Parameters on Khephera IV}
+  \subsection{Evaluating The Gauci Parameters on Khepera IV}
 
-  So far, we have completed our first proposed work of applying the aggregation parameters from \cite{gauci_self-organized_2014} to a simulation with the Khephera IV robot. We implemented the controller using Buzz. Our ``binary sensor'' was simulated by checking if any robots were within 15 degrees of line of sight according to the range and bearing sensors. We ran 10 trials with 10 robots each and plotted the dispersion metric used by the original authors over time below in Figure \ref{fig:dispersion_gauci}. The green line show the dispersion cost for an optimal packing (7.47). Over the 10 trials, the lowest dispersion we found was 19.06, which is close to the optimal packing. This illustrates that the policy reported in \cite{gauci_self-organized_2014} is effective on the Khephera IV, which most notably is a different size, with no modifications. However, it does not quite achieve as close to the optimal packing as the authors report for the e-puck using the same parameters.
+  So far, we have completed our first proposed work of applying the aggregation parameters from \cite{gauci_self-organized_2014} to a simulation with the Khepera IV robot. We implemented the controller using Buzz. Our ``binary sensor'' was simulated by checking if any robots were within 15 degrees of line of sight according to the range and bearing sensors. We ran 10 trials with 10 robots each and plotted the dispersion metric used by the original authors over time below in Figure \ref{fig:dispersion_gauci}. The green line show the dispersion cost for an optimal packing (7.47). Over the 10 trials, the lowest dispersion we found was 19.06, which is close to the optimal packing. This illustrates that the policy reported in \cite{gauci_self-organized_2014} is effective on the Khepera IV, which most notably is a different size, with no modifications. However, it does not quite achieve as close to the optimal packing as the authors report for the e-puck using the same parameters.
 
   \begin{figure}
     \centering
@@ -263,12 +263,14 @@ In addition to the hand-selected policy, we have also started testing with our g
 \section{Future Work}
 %  - consider the radius of the robot, track width, etc...
 
+% consider more realistic applications i.e. different types of robots need to segregate, they may have different movement mechanisms e.g. some drive, some fly
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
 
 \onecolumn
-\section{Appendix}
+\appendix
+%\section{Appendix}
 
 \subsection{Proof of Theorem 1} \label{thm:1}
 
