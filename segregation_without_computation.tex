@@ -16,7 +16,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Segregating Robots That Do Not Compute}
+\title{Segregation without Computation}
 
 \author{\IEEEauthorblockN{Jordan Burklund}
 \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
@@ -122,21 +122,21 @@ pdmitrano@wpi.edu}
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.43\linewidth]{./images/0_1_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/2_3_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/4_5_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/0_3_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/0_5_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/1_4_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/1_2_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/3_4_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/2_5_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/0_4_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/1_5_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/0_2_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/1_3_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/2_4_grid_img.png}
-      \includegraphics[width=0.43\linewidth]{./images/3_5_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/0_1_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/2_3_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/4_5_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/0_3_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/0_5_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/1_4_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/1_2_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/3_4_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/2_5_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/0_4_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/1_5_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/0_2_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/1_3_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/2_4_grid_img.png}
+      \includegraphics[width=0.42\linewidth]{./images/3_5_grid_img.png}
       \caption{Each grid cell shows the cost of the best controller with the x-axis and y-axis parameters at that given cell value.}
       \label{fig:grid_search}
     \end{figure}
@@ -260,7 +260,7 @@ pdmitrano@wpi.edu}
 
   \subsection{Aggregation with non-static Kin}
 
-    \begin{figure*}[H]
+    \begin{figure}[H]
       \centering
       \begin{tikzpicture}
         \draw[white] (-2.25,3.5) rectangle(7,-4.75);
@@ -323,7 +323,7 @@ pdmitrano@wpi.edu}
       \end{tikzpicture}
       \caption{The generic scenario of two robots executing the segregation controllers. In our proof, we allow for robots to be different sizes.}
       \label{fig:pair_kin_aggregation}
-    \end{figure*}
+    \end{figure}
 
     We extend the proof above to consider the case of two kin robots executing the controller. In Figure \ref{fig:pair_kin_aggregation}, we see the situation where two kin robots are executing our controller. To justify that this as our starting state, we consider the three possible initial situations. If no robots see each other, they will both rotate until one or both detect the other. If one of the robots see its kin first, we find ourselves in the situation depicted. In this scenario, robot $i$ is in state $I=1$ and will arc to the left. If robot $j$ does not yet see robot $i$, it will continue to rotate until some time $t_b$ it does, otherwise it will simply keep rotating in state $I=0$. The final scenario where both robots see each other is a special case where $t_b=0$. In the case where robot $j$ doesn't sees robot $i$ until after $i$ finishes its arc away, we simply need to extend the proof from the static robot. We need now have to consider the point $p'_j$, which here refers to the position of robot $j$ after executing the tight arc of state $I=0$ for one time step. What we want to show, similarly to the earlier proof, is that the robots are closer after executing their moves than before. This is expressed formally is:
 
@@ -379,7 +379,9 @@ An interesting expansion of this work would be to investigate more realistic app
 %  - consider the radius of the robot, track width, etc...
 
 \section{Conclusion}
+In this paper, we demonstrate that memoryless, computeless robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple; wheel speeds if a robot's line of sight sensor sees nothing, a robot of the same class (kin), or a robot of any other class (non-kin). This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm. We also performed a grid search to better understand the parameter space.
 
+We then investigate the effect of different initial configurations on the performance of the two controllers. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
