@@ -37,7 +37,7 @@ pdmitrano@wpi.edu}
 \maketitle
 
 \begin{abstract}
-  In this paper, we demonstrate that memoryless computeless robots are capable of $n$-class segregation. We evolve controllers for this behavior with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We find the robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
+  In this paper, we demonstrate that memoryless computeless robots are capable of $n$-class segregation. We evolve controllers for this behavior with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -84,15 +84,15 @@ pdmitrano@wpi.edu}
       \label{alg:controller}
     \end{algorithm}
 
-    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Psuedo code for the controller is shown in algorithm \ref{alg:controller}. This controller has six parameters:
+    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Psuedo code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
 
     $$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
 
-    Keeping with the form used in \cite{gauci_self-organized_2014}, we let these parameters ran from -1 to 1. In simulation, we then scale this parameter to range from \SI{-20}{\centi\meter\per\second} to \SI{20}{\centi\meter\per\second}. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
+    Keeping with the form used in \cite{gauci_self-organized_2014}, we let these parameters range from -1 to 1. In simulation, we then scale this parameter to range from \SI{-20}{\centi\meter\per\second} to \SI{20}{\centi\meter\per\second}. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
 
   \subsection{Simulation Environment}
 
-    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range and bearing sensor to implement the theoretical line of sight sensor. Specifically, we consider all of the robots within some imaginary beam angle and pick the closest of those. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in section \ref{section:beam_angle}.
+    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range and bearing sensor to implement the theoretical line of sight sensor. Specifically, we consider all of the robots within some imaginary beam angle and pick the closest of those. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}.
 
   \subsection{Evolving Segregation}
 
@@ -374,9 +374,12 @@ pdmitrano@wpi.edu}
     \end{figure}
 
 \section{Future Work}
+An interesting expansion of this work would be to investigate more realistic applications i.e. different types of robots that need to segregate based on their type e.g. drones, footbots, etc. Since different types of robots will have different movement mechanisms, a single controller for all robots is likely to be inadequate. However, it is possible that there are similar computeless solutions.
+
 %  - consider the radius of the robot, track width, etc...
 
-% consider more realistic applications i.e. different types of robots need to segregate, they may have different movement mechanisms e.g. some drive, some fly
+\section{Conclusion}
+
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
