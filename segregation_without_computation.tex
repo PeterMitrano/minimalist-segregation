@@ -18,20 +18,21 @@
 
 \title{Segregation without Computation}
 
-\author{\IEEEauthorblockN{Jordan Burklund}
-\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-Worcester, MA \\
-jsburklund@wpi.edu}
-\and
-\IEEEauthorblockN{Michael Giancola}
-\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-Worcester, MA \\
-mjgiancola@wpi.edu}
-\and
-\IEEEauthorblockN{Peter Mitrano}
-\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-Worcester, MA \\
-pdmitrano@wpi.edu}
+\author{
+  \IEEEauthorblockN{Jordan Burklund}
+  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  Worcester, MA \\
+  jsburklund@wpi.edu}
+  \and
+  \IEEEauthorblockN{Michael Giancola}
+  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  Worcester, MA \\
+  mjgiancola@wpi.edu}
+  \and
+  \IEEEauthorblockN{Peter Mitrano}
+  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  Worcester, MA \\
+  pdmitrano@wpi.edu}
 }
 
 \maketitle
@@ -84,7 +85,7 @@ pdmitrano@wpi.edu}
       \label{alg:controller}
     \end{algorithm}
 
-    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Psuedo code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
+    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Pseudocode for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
 
     $$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
 
@@ -92,7 +93,7 @@ pdmitrano@wpi.edu}
 
   \subsection{Simulation Environment}
 
-    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range and bearing sensor to implement the theoretical line of sight sensor. Specifically, we consider all of the robots within some imaginary beam angle and pick the closest of those. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}.
+    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range and bearing sensor to implement the theoretical line of sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}.
 
   \subsection{Evolving Segregation}
 
@@ -142,6 +143,8 @@ pdmitrano@wpi.edu}
     \end{figure}
 
 \section{Controller Analysis}
+
+  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation to kin is guaranteed.
 
   \subsection{Aggregation with static Kin}
 
@@ -343,7 +346,33 @@ pdmitrano@wpi.edu}
       \label{fig:cost_function_fuckup}
     \end{figure}
 
-  \subsection{The effect of Beam Angle} \label{section:beam_angle}
+  \subsection{Scalability Study} \label{section:scalability}
+
+    In this experiment we investigate how segregation behavior scales with the number of classes and number of robots in the environment.
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
+      \caption{The average cost with 100 robots divided into N classes. More classes are lower cost partially because kin robots stay close nought to be considered clusters.}
+      \label{fig:num_classes_100}
+    \end{figure}
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class.png}
+      \caption{The average cost with N classes, 10 robots per class. More classes are higher cost because other robots obstruct your view making it difficult to find kin.}
+      \label{fig:num_classes_10}
+    \end{figure}
+
+  \subsection{The Effect of Implementation Details of the sensor} \label{section:sensor_impl}
+
+    So far we have been vague on how exactly we implement this theoretical line-of-sight sensor. We found in our experiments that the implementation details have a tremendous effect on the performance or behavior of the controller. This is unfortunate because one of the main motivations of the binary or ternary line of sight sensors is that they can be easily transferred between real and simulated implementations.
+
+    Initially, our method for determining sensor state from our simulated range-and-bearing sensors was to consider all the robots within some small angle in front of the robot and pick the closest one. This is very similar to what you would presumably get from a real-world camera implementation that uses colored skirts on each robot and picks the largest blob as the robot to be detected. This sensor implementation works well and was used in all our genetic algorithm and grid search experiments. However, we found later that if instead the robots always prefer to react to kin over non-kin, you can form larger rings more quickly and robustly. For example, if there are two robots within the imagery beam of your sensor and the non-kin robot is closer, you will ignore it and execute the $I=1$ state which will drive you towards the farther away kin robot.
+
+    To test this, we ran 100 trials of our best controller with 40 robots split into 4 classes distributed uniformly randomly with each of these two sensor implementations. For the closest-robot-wins implementation, the average cost was -1399.48, and for the kin-robot-wins implementation the average cost was  -1424.74.
+
+  \subsection{The Effect of Beam Angle} \label{section:beam_angle}
 
     In practice, there must be some finite beam angle to the theoretically line of sight sensor. We ran 100 trials in simulation with uniformly random initial distributions of 40 robots with various half beam angles. Figure \ref{fig:beam_angle} shows the results, as well as a diagram showing how we define half beam angle. The best half beam angle we tested was \ang{15}, and angles smaller or larger got progressively worse. We found that at lower beam angles, it was possible for a robot to skip over seeing a robot during a single step of turning. At larger angles, we believe the behavior fails because we choose the closest robot within the angle, so if a kin robots and non-kin robot are both visible but the non-kin robot is closer, it will execute the non-kin behavior and turn away from the kin robot, thus not aggregating to it.
 
@@ -362,7 +391,7 @@ pdmitrano@wpi.edu}
       \label{fig:beam_angle}
     \end{figure}
 
-  \subsection{The effect of Beam Length} \label{section:beam_length}
+  \subsection{The Effect of Beam Length} \label{section:beam_length}
 
     We also consider what happens if our theoretically infinite sensor now has finite range. We use \ang{15} half beam angle and the same experimental setup as with the beam angle experiments. Like in \cite{gauci_self-organized_2014}, we consider the maximum range of the sensor as the diagonal length of the square in which the robot are initially distributed. In all our experiments, this box was \SI{5}{\meter\square}, so we consider a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs for beam lengths as a fraction of this maximum range. As you can see in Figure \ref{fig:beam_length}, in practice a beam length of only 35\% of the theoretical maximum performs just as well. Below this, the performance degrades. However, even a beam length of just 7\% of unlimited is more effective than zero length at segregation. In our experiment watching many simulations, beam length should also be scaled with the total number of robots as well as the initial distance between robots. When the beam length is short, there are many cases where two rings of kin robots form at different points in the environment, and in order for these two rings to join the robots must have sufficiently long beam length in order to detect each other.
 
@@ -374,14 +403,14 @@ pdmitrano@wpi.edu}
     \end{figure}
 
 \section{Future Work}
-An interesting expansion of this work would be to investigate more realistic applications i.e. different types of robots that need to segregate based on their type e.g. drones, footbots, etc. Since different types of robots will have different movement mechanisms, a single controller for all robots is likely to be inadequate. However, it is possible that there are similar computeless solutions.
 
-%  - consider the radius of the robot, track width, etc...
+  An interesting expansion of this work would be to investigate more realistic applications i.e. different types of robots that need to segregate based on their type e.g. drones, footbots, etc. Since different types of robots will have different movement mechanisms, a single controller for all robots is likely to be inadequate. However, it is possible that there are similar computeless solutions.
 
 \section{Conclusion}
-In this paper, we demonstrate that memoryless, computeless robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple; wheel speeds if a robot's line of sight sensor sees nothing, a robot of the same class (kin), or a robot of any other class (non-kin). This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm. We also performed a grid search to better understand the parameter space.
 
-We then investigate the effect of different initial configurations on the performance of the two controllers. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
+  In this paper, we demonstrate that memoryless, computeless robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple; wheel speeds if a robot's line of sight sensor sees nothing, a robot of the same class (kin), or a robot of any other class (non-kin). This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm. We also performed a grid search to better understand the parameter space.
+
+  We then investigate the effect of different initial configurations on the performance of the two controllers. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
