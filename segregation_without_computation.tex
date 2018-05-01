@@ -56,7 +56,7 @@
 
     The work of \cite{gasparri_swarm_2012} does not restrict itself to a computeless or memoryless solution. Instead they develop an aggregation algorithm which enables robots to respond to guidance commands -- i.e., a human using hand gestures to indicate which direction the swarm should move. They show that swarms running their algorithm are able to follow guidance commands and stay aggregated without colliding. A simpler controller is used in \cite{bahgeci_evolving_2005}, where robots are equipped with IR distance sensors surrounding the robot, 4 microphones, and an omni-directional speaker. The policy is a linear combination of the IR sensor values and the intensity values of the microphones. The authors show that a genetic algorithm is able to find weights for the policy such that robots aggregate together. In \cite{ando_distributed_1999}, the authors present a robot aggregation model with very limited sensing and no memory, but allows the robots to perform computations to determine their next position. They prove that their algorithm is correct in theory, then run the algorithm in simulation.
 
-    Finally, \cite{gauci_self-organized_2014} considers only binary sensor that maps directly to wheel velocities. The authors demonstrate extremely robust aggregation despite these limitations, and they also prove formally that aggregation is guaranteed and find theoretical bounds on aggregation time in simple situations. Similarly, the authors of \cite{gauci_clustering_2014} perform object aggregation with the same restrictions on sensing and control.
+    Finally, \cite{gauci_self-organized_2014} considers a binary sensor that maps directly to wheel velocities. The authors demonstrate extremely robust aggregation despite these limitations, and they also prove formally that aggregation is guaranteed and find theoretical bounds on aggregation time in simple situations. Similarly, the authors of \cite{gauci_clustering_2014} perform object aggregation with the same restrictions on sensing and control.
 
     Segregation of robots has received little attention in swarm robotics, however many researchers have focused on sorting of objects \cite{vardy_accelerated_2012} \cite{holland_collective_1998} \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. The study in \cite{santos_segregation_2014} shares our objective, however they assume that each class has the same number of robots and that each robot knows the position of all other robots. In contrast, we adhere to the memoryless computeless controller architecture with a simple ternary sensor. \cite{gros_segregation_2009} also explores segregation robots based on local interactions inspired by gravity, however they require a centralized broadcast or a consensus algorithm to agree on the source or direction of gravity.
 
@@ -66,7 +66,7 @@
 
     In \cite{kernbach_re-embodiment_2009}, the authors propose an aggregation policy roughly based on observations of bees clustering in an optimal temperature location. In their method, robots are only able to distinguish between collisions between another robot or a wall, can only sense the intensity of a light source when they have collided, and do not communicate information. Although the robots have limited sensing and communication capabilities, the authors show that robots can aggregate to an optimal light intensity location, and that the time to converge to the optimal location improves with increasing number of robots in the environment.
 
-    Robots that do not compute and are memoryless have also been shown to aggregate around a specific object, circle in a ring around an object, and forage for obstacles \cite{johnson_evolving_2016}. In this work, the authors show one can construct simple cost functions to guide the evolution of controllers to do new yet interesting tasks. However, they also report that in attempting to evolve a controller to rendezvous the robots around an object, they accidentally and consistently evolved a policy where the robots circled around the target object. This demonstrates that designing a cost function can be hard or unreliable. They achieved rendezvous by initializing the policy at generation zero to the policy found in \cite{gauci_self-organized_2014} for simple aggregation.
+    Robots that do not compute and are memoryless have also been shown to aggregate around a specific object, circle in a ring around an object, and forage for obstacles \cite{johnson_evolving_2016}. In this work, the authors show one can construct simple cost functions to guide the evolution of controllers to do new, yet interesting tasks. However, they also report that in attempting to evolve a controller to rendezvous the robots around an object, they accidentally and consistently evolved a policy where the robots circled around the target object. This demonstrates that designing a cost function can be hard or unreliable. They achieved rendezvous by initializing the policy at generation zero to the policy found in \cite{gauci_self-organized_2014} for simple aggregation.
 
 \section{Methodology}
 
@@ -81,11 +81,11 @@
       \Else \State set wheel speeds to $v_{l_2}$, $v_{r_2}$
       \EndIf
       \end{algorithmic}
-      \caption{The structure of the controller}
+      \caption{Controller Design}
       \label{alg:controller}
     \end{algorithm}
 
-    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Pseudocode for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
+    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Pseudo-code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
 
     $$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
 
@@ -119,7 +119,7 @@
 
     In order to exhaustively search the space of possible controllers, we conduct a grid search of the 6-dimensional parameter space. Due to limited computational resources, we were only able to search with a resolution of 7 values per parameter, which means in total we evaluated $7^6=117649$ parameters. For each parameter, we ran 1 trial in 36 different initial configurations, with 180 seconds for each simulation. These configurations consisted of uniformly random placement, clusters, and lines of robots distributed throughout the environment. We chose to include some structure configurations (clusters and lines) because we discovered that they varied significantly in performance from uniform random configurations, and by explicitly evaluating on structure configurations we can speak more confidently about the ability of the controller to succeed in any configuration. Otherwise, we would need to have far more trials with uniformly random robot placement to make the same claims. We were able to parallelize across the 36 configurations and run at 75x real time, so the entire grid search took approximately 4 days to evaluate all the controllers.
 
-    Because the search space is 6 dimensional, we choose to visualize it by plotting every pair of parameters against each other. For example, we consider how the cost changes as $v_{l_0}$ and $v_{r_0}$ change. We note that these graphs, shown in Figure \ref{fig:grid_search}, show very similar patterns to the same plots presented by \cite{gauci_self-organized_2014}. As an example of readding these plots, we can tell from plot of parameters 2 and 3 ($I=1$) that there were no good controllers where the left and right wheel speeds were equal and negative since there are only dark square in the upper left, and that the best controllers had slightly unequal but close to 1 because the bottom left squares are lightest. These plots also visualize how there are some sharp discontinuities where performance changes dramatically.
+    Because the search space is 6 dimensional, we choose to visualize it by plotting every pair of parameters against each other. For example, we consider how the cost changes as $v_{l_0}$ and $v_{r_0}$ change. We note that these graphs, shown in Figure \ref{fig:grid_search}, show very similar patterns to the same plots presented by \cite{gauci_self-organized_2014}. As an example of reading these plots, we can tell from the plot of parameters 2 and 3 ($I=1$) that there were no good controllers where the left and right wheel speeds were equal and negative (dark squares in the upper left), and that the best controllers had slightly unequal values close to 1 (lightest squares in the bottom left). These plots also visualize how there are some sharp discontinuities where performance changes dramatically.
 
     \begin{figure}
       \centering
@@ -225,7 +225,7 @@
       2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big)
     \end{equation}
 
-    In both of these equations the dependant variables $\theta$ and $R$ are themselves a function of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+    In both of these equations the dependent variables $\theta$ and $R$ are themselves a function of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \ref{eq:theta_and_r}.
 
     \begin{align}
       \begin{split} \label{eq:theta_and_r}
@@ -261,7 +261,7 @@
 
      We examined a wide range of possible values for our parameters $\Delta t$, $r_i$, $W$, and $r_j$, and we find that as long as $\Delta t$ is small (less than 0.25s), then aggregation is guaranteed for reasonable values of the other parameters (less than 0.5m).
 
-  \subsection{Aggregation with non-static Kin}
+  \subsection{Aggregation with Non-Static Kin}
 
     \begin{figure}[H]
       \centering
@@ -328,7 +328,7 @@
       \label{fig:pair_kin_aggregation}
     \end{figure}
 
-    We extend the proof above to consider the case of two kin robots executing the controller. In Figure \ref{fig:pair_kin_aggregation}, we see the situation where two kin robots are executing our controller. To justify that this as our starting state, we consider the three possible initial situations. If no robots see each other, they will both rotate until one or both detect the other. If one of the robots see its kin first, we find ourselves in the situation depicted. In this scenario, robot $i$ is in state $I=1$ and will arc to the left. If robot $j$ does not yet see robot $i$, it will continue to rotate until some time $t_b$ it does, otherwise it will simply keep rotating in state $I=0$. The final scenario where both robots see each other is a special case where $t_b=0$. In the case where robot $j$ doesn't sees robot $i$ until after $i$ finishes its arc away, we simply need to extend the proof from the static robot. We need now have to consider the point $p'_j$, which here refers to the position of robot $j$ after executing the tight arc of state $I=0$ for one time step. What we want to show, similarly to the earlier proof, is that the robots are closer after executing their moves than before. This is expressed formally is:
+    We extend the proof above to consider the case of two kin robots executing the controller. In Figure \ref{fig:pair_kin_aggregation}, we see the situation where two kin robots are executing our controller. To justify that this as our starting state, we consider the three possible initial situations. If no robots see each other, they will both rotate until one or both detect the other. If one of the robots see its kin first, we find ourselves in the situation depicted. In this scenario, robot $i$ is in state $I=1$ and will arc to the left. If robot $j$ does not yet see robot $i$, it will continue to rotate until some time $t_b$ it does, otherwise it will simply keep rotating in state $I=0$. The final scenario where both robots see each other is a special case where $t_b=0$. In the case where robot $j$ doesn't sees robot $i$ until after $i$ finishes its arc away, we simply need to extend the proof from the static robot. We need now have to consider the point $p'_j$, which here refers to the position of robot $j$ after executing the tight arc of state $I=0$ for one time step. What we want to show, similarly to the earlier proof, is that the robots are closer after executing their moves than before. This is expressed formally as:
 
     $$\lVert p'_j - p'_i \rVert < \lVert p_j - p_i \rVert $$
 
@@ -353,7 +353,7 @@
     \begin{figure}[H]
       \centering
       \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
-      \caption{The average cost with 100 robots divided into N classes. More classes are lower cost partially because kin robots stay close nought to be considered clusters.}
+      \caption{The average cost with 100 robots divided into N classes. More classes are lower cost partially because kin robots stay close enough to be considered clusters.}
       \label{fig:num_classes_100}
     \end{figure}
 
