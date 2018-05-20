@@ -24,26 +24,36 @@
 \title{Segregation without Computation}
 
 \author{
-  \IEEEauthorblockN{Jordan Burklund}
-  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-  Worcester, MA \\
-  jsburklund@wpi.edu}
-  \and
-  \IEEEauthorblockN{Michael Giancola}
-  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-  Worcester, MA \\
-  mjgiancola@wpi.edu}
-  \and
-  \IEEEauthorblockN{Peter Mitrano}
-  \IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
-  Worcester, MA \\
-  pdmitrano@wpi.edu}
+  \IEEEauthorblockN{Peter Mitrano\IEEEauthorrefmark{1} , Jordan Burkland\IEEEauthorrefmark{1}, Michael Giancola\IEEEauthorrefmark{1}, Carlo Pinciroli\IEEEauthorrefmark{1}}
+  \IEEEauthorblockA{\IEEEauthorrefmark{1}Worcester Polytechnic Institute, Worcester, Massachusetts}
 }
+
+%\author{
+  %\IEEEauthorblockN{Peter Mitrano}
+  %\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  %Worcester, MA \\
+  %pdmitrano@wpi.edu}
+  %\and
+  %\IEEEauthorblockN{Jordan Burklund}
+  %\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  %Worcester, MA \\
+  %jsburklund@wpi.edu}
+  %\and
+  %\IEEEauthorblockN{Michael Giancola}
+  %\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  %Worcester, MA \\
+  %mjgiancola@wpi.edu}
+  %\and
+  %\IEEEauthorblockN{Carlo Pinciroli}
+  %\IEEEauthorblockA{\textit{Worcester Polytechnic Institute} \\
+  %Worcester, MA \\
+  %cpinciroli@wpi.edu}
+%}
 
 \maketitle
 
 \begin{abstract}
-  In this paper, we demonstrate that memoryless computeless robots are capable of $n$-class segregation. We evolve controllers for this behavior with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when some reasonable conditions are met.
+  In this paper, we demonstrate that robots with no memory, arithmetic, or communication and only trivial sensors are capable of segregating themselves into an arbitrary number of groups. We evolve controllers with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We analyze two distinct controllers that segregate, on of which is efficient, and prove that aggregation of kin robots is guaranteed when reasonable conditions are met. More broadly, this is an example of how to search for and study emergent behaviors in swarms of simple robots.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -52,18 +62,24 @@
 
 \section{Introduction and Related Work}
 
-  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way, and some have shown the ability to perform such tasks with limited computation and sensing capabilities. Decentralized aggregation is frequently posed as a precursor to other swarm behaviors such as sorting, self-assembly, or coordinated motion \cite{gauci_evolving_2014} \cite{dorigo_evolving_2004}. Segregation is a natural extension of aggregation, and so we also desire algorithms for segregating robots into different clusters. In order to make this robust to individual failures and simple to implement, we would also like to achieve segregation with no communication between robots, no complex sensors, no leaders or beacons, and no environmental cues.
+  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way, and some have shown the ability to perform such tasks with limited computation and sensing capabilities \cite{gauci_self-organized_2014}\cite{shlyakhov_survey_2017}. Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to spread out and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. In order to make this robust to individual failures and simple to implement, we would also like to achieve segregation with no communication between robots, no complex sensors, no leaders or beacons, and no environmental cues.
 
-  In nature, we find many examples of aggregation and segregation. Segregation occurs in cells during embryogenesis, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. Furthermore, segregation is something humans do very quickly, and we can do so almost on reaction rather than carefully planned motion. These examples motivate the study of simple controllers for segregation.
+  In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like segregation can be achieve with an incredibly simple robot and controller. Many prior works have showed that evolutionary strategies are incredibly effective for finding emergent behavior, and our findings here further support this \cite{bahgeci_evolving_2005}\cite{johnson_evolving_2016}\cite{dorigo_evolving_2004}.
+
+    We make no claims that the controllers studied here are the most practical engineering solutions, but rather that they are an example of how complex behavior can emerge from simple rules. We report great success using a genetic algorithm is a practical strategy for searching for a desired swarm behavior. In a sense, we simply asked if it were possible to perform segregation and very quickly found that it was possible. We then studied the emergent behavior further in order to be able to explain it fully. Because simple robots are inexpensive, easier to implement, more robust to individual failures, and easier to understand on interpret, we urge other researchers to ask whether the behavior they require could in fact be achieved with simple robots and a evolutionary search strategy.
+
+    We also provide analysis of a specific emergent behaviors that allows the segregation to work. This analysis, while specific to the segregation behavior and controllers we found, is an example of how to make provable claims about emergent behavior of simple controllers. This is important because having guarantees on swarm behavior and well understand limitations allows one to make an informed decision about whether to deploy the controller in untested environments.
 
   \subsection{Aggregation and Segregation}
-    Robot aggregation is defined as having all robots in the swarm collect at a particular location in a distributed manner. Many swarm aggregation policies require robots to compute bearing and distance to other robots, to sense gradients in the environment, or to otherwise communicate information. However, implementing these communication systems is difficult in practice, so methods that do not require communication or complex sensing are desirable. In \cite{gauci_self-organized_2014}, the authors propose a new class of policies that require no computation.
+    Aggregation is defined as having all robots in the swarm collect at a particular location in a distributed manner. Many swarm aggregation policies require robots to compute bearing and distance to other robots, to sense gradients in the environment, or to otherwise communicate information. However, implementing these communication systems is difficult in practice, so methods that do not require communication or complex sensing are desirable. In \cite{gauci_self-organized_2014}, the authors propose a new class of policies that require no computation.
 
     The work of \cite{gasparri_swarm_2012} does not restrict itself to a computeless or memoryless solution. Instead they develop an aggregation algorithm which enables robots to respond to guidance commands -- i.e., a human using hand gestures to indicate which direction the swarm should move. They show that swarms running their algorithm are able to follow guidance commands and stay aggregated without colliding. A simpler controller is used in \cite{bahgeci_evolving_2005}, where robots are equipped with IR distance sensors surrounding the robot, 4 microphones, and an omni-directional speaker. The policy is a linear combination of the IR sensor values and the intensity values of the microphones. The authors show that a genetic algorithm is able to find weights for the policy such that robots aggregate together. In \cite{ando_distributed_1999}, the authors present a robot aggregation model with very limited sensing and no memory, but allows the robots to perform computations to determine their next position. They prove that their algorithm is correct in theory, then run the algorithm in simulation.
 
     Finally, \cite{gauci_self-organized_2014} considers a binary sensor that maps directly to wheel velocities. The authors demonstrate extremely robust aggregation despite these limitations, and they also prove formally that aggregation is guaranteed and find theoretical bounds on aggregation time in simple situations. Similarly, the authors of \cite{gauci_clustering_2014} perform object aggregation with the same restrictions on sensing and control.
 
     Segregation of robots has received little attention in swarm robotics, however many researchers have focused on sorting of objects \cite{vardy_accelerated_2012} \cite{holland_collective_1998} \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. The study in \cite{santos_segregation_2014} shares our objective, however they assume that each class has the same number of robots and that each robot knows the position of all other robots. In contrast, we adhere to the memoryless computeless controller architecture with a simple ternary sensor. \cite{gros_segregation_2009} also explores segregation robots based on local interactions inspired by gravity, however they require a centralized broadcast or a consensus algorithm to agree on the source or direction of gravity.
+
+    By analysing all the various controllers that we found which perform segergation, we can say that they can all be described by simple rules based on the wheel speeds. These rules are therefore also useful because they tell us something fundemental about the segregation behavior.
 
   \subsection{Robots That Do Not Compute}
 
@@ -154,15 +170,15 @@
     \begin{figure}
       \centering
       \includegraphics[width=0.7\linewidth]{./images/rings_example.png}
-      \caption{the emergent behavior is rings of kin. These rings sometimes expand or rotate around the environment.}
+      \caption{the emergent behavior is rings of kin. These rings expand and drift over time.}
       \label{fig:rings}
     \end{figure}
 
-    The basic description ``they form rings'' does not do justice to the complexity of the emergent behavior. We strongly recommend you view the supplementary videos in Section \ref{section:videos} to appreciate it fully. For example, we notice that these rings expand over time, and that if they are disturbed by a non-kin robot trying to pass through, they break and reform in a fascinating snake-like manner.
+    The basic description ``they form rings'' does not do justice to the complexity of the emergent behavior. We strongly recommend you view the supplementary videos in Section \ref{section:videos} to appreciate it fully. For example, we notice that these rings expand over time, and that if they are disturbed by a non-kin robot trying to pass through, they break and reform in a snake-like manner.
 
 \section{Controller Analysis}
 
-  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation between kin is guaranteed. In all of these proofs we will consider the controller found via grid search since it is the best controller.
+  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation between kin is guaranteed. In all of these proofs we will consider the controller found via grid search since it is the best controller. These proofs show we can prove useful things about complex emergent swarm behavior if we use simple robots and controllers"
 
   \subsection{Aggregation with Static Kin}
 
