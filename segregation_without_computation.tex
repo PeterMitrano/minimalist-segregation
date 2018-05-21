@@ -1,6 +1,8 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage{cite}
+\usepackage{xcolor}
+\usepackage{footnote}
 \usepackage{cancel}
 \usepackage{xfrac}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -178,11 +180,11 @@
 
 \section{Controller Analysis}
 
-  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation between kin is guaranteed. In all of these proofs we will consider the controller found via grid search since it is the best controller. These proofs show we can prove useful things about complex emergent swarm behavior if we use simple robots and controllers"
+  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation between kin is guaranteed. In all of these proofs we will consider the controller found via grid search since it is the best controller. These proofs show we can prove useful things about complex emergent swarm behavior if we use simple robots and controllers.
 
   \subsection{Aggregation with Static Kin}
 
-    We found from grid search that the parameters [1, -0.6667, 0.3333, 1.0, 1.0, 0.0] best achieve segregation as defined by our cluster metric cost function. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a static kin robot, or more importantly, a static cluster of kin robots. This proof is a variation of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot $i$ facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distance $W$, and that the controller is executed in finite time steps. Our goal is to show that the distance between the position of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
+    We found from grid search that the parameters [1, -0.6667, 0.3333, 1.0, 1.0, 0.0] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [0.2, -0.1333, 0.06667, 0.2, 0.2, 0.0]. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a static kin robot, or more importantly, a static cluster of kin robots. This proof is a variation of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot $i$ facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distance $W$, and that the controller is executed for finite time steps. Our goal is to show that the robots will always be closer after executing the controller. More precisely, the distance between the position of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
 
     \begin{equation} \label{eq:agg}
       \lVert p_j - p'_i \rVert < \lVert p_j - p_i \rVert
@@ -190,57 +192,58 @@
 
     \begin{figure}
       \centering
-      \begin{tikzpicture}
-        \draw[white] (-2.25,3.5) rectangle(7,-4.75);
-
-        \draw[->] (0,0) -- (6,0);
-        \node at (6.2,.2) {x};
-        \draw[->] (0,0) -- (0,3);
-        \node at (-0.2,3.2) {y};
+      \begin{tikzpicture}[scale=25.0]
+        \draw[->] (0,0) -- (0.3,0);
+        \node at (0.29,.02) {x};
+        \draw[->] (0,0) -- (0,0.1);
+        \node at (-.02,0.1) {y};
 
          % c_i
-        \filldraw (0,0) circle (.05);
-        \node at (.2,.2) {$c_i$};
-        \draw[blue, dashed] (0,0) circle (2);
+        \filldraw (0,0) circle (.003);
+        \node at (.02,.02) {$c_i$};
+        \draw[blue, dashed] (0,0) circle (0.053);
 
          % p_i
-        \filldraw (0,-2) circle (.05);
-        \node at (.2,-2.2) {$p_i$};
-        \draw[blue] (0,-2) circle (0.85);
-        \node at (-.3,-.8) {$R$};
-        \draw[dashed] (0,0) -- (0,-2);
+        \filldraw (0,-0.053) circle (.003);
+        \node at (0,-0.065) {$p_i$};
+        \draw[blue] (0,-.053) circle (0.035);
+        \node at (-0.01,-.03) {$R$};
+        \draw[dashed] (0,0) -- (0,-0.053);
+        \draw[dashed] (0,-0.053) -- (-0.035,-0.053);
+        \node at (-0.015,-0.061) {$r_i$};
 
          % p'_i
-        \filldraw (1.41,-1.41) circle (.05);
-        \node at (1.85,-1.25) {$p'_i$};
-        \draw[blue] (1.41,-1.41) circle (0.85);
-        \draw[dashed] (0,0) -- (1.41,-1.41);
-        \node at (.8,-.3) {$R$};
+        \filldraw (0.0131,-0.051) circle (.003);
+        \node at (0.019,-0.038) {$p'_i$};
+        \draw[blue] (0.0131,-0.051) circle (0.035);
+        \draw[dashed] (0,0) -- (0.0131,-0.051);
 
          % p_j
-        \filldraw (5,-3.25) circle (.05);
-        \node at (5.2,-3.5) {$p_j$};
-        \draw[red] (5,-3.25) circle (1.25);
-        \draw (5,-3.25) -- (5,-2);
-        \node at (5.3,-2.625) {$r_j$};
+        \filldraw (0.14,-0.277) circle (.003);
+        \node at (0.16,-0.14) {$p_j$};
+        \draw[red] (0.14,-0.277) circle (0.224);
+        \draw[dashed] (.14,-0.277) -- (.14,-.053);
+        \node at (.15,-0.075) {$r_j$};
 
         % delta
-        \draw[blue] (0,-2) -- (5,-2);
-        \draw[blue] (1.41,-1.41) -- (5.3,-2.03);
-        \node at (2.5, -2.2) {$\delta$};
+        \draw[blue] (0,-.053) -- (.14,-.053);
+        \node at (0.075, -0.06) {$\delta$};
 
         % theta
-        \draw (0,-.7) arc [radius=.7, start angle=-90, end angle=-45];
-        \node at (.36,-.85) {$\theta$};
+        \draw (0,-.03) arc [radius=.03, start angle=-90, end angle=-76];
+        %\node at (.36,-.85) {$\theta$};
+
+        % d
+        \draw (0,-0.053) -- (0.14,-0.277);
+        \node at (0.08,-0.165) {$d$};
       \end{tikzpicture}
       \caption{The robot will always move closer to its Kin.}
       \label{fig:kin_aggregation}
     \end{figure}
 
+    With this coordinate system defined, we can define the coordinates of $p_i$, $p_j$, and $p'_i$ (Equation \ref{eq:vars}). Next, we can write the variables $\theta$ and $R$ in terms of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \ref{eq:theta_and_r}.
 
-    We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large cluster of kin robots. With this coordinate system defined and assumptions stated, we can define the coordinates of $p_i$, $p_j$, and $p'_i$.
-
-    \begin{equation}
+    \begin{equation} \label{eq:vars}
       \begin{split}
         p_i = \begin{bmatrix}0 \\ -R\end{bmatrix} \\
         p_j = \begin{bmatrix}\delta \\ -(R+r_j)\end{bmatrix} \\
@@ -248,52 +251,52 @@
       \end{split}
     \end{equation}
 
-    We then substitute these variables into our inequality (Equation \ref{eq:agg}), and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In short, the distance of the robot to its kin is guaranteed to decrease until a point where the sensor ray distance $\delta$ is not greater than some simple function of $\theta$ and $R$.
+    \begin{align}
+      \begin{split} \label{eq:theta_and_r}
+        \theta &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - (0.06667)}{W} = \frac{2\Delta t}{15W} \\
+        R &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + (0.06667)}{0.2 - (0.06667)}\bigg) = W
+      \end{split}
+    \end{align}
+
+    We then substitute these variables into our inequality (Equation \ref{eq:agg}) and simplify, and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot/cluster radius $r_j$ should not be huge compared to the other robot radius $r_i$, and the time step should be small. $W$ has less straightforward effect on whether aggregation is guaranteed, but for realistic robot sizes it is not an issue. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static cluster of kin robots.
 
     \begin{equation} \label{eq:agg_result}
-      \delta > (R + r_j)\tan\bigg(\frac{\theta}{2}\bigg)
+        \frac{r_i}{\tan{\frac{\Delta t}{15W}}} - W > r_j \\
     \end{equation}
 
-    We can further calculate exactly how much closer the robot $i$ will be to robot $j$ after executing the $I=1$ state for one time step. As we show in Appendix \ref{thm:2}, the change in distance between the robots is exactly equal to Equation \ref{eq:dist_change}. We can use this equation to plot how the distance between the robots changes over time. We show an example of this for our simulated robot in Figure \ref{fig:dist_plot}.
+    We can further calculate exactly how much closer the robots will be after executing the $I=1$ state for one time step. As we show in Appendix \ref{thm:2}, the change in distance between the robots is exactly equal to Equation \ref{eq:dist_change}. We can use this equation to plot how the distance between the robots changes over time. We show an example of this for our simulated robot in Figure \ref{fig:dist_plot}.
     \begin{equation} \label{eq:dist_change}
       2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big)
     \end{equation}
 
-    In both of these equations the dependent variables $\theta$ and $R$ are themselves a function of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \ref{eq:theta_and_r}.
-
-    \begin{align}
-      \begin{split} \label{eq:theta_and_r}
-        \theta &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{1 - (0.3333)}{W} = \frac{2\Delta t}{3W} \\
-        R &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{1 + (0.3333)}{1 - (0.3333)}\bigg) = \frac{W}{4}
-      \end{split}
-    \end{align}
-
-    Combining \ref{eq:theta_and_r} with \ref{eq:agg_result} gives us \ref{eq:agg_final_result}, which tells us the conditions under which aggregation is guaranteed. We emphasize that this does not mean aggregation to a kin is guaranteed for all values of $\Delta t$, $r_j$, and $W$. For example, if $\Delta t$ is increased to \SI{1}{\second} then aggregation is likely not guaranteed, simply because robot $i$ may have driven so far in its circle that it is further from $p_j$ than before.
-
     \begin{figure}
       \centering
+      % TODO: this plot is wrong now...
       \includegraphics[width=1\linewidth]{./images/dist_plot.png}
       \caption{The distance between a robot and its kin after each step as it aggregates. We use $W=0.14$, $r_j=0.14$, $\Delta t=0.1$. In this example, aggregation took 60 iterations.}
       \label{fig:dist_plot}
     \end{figure}
 
-    \begin{equation}
-      \label{eq:agg_final_result}
-      \delta > \bigg(\frac{W}{4} + r_j\bigg)\tan\bigg(\frac{\Delta t}{3W}\bigg)
-    \end{equation}
+    Equation \ref{eq:agg} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of our robots. Of course this condition may not hold true for all scenarios, but we show it holds true for many popular robots in Table \ref{table:robots}). This table shows that largest $r_j$ for which aggregation is guaranteed.
 
-    We can now consider an example with the FootBot robot. The inner wheel distance for the FootBot is $W=0.14$m, and in our simulations we use a time step of $\Delta t = 0.1s$. Therefore $\theta = 0.4761\;\text{rad}$ and $R=0.035$, and so aggregation is guaranteed when the following is true.
-
-    \begin{equation} \label{eq:khephera_agg}
-      \begin{split}
-        \delta &> \bigg(0.035 + r_j\bigg)\tan\frac{0.4761}{2} \\
-        \delta &> 0.2427 r_j + 0.0085
-      \end{split}
-    \end{equation}
-
-     What we would like is for the right hand side of the equation to always be less than the distance at which the robots are considered aggregated. In other words, we want aggregation to be guaranteed until the sensor ray distance is small enough that aggregation has been achieved. We defined aggregation as when the distance between the robots $d \leq r_j+r_i$. Since the sensor ray length $\delta$ is always less than that distance, we can simply show that the right hand side of Equation \ref{eq:agg_final_result} is always less than $r_i+r_j$. Again we must consider an example since aggregation cannot be guaranteed in all scenarios, so going back to our example with the FootBot, we note that $0.2427r_j + 0.0085 < r_j+r_i$ is always true as long as $r_j>0$ and $r_i\geq0.0085$.
-
-     We examined a wide range of possible values for our parameters $\Delta t$, $r_i$, $W$, and $r_j$, and we find that as long as $\Delta t$ is small (less than 0.25s), then aggregation is guaranteed for reasonable values of W (less than 0.5m).
+    \begin{savenotes}
+    \begin{table}
+      \centering
+      \caption{Aggregation is guaranteed for many differential drive swarm robots.}
+      \begin{tabular}{|c|c|c|c|} \hline
+        Robot & $r_i$ & $W$ & largest $r_j$ \\ \hline
+        FootBot\footnote{\href{https://github.com/ilpincy/argos3/blob/master/src/plugins/robots/foot-bot/simulator/footbot_entity.cpp}{ARGoS file footbot\_entity.cpp}} &
+            0.085 & 0.14 & 1.644 \\ \hline
+        Khephera IV\footnote{Khephera IV User Manual, page 66.} &
+            0.07 & 0.1054 & 1.000 \\ \hline
+        E-Puck 2\footnote{\href{http://projects.gctronic.com/epuck2/e-puck2-flyer.pdf}{http://projects.gctronic.com/epuck2/e-puck2-flyer.pdf}} &
+            0.035 & 0.053 & 0.224 \\ \hline
+        Kilobot\footnote{\href{https://www.k-team.com/mobile-robotics-products/kilobot/specifications}{https://www.k-team.com/mobile-robotics-products/kilobot/specifications}} &
+            0.0165 & 0.030\footnote{only approximate} & 0.043 \\ \hline
+      \end{tabular}
+      \label{table:robots}
+    \end{table}
+    \end{savenotes}
 
 \section{Experimental Results}
 
@@ -378,27 +381,40 @@
 
   \subsection{Proof of Theorem 1} \label{thm:1}
 
-    \begin{align*}
-      \lVert p_j - p'_i \rVert &< \lVert p_j - p_i \rVert \\
-      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
-      (p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2 &< (p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2 \\
-      (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + (-(R+r_j) + R)^2 \\
-      (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + (r_j + R(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j(1 - \cos(\theta)) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - 2\cos(\theta) + \cos(\theta)^2) &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) + R^2\cos(\theta)^2 &< \delta^2 + r_j^2 \\
-      \delta^2 - 2R\delta\sin(\theta) + R^2(\sin(\theta)^2 + cos(\theta)^2) + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) &< \delta^2 + r_j^2 \\
-      \cancel{\delta^2} - 2R\delta\sin(\theta) + 2R^2 + \cancel{r_j^2} + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< \cancel{\delta^2} + \cancel{r_j^2} \\
-      -2R\delta\sin(\theta) + 2R^2 + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< 0 \\
-      -\delta\sin(\theta) + R + r_j - r_j\cos(\theta) - R\cos(\theta) &< 0 \qquad \text{assuming $R>0$}\\
-      R + r_j - r_j\cos(\theta) - R\cos(\theta) &< \delta\sin(\theta) \\
-      r_j(1 - \cos(\theta)) + R(1 - \cos(\theta)) &< \delta\sin(\theta) \\
-      (r_j+R)(1 - \cos(\theta)) &< \delta\sin(\theta) \\
-      (R+r_j)\bigg(\frac{1 - \cos(\theta)}{\sin(\theta)}\bigg) &< \delta \\
-      (R+r_j)\tan{\frac{\theta}{2}}  &< \delta \\
-    \end{align*}
+    {%
+      \setlength{\belowdisplayskip}{3pt}%
+      \setlength{\abovedisplayskip}{3pt}%
+      \begin{align*}
+        \lVert p_j - p'_i \rVert &< \lVert p_j - p_i \rVert \\
+        \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
+        (p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2 &< (p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2 \\
+        (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + (-(R+r_j) + R)^2 \\
+        (\delta - R\sin(\theta))^2 + (-(R+r_j) + R\cos(\theta))^2 &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + (r_j + R(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j(1 - \cos(\theta)) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - \cos(\theta))^2 &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2(1 - 2\cos(\theta) + \cos(\theta)^2) &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2\sin(\theta)^2 + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) + R^2\cos(\theta)^2 &< \delta^2 + r_j^2 \\
+        \delta^2 - 2R\delta\sin(\theta) + R^2(\sin(\theta)^2 + cos(\theta)^2) + r_j^2 + 2Rr_j - 2Rr_j\cos(\theta) + R^2 - 2R^2\cos(\theta) &< \delta^2 + r_j^2 \\
+        \cancel{\delta^2} - 2R\delta\sin(\theta) + 2R^2 + \cancel{r_j^2} + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< \cancel{\delta^2} + \cancel{r_j^2} \\
+        -2R\delta\sin(\theta) + 2R^2 + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) &< 0 \\
+        -\delta\sin(\theta) + R + r_j - r_j\cos(\theta) - R\cos(\theta) &< 0 \qquad \text{assuming $R>0$}\\
+        R + r_j - r_j\cos(\theta) - R\cos(\theta) &< \delta\sin(\theta) \\
+        r_j(1 - \cos(\theta)) + R(1 - \cos(\theta)) &< \delta\sin(\theta) \\
+        (r_j+R)(1 - \cos(\theta)) &< \delta\sin(\theta) \\
+        (R+r_j)\bigg(\frac{1 - \cos(\theta)}{\sin(\theta)}\bigg) &< \delta \\
+        (R+r_j)\tan{\frac{\theta}{2}}  &< \delta \\
+        (R+r_j)\tan{\frac{\theta}{2}}  &< \sqrt{d^2 - r^2_j} \\
+        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 &< d^2 - r^2_j \\
+        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 + r^2_j &< d^2 \\
+        \intertext{Aggregation is achieved when $d^2 \leq r^2_i + r^2_j$, so we can simplify our condition for guaranteed aggregation to:}
+        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 + r^2_j &< r^2_i + r^2_j \\
+        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 &< r^2_i \\
+        (R+r_j)\tan{\frac{\theta}{2}} &< r_i \qquad \text{assuming positive terms} \\
+        (W+r_j)\tan{\frac{\Delta t}{15W}} &< r_i \\
+        r_j &< \frac{r_i}{\tan{\frac{\Delta t}{15W}}} - W \\
+      \end{align*}
+    }
 
   \subsection{Proof of Theorem 2} \label{thm:2}
 
@@ -418,7 +434,7 @@
       &= \cancel{\delta^2} - 2R\delta\sin(\theta) + 2R^2 + \cancel{r_j^2} + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) - \cancel{\delta^2} + \cancel{r_j^2} \\
       &= -2R\delta\sin(\theta) + 2R^2 + 2Rr_j - 2Rr_j\cos(\theta) - 2R^2\cos(\theta) \\
       &= 2R\big(-\delta\sin(\theta) + R + r_j - r_j\cos(\theta) - R\cos(\theta)\big) \\
-      &= 2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big) \\
+      &= 2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big)
     \end{align*}
 
   \subsection{Supplementary Videos} \label{section:videos}
