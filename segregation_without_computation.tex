@@ -192,7 +192,7 @@
 
     \begin{figure}
       \centering
-      \begin{tikzpicture}[scale=25.0]
+      \begin{tikzpicture}[scale=22.0]
         \draw[->] (0,0) -- (0.3,0);
         \node at (0.29,.02) {x};
         \draw[->] (0,0) -- (0,0.1);
@@ -219,23 +219,24 @@
         \draw[dashed] (0,0) -- (0.0131,-0.051);
 
          % p_j
-        \filldraw (0.14,-0.277) circle (.003);
-        \node at (0.16,-0.14) {$p_j$};
-        \draw[red] (0.14,-0.277) circle (0.224);
-        \draw[dashed] (.14,-0.277) -- (.14,-.053);
-        \node at (.15,-0.075) {$r_j$};
+        \filldraw (0.22, -0.153) circle (.003);
+        \node at (0.22, -0.13) {$p_j$};
+        \draw[red] (0.22, -0.153) circle (0.1);
+        \draw[dashed] (0.12, -0.153) -- (0.22, -0.153);
+        \node at (0.17, -0.17) {$r_j$};
 
         % delta
-        \draw[blue] (0,-.053) -- (.14,-.053);
-        \node at (0.075, -0.06) {$\delta$};
+        \draw[blue] (0,-.053) -- (.22,-.053);
+        \node at (0.1, -0.068) {$\delta$};
 
         % theta
         \draw (0,-.03) arc [radius=.03, start angle=-90, end angle=-76];
+        % TODO add theta annotation back
         %\node at (.36,-.85) {$\theta$};
 
         % d
-        \draw (0,-0.053) -- (0.14,-0.277);
-        \node at (0.08,-0.165) {$d$};
+        \draw (0,-0.053) -- (0.22, -0.153);
+        \node at (0.08,-0.11) {$d$};
       \end{tikzpicture}
       \caption{The robot will always move closer to its Kin.}
       \label{fig:kin_aggregation}
@@ -258,10 +259,10 @@
       \end{split}
     \end{align}
 
-    We then substitute these variables into our inequality (Equation \ref{eq:agg}) and simplify, and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot/cluster radius $r_j$ should not be huge compared to the other robot radius $r_i$, and the time step should be small. $W$ has less straightforward effect on whether aggregation is guaranteed, but for realistic robot sizes it is not an issue. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static cluster of kin robots.
+    We then substitute these variables into our inequality (Equation \ref{eq:agg}) and simplify, and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot/cluster radius $r_j$ should not be huge compared to the other robot radius $r_i$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static cluster of kin robots.
 
     \begin{equation} \label{eq:agg_result}
-        \frac{r_i}{\tan{\frac{\Delta t}{15W}}} - W > r_j \\
+      \sqrt{r^2_i + 2r_ir_j} &> (W+r_j)\tan{\frac{\Delta t}{15W}}
     \end{equation}
 
     We can further calculate exactly how much closer the robots will be after executing the $I=1$ state for one time step. As we show in Appendix \ref{thm:2}, the change in distance between the robots is exactly equal to Equation \ref{eq:dist_change}. We can use this equation to plot how the distance between the robots changes over time. We show an example of this for our simulated robot in Figure \ref{fig:dist_plot}.
@@ -277,7 +278,7 @@
       \label{fig:dist_plot}
     \end{figure}
 
-    Equation \ref{eq:agg} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of our robots. Of course this condition may not hold true for all scenarios, but we show it holds true for many popular robots in Table \ref{table:robots}). This table shows that largest $r_j$ for which aggregation is guaranteed.
+    Equation \ref{eq:agg} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of our robots or the largest cluster we expect to form. This condition may not hold true for all scenarios (such as those with thousands of small robots), but we show it holds true for many popular robots in Table \ref{table:robots}). This table shows that largest cluster size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}.
 
     \begin{savenotes}
     \begin{table}
@@ -286,13 +287,13 @@
       \begin{tabular}{|c|c|c|c|} \hline
         Robot & $r_i$ & $W$ & largest $r_j$ \\ \hline
         FootBot\footnote{\href{https://github.com/ilpincy/argos3/blob/master/src/plugins/robots/foot-bot/simulator/footbot_entity.cpp}{ARGoS file footbot\_entity.cpp}} &
-            0.085 & 0.14 & 1.644 \\ \hline
+            0.085 & 0.14 & - \\ \hline
         Khephera IV\footnote{Khephera IV User Manual, page 66.} &
-            0.07 & 0.1054 & 1.000 \\ \hline
+            0.07 & 0.1054 & - \\ \hline
         E-Puck 2\footnote{\href{http://projects.gctronic.com/epuck2/e-puck2-flyer.pdf}{http://projects.gctronic.com/epuck2/e-puck2-flyer.pdf}} &
-            0.035 & 0.053 & 0.224 \\ \hline
+            0.035 & 0.053 & - \\ \hline
         Kilobot\footnote{\href{https://www.k-team.com/mobile-robotics-products/kilobot/specifications}{https://www.k-team.com/mobile-robotics-products/kilobot/specifications}} &
-            0.0165 & 0.030\footnote{only approximate} & 0.043 \\ \hline
+            0.0165 & 0.030\footnote{only approximate} & - \\ \hline
       \end{tabular}
       \label{table:robots}
     \end{table}
@@ -403,16 +404,12 @@
         r_j(1 - \cos(\theta)) + R(1 - \cos(\theta)) &< \delta\sin(\theta) \\
         (r_j+R)(1 - \cos(\theta)) &< \delta\sin(\theta) \\
         (R+r_j)\bigg(\frac{1 - \cos(\theta)}{\sin(\theta)}\bigg) &< \delta \\
-        (R+r_j)\tan{\frac{\theta}{2}}  &< \delta \\
-        (R+r_j)\tan{\frac{\theta}{2}}  &< \sqrt{d^2 - r^2_j} \\
-        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 &< d^2 - r^2_j \\
-        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 + r^2_j &< d^2 \\
-        \intertext{Aggregation is achieved when $d^2 \leq r^2_i + r^2_j$, so we can simplify our condition for guaranteed aggregation to:}
-        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 + r^2_j &< r^2_i + r^2_j \\
-        \bigg((R+r_j)\tan{\frac{\theta}{2}}\bigg)^2 &< r^2_i \\
-        (R+r_j)\tan{\frac{\theta}{2}} &< r_i \qquad \text{assuming positive terms} \\
-        (W+r_j)\tan{\frac{\Delta t}{15W}} &< r_i \\
-        r_j &< \frac{r_i}{\tan{\frac{\Delta t}{15W}}} - W \\
+        (R+r_j)\tan{\frac{\theta}{2}} &< \delta \\
+        \delta &> (W+r_j)\tan{\frac{\Delta t}{15W}} \\
+        \intertext{Intuitively, this condition means aggregation is guaranteed when the robots are sufficiently far apart.}
+        \intertext{We also know that $\delta\geq\sqrt{(r_i+r_j)^2-r^2_j}$ because at that point the two robots are touching and thus have aggregated.}
+        \sqrt{(r_i+r_j)^2 - r^2_j} &> (W+r_j)\tan{\frac{\Delta t}{15W}} \\
+        \sqrt{r^2_i + 2r_ir_j} &> (W+r_j)\tan{\frac{\Delta t}{15W}} \\
       \end{align*}
     }
 
