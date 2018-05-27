@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we demonstrate that robots which directly map one of three sensor readings to wheel speeds, no explicit communication, and have one trivial sensor are capable of segregating themselves into an arbitrary number of groups. We evolve controllers with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We analyze two distinct controllers that segregate, on of which is efficient, and prove that aggregation of kin robots is guaranteed when reasonable conditions are met. More broadly, this is an example of how to search for and study emergent behaviors in swarms of simple robots.
+  In this paper, we demonstrate that robots which directly map one of three sensor readings to wheel speeds, no explicit communication, and have one trivial sensor are capable of $n$-class segregation. We evolve controllers with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We analyze two distinct controllers that segregate, one of which is efficient, and prove that aggregation of kin robots is guaranteed when reasonable conditions are met. More broadly, this is an example of how to search for and study emergent behaviors in swarms of simple robots.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -43,15 +43,16 @@
 
 \section{Introduction and Related Work}
 
-  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way\cite{shlyakhov_survey_2017}, and \cite{gauci_self-organized_2014}\cite{gauci_clustering_2014} have shown the ability to perform such tasks with limited computation and sensing capabilities . Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to spread out and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. Furthermore, we attempt to achieve segregation with no messaging between robots, no complex sensors, no leaders or beacons, and no environmental cues.
+  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way\cite{shlyakhov_survey_2017}, and \cite{gauci_self-organized_2014}\cite{gauci_clustering_2014} have shown the ability to perform such tasks with limited computation and sensing capabilities . Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to spread out and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. Furthermore, we attempt to achieve segregating themselves into an arbitrary number of groups with no messaging between robots, no complex sensors, no leaders or beacons, and no environmental cues.
 
-  In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis \cite{batlle_molecular_2012}, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like segregation can be achieved with a simple robot and controller.
+  In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis \cite{batlle_molecular_2012}, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like $n$-class segregation can be achieved with a simple robot and controller.
 
   We make no claims that the controllers studied here are the most practical engineering solutions, but rather that they are an example of how complex behavior can emerge from simple rules. The advantages of simple robots is that they are inexpensive, easier to implement. It is also easy to understand and construct proofs about the behavior of these simple robots and their controllers.
 
   We also provide analysis of a specific emergent behaviors that allows the segregation to work. This analysis, while specific to the segregation behavior and controllers we found, is an example of how to make provable claims about emergent behavior of simple controllers. This is important because having guarantees on swarm behavior and well understand limitations allows one to make an informed decision about whether to deploy the controller in untested environments. If swarm robotics are to actually be used in disaster relief, as is so often proposed, it's important to know the conditions under which certain behavior is guaranteed. In these scenarios, using the simplistic robot and controllers may actually be advantageous.
 
   \subsection{Aggregation and Segregation}
+
     Aggregation is defined as having all robots in the swarm collect at a particular location in a distributed manner. Many swarm aggregation controllers require robots to compute bearing and distance to other robots, to sense gradients in the environment, or to otherwise communicate information. However, implementing these communication systems is difficult in practice, so methods that do not require communication or complex sensing are desirable. In \cite{gauci_self-organized_2014}, the authors propose a new class of controllers that require no computation.
 
    Gasparri et al. instead develop an aggregation controller which enables robots to respond to guidance commands -- i.e., a human using hand gestures to indicate which direction the swarm should move \cite{gasparri_swarm_2012}. They show that swarms running their controller are able to follow guidance commands and stay aggregated without colliding. A simpler controller is used by Bahgeci and Sahin \cite{bahgeci_evolving_2005}, where robots are equipped with IR distance sensors surrounding the robot, 4 microphones, and an omni-directional speaker. The controller is a linear combination of the IR sensor values and the intensity values of the microphones. The authors show that a genetic algorithm is able to find weights for the controller such that robots aggregate. In \cite{ando_distributed_1999}, the authors present an aggregation controller with very limited sensing and no memory, but allows the robots to perform computations to determine their next position. They prove that their controller is correct in theory, then run the controller in simulation.
@@ -74,7 +75,7 @@
 
   \subsection{Problem Formulation}
 
-    We consider a collection of differential drive robots all executing the same controller in a homogeneous, two dimensional, obstacle free environment. The robots are equipped with a single forward facing line of sight sensor which can distinguish between the presence of a kin robot, a non-kin robot, and nothing. This sensor is assumed to have infinite length (we consider non-infinite length in Section \ref{section:beam_length}). We assign $I=0$ to the state when no robot is seen, $I=1$ to the detection of a kin robot, and $I=2$ to the detection of a non-kin robot. We allow for any number of classes, but the robots need not distinguish between different non-kin classes. They need only to detect if a robot is of the same class or not. The objective is to segregate robots into clusters, ideally such that all the robots of the same class are packed into one cluster with no non-kin robots.
+    We consider a collection of differential drive robots all executing the same controller in a homogeneous, two dimensional, obstacle free environment. The robots are equipped with a single forward facing line of sight sensor which can distinguish between the presence of a kin robot, a non-kin robot, and the absence of a robot. This sensor is assumed to have infinite length (we consider non-infinite length in Section \ref{section:beam_length}). We assign $I=0$ to the state when no robot is seen, $I=1$ to the detection of a kin robot, and $I=2$ to the detection of a non-kin robot. We allow for any number of classes, but the robots need not distinguish between different non-kin classes. They need only to detect if a robot is of the same class or not. The objective is to segregate robots into clusters, ideally such that all the robots of the same class are packed into one cluster with no non-kin robots.
 
     \begin{algorithm}[t!]
       \begin{algorithmic}
@@ -87,7 +88,7 @@
       \label{alg:controller}
     \end{algorithm}
 
-    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. They simply map each of the three sensor values to a set of wheel speeds. Pseudo-code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
+    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. The controller maps each of the three sensor values to a set of wheel speeds. Pseudo-code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
 
     $$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
 
@@ -95,37 +96,44 @@
 
   \subsection{Simulation Environment}
 
-    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range and bearing sensor to implement the theoretical line of sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. We note here the detail that we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
+    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range-and-bearing sensor to implement the theoretical line of sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. We note here the detail that we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
 
   \subsection{Evolving Segregation}
 
-    \cite{bahgeci_evolving_2005}\cite{johnson_evolving_2016}\cite{dorigo_evolving_2004} show that evolutionary strategies are effective for finding emergent behavior. In order to quickly search for parameters to achieve segregation, we use a simple genetic algorithm to evolve controller parameters. The genetic algorithm we used is unmodified from the example MPGA code\footnote{http://www.argos-sim.info/examples.php} provided with the ARGoS simulator. The mutation strategy is to mutate each of these 6 parameters with some probability p ($0.05$ in our experiments). If a parameter is selected to be mutated, a uniformly random number from -1 to 1 is picked for the new value. Selection is performed by picking the two lowest cost individuals, and the next population is formed by crossing the parameters of these two individuals. The original two parents are always kept in the population so that the current lowest cost individual is never removed until a lower cost genome is discovered.
+    \cite{bahgeci_evolving_2005}\cite{johnson_evolving_2016}\cite{dorigo_evolving_2004} show that evolutionary strategies are effective for finding emergent behavior. In order to quickly search for parameters to achieve segregation, we use a simple genetic algorithm to evolve controller parameters. The genetic algorithm we used is unmodified from the example MPGA code\footnote{http://www.argos-sim.info/examples.php} provided with the ARGoS simulator. The mutation strategy is to mutate each of these 6 parameters with some probability $p$ ($0.05$ in our experiments). If a parameter is selected to be mutated, a uniformly random number from -1 to 1 is picked for the new value. Selection is performed by picking the two lowest cost individuals, and the next population is formed by crossing the parameters of these two individuals. The original two parents are always kept in the population so that the current lowest cost individual is never removed until a lower cost genome is discovered.
 
   \subsection{Cost Functions}
 
-    As with any optimization algorithm, it is important to have a cost function that accurately assigns cost to behaviors. We explore two different cost functions, and we find that one of them did not behave as we expected (see Section \ref{section:evaluting_cost_functions}). The first is the cluster metric used by \cite{gauci_self-organized_2014}, which is the proportion of the number of robots in the largest cluster to the total number of robots. We will apply this for each class of robots and sum up the cluster-metric cost for each class to get the total cost. The negative sign is present because the cluster metric is 0 when no robots are connected and 1 when all robots in a class are connected, so the negative sign assigns more connections a lower cost. This was ultimately the cost function we used in grid search and all following experiments.
+    As with any optimization algorithm, it is important to have a cost function that accurately assigns cost to behaviors. We explore two different cost functions, and we find that one of them did not behave as we expected (see Section \ref{section:evaluting_cost_functions}). The first cost metric, shown in Equation \eqref{eq:cluster_cost}, is based on the cluster metric $c_{\text{gauci}}^{(t)}$ used by \cite{gauci_self-organized_2014}, which is the proportion of the number of robots in the largest cluster to the total number of robots at some time step $t$.
 
-    \begin{align*}
-      c_{\text{total}} &=  \frac{1}{n}\sum^n_{\text{classes}}\sum_{t=0}^{T-1} -t c_{\text{gauci}}^{(t)} \\
-    \end{align*}
+    \begin{equation} \label{eq:cluster_cost}
+      c_{\text{total}} =  \frac{1}{n}\sum^n\sum_{t=0}^{T-1} -t c_{\text{gauci}}^{(t)}
+    \end{equation}
 
-    We also tried a new cost function to address some concerns with the cluster metric. The cluster metric described above is problematic because it considers a straight line of robots to be one cluster. In some scenarios, we care about how tightly the swarm is packed in its clusters. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. Given all the centroids $\bar{p}_i^{(t)}$ for each class $i$, we call the centroid of all of these centroids $\bar{P}^{(t)}$. We call this the centroid-of-centroids cost function, and it can be defined formally as follows:
+    Let $n$ be the number of classes of robots, and $T$ be the total number of time steps in the trial being evaluated. We apply this cost function for each class of robots and sum the cluster-metric cost for each class to get the total cost. The negative sign is present because the cluster metric is 0 when no robots are connected and 1 when all robots in a class are connected, so the negative sign assigns more connections a lower cost. We used this cost function in grid search and all following experiments.
 
-    \begin{align*}
-    c_{\text{intra}} &= \sum_{i=1}^n u_i^{(t)} \\
-    c_{\text{inter}} &= -\frac{1} {4r^2}\sum_{i=1}^n{\lVert \bar{p}_i^{(t)} - \bar{P}_i^{(t)} \rVert}^2 \\
-    c_{\text{total}} &=  \sum_{t=0}^{T-1} t (c_{\text{intra}} + c_{\text{inter}}) \\
-    \end{align*}
+    The cluster metric in \eqref{eq:cluster_cost} is problematic because it considers a straight line of robots to be one cluster. For some tasks like task allocation, we might care about how tightly the swarm is packed in its clusters. Therefore, we also experiented with a second cost metric. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. Given all the centroids $\bar{p}_i^{(t)}$ for each class $i$, we call the centroid of all of these centroids $\bar{P}^{(t)}$. First, let $c_{\text{intra}}$ be the total cost of dispersion within all the classes of robots, which should be low because robots within the same class should be close to one another. $c_{\text{intra}}$ is then the cost of the dispersion of the centroids, which should be high because we want the clusters kin robots to be far apart. We call this the centroid-of-centroids cost function $c_{\text{total}}$, and it is defined formally in Equation \eqref{eq:centroid_cost}.
+
+    \begin{equation} \label{eq:centroid_cost}
+      \begin{split}
+        u_i^{(t)} &= -\frac{1} {4r^2}\sum_{j=1}^{m_{i}}{\lVert p_{i,j}^{(t)} - \bar{p}_{i,j}^{(t)} \rVert}^2 \\
+        c_{\text{intra}} &= \sum_{i=1}^n u_i^{(t)} \\
+        c_{\text{inter}} &= -\frac{1} {4r^2}\sum_{i=1}^n{\lVert \bar{p}_i^{(t)} - \bar{P}_i^{(t)} \rVert}^2 \\
+        c_{\text{total}} &=  \sum_{t=0}^{T-1} t (c_{\text{intra}} + c_{\text{inter}}) \\
+      \end{split}
+    \end{equation}
+
+    Let $m$ be the number of robots in group $i$, $T$ be the total number of time steps, $t$ be a specific time step, $n$ be the total number of classes, $r$ be the radius of the robot.
 
   \subsection{Grid Search}
 
-    In order to exhaustively search the space of possible controllers, we conduct a grid search of the 6-dimensional parameter space. Due to limited computational resources, we were only able to search with a resolution of 7 values per parameter, which means in total we evaluated $7^6=117649$ parameters. For each parameter, we ran 1 trial in 36 different initial configurations, with 180 seconds for each simulation. These configurations consisted of uniformly random placement, clusters, and lines of robots distributed throughout the environment. We chose to include some structure configurations (clusters and lines) because we discovered that they varied significantly in performance from uniform random configurations, and by explicitly evaluating on structure configurations we can speak more confidently about the ability of the controller to succeed in any configuration. Otherwise, we would need to have far more trials with uniformly random robot placement to make the same claims. We were able to parallelize across the 36 configurations and run at 75x real time, so it took approximately 4 days to evaluate all the controllers.
+    In order to exhaustively search the space of possible controllers, we conducted a grid search of the 6-dimensional parameter space. Due to limited computational resources, we were only able to search with a resolution of 7 values per parameter, which means in total we evaluated $7^6=117649$ parameters. For each parameter, we ran 1 trial in 36 different initial configurations, with 180 seconds for each simulation. These configurations consisted of uniformly random placement, clusters, and lines of robots distributed throughout the environment. We chose to include some structure configurations (clusters and lines) because we discovered that they varied significantly in performance from uniform random configurations, and by explicitly evaluating on structure configurations we can speak more confidently about the ability of the controller to succeed in any configuration. Otherwise, we would need to have far more trials with uniformly random robot placement to make the same claims. We were able to parallelize across the 36 configurations and run at 75x real time, so it took approximately 4 days to evaluate all the controllers.
 
-    Because the search space is 6 dimensional, we choose to visualize it by plotting every pair of parameters against each other. For example, we consider how the cost changes as $v_{l_0}$ and $v_{r_0}$ change. We note that these graphs, shown in Appendix \ref{section:grid_search_images}, show very similar patterns to the same plots presented by \cite{gauci_self-organized_2014}. As an example of reading these plots, we can tell from the plot of parameters 2 and 3 ($I=1$) that there were no good controllers where the left and right wheel speeds were equal and negative (dark squares in the upper left), and that the best controllers had slightly unequal values close to 1 (lightest squares in the bottom left). These plots also visualize how there are some sharp discontinuities where performance changes dramatically.
+    Because the search space is six-dimensional, we chose to visualize it by plotting every pair of parameters against each other. For example, we consider how the cost changes as $v_{l_0}$ and $v_{r_0}$ change. We note that these graphs, shown in Appendix \ref{section:grid_search_images}, show very similar patterns to the same plots presented by \cite{gauci_self-organized_2014}. As an example of reading these plots, we can tell from the plot of parameters 2 and 3 ($I=1$) that there were no good controllers where the left and right wheel speeds were equal and negative (dark squares in the upper left), and that the best controllers had slightly unequal values close to 1 (lightest squares in the bottom left). These plots also visualize how there are some sharp discontinuities where performance changes dramatically.
 
 \section{The Emergent Behavior}
 
-    After running 10 generations with 10 genomes per generation, the lowest cost controller we found was [0.5, -0.5, -0.2, 0.6, 0.6, 0.2]. Similarly, after running the grid search the best controller was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. For both of these controllers, the resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This cause the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen below in Figure \ref{fig:rings}. Rarely, they also for these shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
+    After running 10 generations with 10 genomes per generation, the lowest cost controller found was [0.5, -0.5, -0.2, 0.6, 0.6, 0.2]. Similarly, after running the grid search, the best controller was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. For both of these controllers, the resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely, the robots form shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
 
     \begin{figure}
       \centering
@@ -134,15 +142,15 @@
       \label{fig:rings}
     \end{figure}
 
-    The basic description ``they form rings'' does not do justice to the complexity of the emergent behavior. We strongly recommend you view the supplementary videos in Section \ref{section:videos} to appreciate it fully. For example, we notice that these rings expand over time, and that if they are disturbed by a non-kin robot trying to pass through, they break and reform in a snake-like manner.
+    The dynamics of the robots is far more complex than merely forming rings. A complete description of the observed behavior is beyond the scope of this paper, but we encourage the curious reader to view the supplementary videos at \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}. For example, we notice that the rings, once formed, expand over time. If a ring is disturbed by non-kin robots that trying to pass through, the ring is disrupted and eventually reforms.
 
 \section{Controller Analysis}
 
-  Now that we have found parameters that achieve what we consider segregation, we attempt to prove that aggregation between kin is guaranteed. In all of these proofs we will consider the controller found via grid search since it is the best controller. These proofs demonstrate that we can prove useful things about complex emergent swarm behavior if we use simple robots and controllers.
+  Now that we have found parameters that achieve what we consider segregation, we to prove that aggregation between kin is guaranteed under certain conditions. In all of these proofs we will consider the controller found via grid search since it is the best controller. These proofs demonstrate that we can prove useful things about complex emergent swarm behavior if we use simple robots and controllers.
 
   \subsection{Aggregation with Static Kin}
 
-    We found from grid search that the parameters [1, -0.6667, 0.3333, 1.0, 1.0, 0.0] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [0.2, -0.1333, 0.06667, 0.2, 0.2, 0.0]. We now analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a static kin robot, or more importantly, a static cluster of kin robots. This proof is a variation of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot $i$ facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distance $W$, and that the controller is executed for finite time steps. Our goal is to show that the robots will always be closer after executing the controller. More precisely, the distance between the position of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
+    We found from grid search that the parameters [1, -0.6667, 0.3333, 1.0, 1.0, 0.0] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [0.2, -0.1333, 0.06667, 0.2, 0.2, 0.0]. We analyze this controller formally. First, we prove that a single isolated robot executing this controller will aggregate to a static kin robot, or more importantly, a static cluster of kin robots. This proof is a variation of the Theorem 5.1 provided in \cite{gauci_self-organized_2014}. Consider a robot situated as shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R$. Without loss of generality, we define our coordinate system so that $c_i=[0,0]$ with the robot $i$ facing the $+x$ axis. For this analysis, we assume that the robot has a fixed, positive inter wheel distance $W$, and that the controller is executed for finite time steps. Our goal is to show that the robots will always be closer after executing the controller. More precisely, the distance between the position of the robot after executing our controller for one time step $p'_i$ and the kin robot $p_j$ is less than the distance between the initial position of the robot $p_i$ and the kin robot $p_j$. Formally, this is expressed by the following relationship:
 
     \begin{equation} \label{eq:agg}
       \lVert p_j - p'_i \rVert < \lVert p_j - p_i \rVert
@@ -201,7 +209,7 @@
       \label{fig:kin_aggregation}
     \end{figure}
 
-    With this coordinate system defined, we can define the coordinates of $p_i$, $p_j$, and $p'_i$ (Equation \ref{eq:vars}). Next, we can write the variables $\theta$ and $R$ in terms of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \ref{eq:theta_and_r}.
+    With this coordinate system defined, we can define the coordinates of $p_i$, $p_j$, and $p'_i$ (Equation \eqref{eq:vars}). Next, we can write the variables $\theta$ and $R$ in terms of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \eqref{eq:theta_and_r}.
 
     \begin{equation} \label{eq:vars}
       \begin{split}
@@ -218,13 +226,13 @@
       \end{split}
     \end{align}
 
-    We then substitute these variables into our inequality (Equation \ref{eq:agg}) and simplify, and the result is shown in Equation \ref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot/cluster radius $r_j$ should not be huge compared to the other robot radius $r_i$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static cluster of kin robots.
+    We then substitute these variables into Equation \eqref{eq:agg} and simplify, and the result is shown in Equation \eqref{eq:agg_result}. For the full derivation, see Appendix \ref{thm:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot/cluster radius $r_j$ should not be large compared to the other robot radius $r_i$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static cluster of kin robots.
 
     \begin{equation} \label{eq:agg_result}
       \sqrt{r^2_i + 2r_ir_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
     \end{equation}
 
-    We can further calculate exactly how much closer the robots will be after executing the $I=1$ state for one time step. As we show in Appendix \ref{thm:2}, the change in distance between the robots is exactly equal to Equation \ref{eq:dist_change}. We can use this equation to plot how the distance between the robots changes over time. We show an example of this for our simulated robot in Figure \ref{fig:dist_plot}.
+    We can further calculate exactly how much closer the robots will be after executing the $I=1$ state for one time step. As we show in Appendix \ref{thm:2}, the change in distance between the robots is exactly equal to Equation \eqref{eq:dist_change}. We can use this equation to plot how the distance between the robots changes over time. We show an example of this for our simulated robot in Figure \ref{fig:dist_plot}.
     \begin{equation} \label{eq:dist_change}
       2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big)
     \end{equation}
@@ -237,7 +245,7 @@
       \label{fig:dist_plot}
     \end{figure}
 
-    Equation \ref{eq:agg_result} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of our robots and the largest cluster we expect to form. This condition may not hold true for all scenarios (such as those with thousands of small robots or large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest cluster size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{thm:1}. From this table, we can see that the controller speeds are most effective on the FootBot, which is expected because our grid search used the FootBot.
+    Equation \eqref{eq:agg_result} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of the robots and the largest cluster we expect to form. This condition may not hold true for all scenarios (such as those with thousands of small robots or large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest cluster size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{thm:1}. From this table, we can see that the controller speeds are most effective on the foot-bot, which is expected because our grid search used the foot-bot.
 
     \begin{savenotes}
     \begin{table}
@@ -245,7 +253,7 @@
       \caption{Aggregation is guaranteed for many differential drive swarm robots.}
       \begin{tabular}{|c|c|c|c|} \hline
         Robot & $r_i$ (m) & $W$ (m) & maximum $r_j$ (m) \\ \hline
-        FootBot\footnote{\href{https://github.com/ilpincy/argos3/blob/master/src/plugins/robots/foot-bot/simulator/footbot_entity.cpp}{ARGoS file footbot\_entity.cpp}} &
+        foot-bot\footnote{\href{https://github.com/ilpincy/argos3/blob/master/src/plugins/robots/foot-bot/simulator/footbot_entity.cpp}{ARGoS file footbot\_entity.cpp}} &
             0.085 & 0.14 & 74.619 \\ \hline
         Khephera IV\footnote{Khephera IV User Manual, page 66.} &
             0.07 & 0.1054 & 34.725 \\ \hline
@@ -258,7 +266,7 @@
     \end{table}
     \end{savenotes}
 
-    Ultimately, we can use this straightforward geometric proof to make a useful assertion about the behavior of an individual in our swarm. However, this is a very limited and unrealistic scenario where there is only one robot and the one kin or cluster of kin which is assumed to be static. Next, we will use what we've shown here to demonstrate that two kin robots will also aggregate regardless of their initial positions or orientations. \textbf{This supports our argument that complex emergent behavior of simple swarm robots can be well understood and even be proven to do or not do certain things.}
+    Ultimately, we can use this geometric proof to make a useful assertion about the behavior of an individual in our swarm. However, this is a very limited and unrealistic scenario where there is only one robot and the one kin or cluster of kin which is assumed to be static.
 
   \subsection{Aggregation of two Kin}
 
@@ -268,7 +276,7 @@
 
   \subsection{Evaluating the centroid-of-centroids cost function} \label{section:evaluting_cost_functions}
 
-    When we implemented the centroid-of-centroids style cost function, we quickly found examples of configurations ranked in ways we did not like. One example is shown below in Figure \ref{fig:cost_function_fuckup}. The behavior that looks like aggregation was given lower cost of -8e9, versus the behavior that looks like segregation was given a cost of -5e9.
+    When we implemented the centroid-of-centroids style cost function, we quickly found examples of configurations which were ranked undesirably. One example is shown below in Figure \ref{fig:cost_function_fuckup}. The behavior that looks like aggregation was given lower cost of $-8\cdot 10^{9}$, versus the behavior that looks like segregation was given a cost of $-5\cdot 10^{9}$.
 
     \begin{figure}[H]
       \centering
@@ -280,7 +288,15 @@
 
   \subsection{Scalability Study} \label{section:scalability}
 
-    In this experiment we investigate how segregation behavior scales with the number of classes and number of robots in the environment. We varied the number of classes from 1 to 25 and ran 100 trials of robots randomly distributed. Because our cost function is independent of the number of classes, we first considered having 10 robots for each class. However, this also means that in the trial with 25 classes there are 25 times the total number of robots than in the 1 class trial. This means that occlusion of robots is more likely so we are not surprised to find that cost increases with more classes. The results of this are plotted in Figure  \ref{fig:num_classes_10}. Another scenario is to consider a fixed number of robots and split them into more and more classes. We choose 100 robots because we are still able to get 4 robots per class at 25 classes. As you can see in Figure \ref{fig:num_classes_100}, the cost no longer increases as the number of classes increases. However, the cost for just a few classes is much higher. This is expected, because when there are many robots of a single class, our controller forms very large sparse rings where robots are too far to be considered clustered.
+    In this experiment we investigate how segregation behavior scales with the number of classes and number of robots in the environment. We varied the number of classes from 1 to 25 and ran 100 trials of robots uniformly randomly distributed.
+
+    \paragraph{Fixed number of robots per class}
+
+    Because our cost function is independent of the number of classes, we first considered having 10 robots for each class. However, this also means that in the trial with 25 classes there are 25 times the total number of robots than in the 1-class trial. This means that occlusion of robots is more likely and so the cost increases with more classes. The results of this are plotted in Figure  \ref{fig:num_classes_10}.
+
+    \paragraph{Fixed total number of robots}
+
+    Another scenario is to consider a fixed number of robots and split them into more and more classes. We choose 100 robots because we are still able to get 4 robots per class at 25 classes. As you can see in Figure \ref{fig:num_classes_100}, the cost no longer increases as the number of classes increases. However, the cost for just a few classes is much higher. This is expected, because when there are many robots of a single class, our controller forms very large sparse rings where robots are too far apart to be considered clustered.
 
     Ultimately, we can say that our controller scales well to many classes with few robots, but not well to many robots of the same class.
 
@@ -300,13 +316,13 @@
 
   \subsection{The Effect of Implementation Details of the sensor} \label{section:sensor_impl}
 
-    So far we have been vague on how exactly we implement this theoretical line-of-sight sensor. We found in our experiments that the implementation details have a tremendous effect on the performance or behavior of the controller. This is unfortunate because one of the main motivations of the binary or ternary line of sight sensors is that they can be easily transferred between real and simulated implementations.
+    We found in our experiments that the implementation details of the line-of-sight sensor have a significant effect on the behavior of the controller.
 
-    Initially, our method for determining sensor state from our simulated range-and-bearing sensors was to consider all the robots within some small angle in front of the robot and pick the closest one. This is very similar to what you would presumably get from a real-world camera implementation that uses colored skirts on each robot and picks the largest blob as the robot to be detected. This sensor implementation works well and was used in all our genetic algorithm and grid search experiments. However, we found later that if instead the robots always prefer to react to kin over non-kin, you can form larger rings more quickly and robustly. For example, if there are two robots within the imagery beam of your sensor and the non-kin robot is closer, you will ignore it and execute the $I=1$ state which will drive you towards the farther away kin robot. Exploring exactly which of these implementation details have what effect on cost is left for future work.
+    Initially, our method for determining sensor state from our simulated range-and-bearing sensors was to consider all the robots within some small angle in front of the robot and pick the closest one. This is very similar to what would be provided by a real-world camera that uses colored skirts on each robot and picks the largest blob as the robot to be detected. This sensor implementation works well and was used in all our genetic algorithm and grid search experiments. However, we found later that if the robots instead always prefer to react to kin over non-kin, you can form larger rings more quickly and robustly. For example, if there are two robots within the field of view of your sensor and the non-kin robot is closer, you will ignore it and execute the $I=1$ state which will drive you towards the farther away kin robot. Exploring exactly which of these implementation details have what effect on cost is left for future work.
 
-  \subsection{The Effect of Beam Angle} \label{section:beam_angle}
+  \subsection{The Effect of the Beam Angle} \label{section:beam_angle}
 
-    In practice, there must be some finite beam angle to the theoretically line of sight sensor. We ran 100 trials in simulation with uniformly random initial distributions of 40 robots with various half beam angles. Figure \ref{fig:beam_angle} shows the results, as well as a diagram showing how we define half beam angle. The best half beam angle we tested was \ang{15}, and angles smaller or larger got progressively worse. We found that at lower beam angles, it was possible for a robot to become stuck in groups of two or three where the robots spent all their time looking at each other and not peeking around them to find kin. At larger angles, we believe the behavior fails because larger beam angles cause the rings to enlarge faster, which in turn causes the rings to be so large that they are not considered a cluster anymore and so the cost rises.
+    On a real robot, there must be some finite beam angle to the theoretically line-of-sight sensor. We ran 100 trials in simulation with uniformly random initial distributions of 40 robots with various half beam angles. Figure \ref{fig:beam_angle} shows the results, as well as a diagram showing how we define half beam angle. The best half beam angle we tested was \ang{15}, and angles smaller or larger became progressively worse. We found that at lower beam angles, it was possible for a robot to become stuck in groups of two or three where the robots spent all their time looking at each other and not peeking around them to find kin. At larger angles, we believe the behavior fails because larger beam angles cause the rings to enlarge faster, which in turn causes the rings to be so large that they are not considered a cluster anymore and so the cost rises.
 
     \begin{figure}[H]
       \centering
@@ -325,7 +341,7 @@
 
   \subsection{The Effect of Beam Length} \label{section:beam_length}
 
-    We also consider what happens if our theoretically infinite sensor now has finite range. We use \ang{15} half beam angle and the same experimental setup as with the beam angle experiments. Like in \cite{gauci_self-organized_2014}, we consider the maximum range of the sensor as the diagonal length of the square in which the robot are initially distributed. In all our experiments, this box was \SI{5}{\meter\square}, so we consider a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs for beam lengths as a fraction of this maximum range. As you can see in Figure \ref{fig:beam_length}, in practice a beam length of only 35\% of the theoretical maximum performs just as well. Below this, the performance degrades. However, even a beam length of just 7\% of unlimited is more effective than zero length at segregation. In our experiment watching many simulations, beam length should also be scaled with the total number of robots as well as the initial distance between robots. When the beam length is short, there are many cases where two rings of kin robots form at different points in the environment, and in order for these two rings to join the robots must have sufficiently long beam length in order to detect each other.
+    We also consider what happens if our theoretically infinite sensor now has finite range. We use \ang{15} half beam angle and the same experimental setup as with the beam angle experiments. Analogously to \cite{gauci_self-organized_2014}, we consider the maximum range of the sensor as the diagonal length of the square in which the robot are initially distributed. In all our experiments, this box was \SI{5}{\meter\square}, so we consider a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs for beam lengths as a fraction of this maximum range. As shown in Figure \ref{fig:beam_length}, a beam length of 35\% of the theoretical maximum performs just as well. Below this, the performance degrades. However, even a beam length of 7\% of unlimited is more effective than zero length at segregation. In our experiment watching many simulations, beam length should also be scaled with the total number of robots as well as the initial distance between robots. When the beam length is short, there are many cases where two rings of kin robots form at different points in the environment, and in order for these two rings to join the robots must have sufficiently long beam length in order to detect each other.
 
     \begin{figure}
       \centering
@@ -414,12 +430,6 @@
       &= 2R\big(-\delta\sin(\theta) + R + r_j - r_j\cos(\theta) - R\cos(\theta)\big) \\
       &= 2R\big((r_j + R)(1 - \cos(\theta))-\delta\sin(\theta)\big)
     \end{align*}
-
-  \subsection{Supplementary Videos} \label{section:videos}
-
-    This YouTube playlist contains videos of the controller found with grid search:
-
-    \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}
 
   \pagebreak
   \subsection{Grid Search Images} \label{section:grid_search_images}
