@@ -9,8 +9,8 @@
 \BOOKMARK [2][-]{subsection.2.5}{Grid Search}{section.2}% 9
 \BOOKMARK [1][-]{section.3}{The Emergent Behavior}{}% 10
 \BOOKMARK [1][-]{section.4}{Controller Analysis}{}% 11
-\BOOKMARK [2][-]{subsection.4.1}{Aggregation with Static Kin}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.2}{Aggregation of two Kin}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Aggregation of Two Kin}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Aggregation with Cluster of Static Kin}{section.4}% 13
 \BOOKMARK [1][-]{section.5}{Experimental Results}{}% 14
 \BOOKMARK [2][-]{subsection.5.1}{Evaluating the centroid-of-centroids cost function}{section.5}% 15
 \BOOKMARK [2][-]{subsection.5.2}{Scalability Study}{section.5}% 16
@@ -20,6 +20,7 @@
 \BOOKMARK [1][-]{section.6}{Conclusion}{}% 20
 \BOOKMARK [1][-]{section*.1}{References}{}% 21
 \BOOKMARK [1][-]{section*.2}{Appendix}{}% 22
-\BOOKMARK [2][-]{subsection.Appendix.A.1}{Proof of Theorem 1}{section*.2}% 23
-\BOOKMARK [2][-]{subsection.Appendix.A.2}{Proof of Theorem 2}{section*.2}% 24
-\BOOKMARK [2][-]{subsection.Appendix.A.3}{Grid Search Images}{section*.2}% 25
+\BOOKMARK [2][-]{subsection.Appendix.A.1}{Proof that Two Kin Aggregate When One Sees The Other}{section*.2}% 23
+\BOOKMARK [2][-]{subsection.Appendix.A.2}{Proof that Two Kin Aggregate When Both Robots See Each Other}{section*.2}% 24
+\BOOKMARK [2][-]{subsection.Appendix.A.3}{Proof of Theorem 1}{section*.2}% 25
+\BOOKMARK [2][-]{subsection.Appendix.A.4}{Grid Search Images}{section*.2}% 26
