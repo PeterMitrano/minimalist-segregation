@@ -431,38 +431,38 @@
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{(\delta - 0)^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{\delta^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
-        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta^2 -2b\delta + b^2) + a} - \sqrt{\delta^2 + (-(R+r) - R)^2}\bigg) &\leq 0 \\
-        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta^2 -2b\delta + b^2 + a} - \sqrt{\delta^2 + r^2}\bigg) &\leq 0 \\
-        \frac{1}{2}\Big[(\delta^2 -2b\delta + b^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
-        (\delta^2 -2b\delta + b^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
-        (\delta^2 -2b\delta + b^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) \\
-        (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)(\delta^2 -2b\delta + b^2 + a)^{\frac{1}{2}} \\
-        (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta)^2(\delta^2 -2b\delta + b^2 + a) \\
-        (\delta^2+r^2)(\delta^2-2b\delta+b^2) &\leq \delta^4-2b\delta^3+b^2\delta^2+a\delta^2 \\
-        \delta^4+r^2\delta^2-2b\delta^3-2br^2\delta+b^2\delta^2+b^2r^2 &\leq \delta^4-2b\delta^3+b^2\delta^2+a\delta^2 \\
-        \cancel{\delta^4}+r^2\delta^2+\cancel{-2b\delta^3}-2br^2\delta+\cancel{b^2\delta^2}+b^2r^2 &\leq \cancel{\delta^4}-\cancel{2b\delta^3}+\cancel{b^2\delta^2}+a\delta^2 \\
-        r^2\delta^2-2br^2\delta+b^2r^2 &\leq \delta^2 \\
-        (r^2-a)\delta^2 - 2br^2\delta + b^2r^2 &\leq 0 \\
-        \intertext{If we can show that this condition holds true for all $\delta\geq\sqrt{2}r$, then the original conditions holds. To show that expression is always negative, we need to show that the quadratic coefficient is negative, and that the maximum value is negative. We do this by finding where the derivative equals zero and substituting back in.
-        We simply.}
-        \intertext{Condition 1}
-        r^2-a &\leq 0 \\
-        r^2-(p_{j_y} - p'_{i_y})^2 &\leq 0 \\
-        r^2-(-W-r+W\cos(\theta_i))^2 &\leq 0 \\
-        \intertext{Condition 2}
-        2(r^2-a)\delta - 2br^2 &= 0 \\
-        (r^2-a)\delta - br^2 &= 0 \\
-        \delta &= \frac{br^2}{r^2-a} \\
-        \intertext{this is the root, now substitute.}
-        (r^2-a)\bigg(\frac{br^2}{r^2-a}\bigg)^2 - 2br^2\bigg(\frac{br^2}{r^2-a}\bigg) + b^2r^2 &\leq 0 \\
-        \bigg(\frac{b^2r^4}{r^2-a}\bigg) - 2\bigg(\frac{b^2r^4}{r^2-a}\bigg) + b^2r^2 &\leq 0 \\
-        b^2r^2 - \frac{b^2r^4}{r^2-a} &\leq 0 \\
-        \big(W\sin(\theta_i)\big)^2r^2 - \frac{\big(W\sin(\theta_i)\big)^2r^4}{r^2-\big(p_{j_y} - p'_{i_y}\big)^2} &\leq 0 \\
-        \big(W\sin(\theta_i)\big)^2r^2 - \frac{\big(W\sin(\theta_i)\big)^2r^4}{r^2-\big(-W-r+W\cos(\theta_i)\big)^2} &\leq 0 \\
+        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + (-(R+r) - R)^2}\bigg) &\leq 0 \\
+        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + r^2}\bigg) &\leq 0 \\
+        \frac{1}{2}\Big[(\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
+        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
+        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) \\
+        (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} && \text{OK, all terms are positive} \\
+        (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} \\
+        (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta)^2((\delta-b)^2 + a) \\
+        (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta-b)^2(\delta^2 + a\delta^2) \\
+        (\delta^2 + r^2) &\leq (\delta^2 + a\delta^2) \\
+        r^2 &\leq a\delta^2 \\
+        \frac{r}{\sqrt{a}} &\leq \delta \\
+        \frac{r}{\sqrt{(-W-r+W\cos(\theta_i))^2}} &\leq \delta \\
+        \frac{r}{-W-r+W\cos(\theta_i)} &\leq \delta \\
+        \frac{r}{-W-r+W\cos(\theta_i)} &\leq \sqrt{2}r && \text{lower bound on }\delta \\
+        \frac{1}{-W-r+W\cos(\theta_i)} &\leq \sqrt{2} \\
+      \end{align*}
+
+      \begin{align*}
+        \intertext{Proof that $(\delta-b)>0$}
+        \delta - b &> 0 \\
+        \delta - W\sin(\theta_i) &> 0 \\
+        \sqrt{2}r - W\sin(\theta_i) &> 0 && \text{lower bound of }\delta \\
+        \sqrt{2}r - W\sin(\theta_i) &> 0 && \text{The robot must be wider than its track width, } r \geq \tfrac{W}{2} \\
+        \tfrac{\sqrt{2}}{2}W - W\sin(\theta_i) &> 0 \\
+        \tfrac{\sqrt{2}}{2} - \sin(\theta_i) &> 0 \\
+        \tfrac{\sqrt{2}}{2} &> \sin(\theta_i) \\
+        \tfrac{\pi}{4} &> \theta_i \\
       \end{align*}
     }
 
-    This proves that the lower bound on how much closer the robots get occurs when $\delta$ is minimized. The minimum is $\delta=\sqrt{2}r$, so all we need to do is check whether $d'-d<\frac{R\Delta t}{15W}$ for $\delta=\sqrt{2}r$ and that will prove (assuming the above conditions also hold) that in the case of two robots executing the controller where one kin sees the other that they are closer.
+    We have now shown that if $\frac{1}{-W-r+W\cos(\theta_i)} \leq \sqrt{2}$, then this implies that the change in distance $d'-d$ strictly decreases as $\delta$ increases. In other words, the amount that the two robots get closer is smallest when they are as close as possible. Because of this property, we can guarantee aggregation by showing that $d'-d<s$ when $\delta$ is at its minimum of $\sqrt{2}r$. In other words, if these two simple analytic conditions are satisfied, than aggregation between two kin robots where one robot sees the other is guaranteed.
 
   \subsection{Proof that Two Kin Aggregate When One Sees The Other} \label{apx:two_agg_1}
     \begin{align*}
