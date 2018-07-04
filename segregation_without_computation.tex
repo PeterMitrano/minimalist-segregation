@@ -151,7 +151,7 @@
 
 \section{Controller Analysis}
 
-  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we seek a to show more formally explain this behavior, and define the conditions under which it is guaranteed. We first prove that aggregation between two kin robots is guaranteed under certain conditions. Then we show that kin will aggregate with a static ring of kin. Finally, we explain why groups of three or more robots usually form rings. Finally, we show that non-kin will aggregate faster to kin than non-kin. All together, this is a fairly rigorous explanation of the emergent behavior, and since the conditions are minimal, it explains why the observed segregation behavior is so robust. More generally it demonstrates that we can prove useful things about complex emergent swarm behavior of these simple robots and controllers. In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, that each motion is execute for the same $\Delta t$ at the same point in time, and that the robot has a fixed positive inter wheel distance $W$.
+  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first prove that aggregation between two isolated kin robots is guaranteed under weak assumptions. Then we show that kin will aggregate with a static ring of kin. Furthermore, we explain why groups of three or more robots usually form rings. Finally, we show that non-kin will aggregate faster to kin than non-kin. All together, this explains much of the emergent behavior. More generally it demonstrates that we can prove useful things about complex emergent swarm behavior of these simple robots and controllers. In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, that each motion is execute for the same $\Delta t$ at the same point in time, and that the robot has a fixed positive inter wheel distance $W$ and radius $r$.
 
     \begin{figure}[t!]
       \centering
@@ -173,7 +173,7 @@
         \node at (-0.01,-.03) {$R$};
         \draw[dashed] (0,0) -- (0,-0.053);
         \draw[dashed] (0,-0.053) -- (-0.035,-0.053);
-        \node at (-0.015,-0.061) {$r_i$};
+        \node at (-0.015,-0.061) {$r$};
 
          % p'_i
         \filldraw (0.0131,-0.051) circle (.002);
@@ -206,24 +206,46 @@
         \draw (0,-0.053) -- (0.15, -0.088);
         \node at (0.06,-0.08) {$d$};
       \end{tikzpicture}
-      \caption{The configuration of a robot aggregating to another kin where both robots see each other.}
+      \caption{The configuration of a robot aggregating to another kin where both robots see each other. $R$ is the radius of the robots path around the ICC.}
       \label{fig:kin_aggregation}
     \end{figure}
 
   \subsection{Aggregation of Two Kin}
 
-    The set of all possible initial configurations of two robots $i$ and $j$ can be split into three possible states. Either neither robot sees the other, one robot sees the other, or both robots see each other. In order to show that aggregation is guaranteed in all scenarios, we consider how these states evolve as a finite state machine (Figure \ref{fig:fsm}). Specifically, we prove that aggregation is guaranteed starting from state $0,0$ and eventually transitioning to $1,0$ or $1,1$. Given this condition, we can conclude that aggregation is guaranteed for any initial configuration of two kin robots.
+    \begin{figure}[t!]
+      \centering
+			\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm, semithick]
+				\node[state] (A)                    {$0,0$};
+				\node[state] (B) [below left of=A]  {$1,0$};
+				\node[state] (C) [below right of=A] {$1,1$};
+        \node at (0, -2.5) (hidden) {};
 
-    To start, we note that intuitively the robots should aggregate in state $1,0$ and $1,1$, and in $0,0$ they rotate regardless of the other robot. We show that the distance by which the robots aggregate during the $1,0$ and $1,1$ states is always greater than the distance they could possibly separate in an infinite number of visits to $0,0$. The upper bound on how much the robots disperse in state $0,0$ we call $s$, and it is equal to twice the radius of the rotation in state $0,0$ (Equation \eqref{eq:s_bound}).
+				\path (A) edge [red, loop above] node {x} (A)
+                  edge [red, bend right] node {x} (B)
+                  edge [red, bend right] node {x} (C)
+              (B) edge [blue, bend right] node {y} (C)
+                  edge [blue, bend right] node {y} (A)
+              (C) edge [blue, bend right] node {z} (A);
+			\end{tikzpicture}
+      \label{fig:fsm}
+      \caption{State machine representation for two kin aggregation. (1,0) means robot $i$ has sensor state $I=0$, and robot $j$ has $I=1$. Blue arrows indicate transitions where the robots aggregate, and red indicates they may not aggregate. Letters indicate identical transitions. One can see visually in Figure \ref{fig:kin_aggregation} why it's impossible to transition from $1,1$ to $1,0$.}
+		\end{figure}
+
+    The set of all possible initial configurations of two robots $i$ and $j$ can be split into three possible states. Either neither robot sees the other, one robot sees the other, or both robots see each other. In order to show that aggregation is guaranteed in all scenarios, we consider how these states evolve as a finite state machine (Figure \ref{fig:fsm}). For each sensor state $I=0,1,2$ there is a corresponding radius of rotation around the ICC which we call $R_0$, $R_1$, $R_2$ respectively. There are three unique transitions between states in this state machine, which are called $x$, $y$ and $z$.
+
+    We show that the distance by which the robots aggregate during the blue transitions $y$ or $z$ is always greater than the distance they could possibly separate in any sequence of $x$ transitions. The upper bound on how much the robots disperse in transition $x$ we call $s$, and it is equal to twice the radius of the curvature of the robots path $R_0$. Equation \eqref{eq:s_bound} formally defines $s$.
 
     \begin{equation} \label{eq:s_bound}
-      s = 2R_{(0,0)} = 2\frac{W}{2}\bigg(\frac{v_{l_1} + v_{r_1}}{v_{l_1} - v_{r_1}}\bigg) = \frac{W}{4}\bigg(\frac{0.2 + -0.133}{0.2 - (-1.333)}\bigg) = 0.8W
+      \begin{split}
+        s &= 2R_0 = 2\frac{W}{2}\bigg(\frac{v_{l_1} + v_{r_1}}{v_{l_1} - v_{r_1}}\bigg) = \frac{W}{4}\bigg(\frac{0.2 + -0.133}{0.2 - (-1.333)}\bigg) \\
+        &= 0.8W
+      \end{split}
     \end{equation}
 
-    We need to show that, in states $1,1$ and $1,0$, the kin robots always aggregate more than $s$ in order to show that they always aggregate from any starting configuration given enough time. To show this, we first demonstrate that the magnitude of aggregation, which can be described as $d'-d$ in Figure \ref{fig:kin_aggregation}, always increases as $\delta$ increases. In other words, the closer the robots are, the less by which they aggregate. The conditions under which this is true are derived in Equation \ref{thm:d-d}. Given this fact, if we can then also prove that the robots aggregate by more than $s$ at their closest possible distance, then they must also aggregate at all further distances. This second condition is derived in Equations \ref{thm:one_see_cond} and \ref{thm:both_see_cond}, and the final conditions are shown below.
+    We need to show that, in transitions $y$ and $z$, the kin robots always aggregate more than $s$. We first demonstrate that the magnitude of aggregation, which can be described as $d'-d$ in Figure \ref{fig:kin_aggregation}, always increases as $\delta$ increases. In other words, the closer the robots are, the less by which they aggregate. The conditions under which this is true are derived in Equation \ref{thm:d-d}. Given this fact, if we can then also prove that the robots aggregate by more than $s$ at the smallest $\delta$, then they must also aggregate for all $\delta$. This second condition is derived in Equations \ref{thm:one_see_cond} and \ref{thm:both_see_cond}, and the final conditions are shown below. We know the lower bound of $\delta$ is $\sqrt{2}r$ because this is the point at which the two robots are touching.
 
     \begin{equation} \label{eq:two_kin_cond_1}
-        \frac{1}{-W-r_i+W\cos(\theta_i)} \leq \sqrt{2}
+        \frac{1}{-W-r+W\cos(\theta_i)} \leq \sqrt{2}
     \end{equation}
 
     % TODO: maybe mention this second constrain is always true if the third one is
@@ -241,49 +263,7 @@
       \end{split}
     \end{equation}
 
-    Note that this proof relies on the assumption that the robots cannot transition back to $0,0$ forever, which is true because in this state they rotate and without any occlusions they must see each other at some point before completing a full rotation. In practice, this even less of an issue because the robots almost never have to turn more than half way around before detecting another robot.
-
-    Ultimately, if Equations \eqref{eq:two_kin_agg_cond_1}, \eqref{eq:two_kin_agg_cond_2}, and \eqref{eq:two_kin_agg_cond_3} are satisfied, we can say that form any initial configuration, two kin robots will eventually aggregate in a sort of two-steps-forward one-step-back fashion. This behavior is clearly demonstrated in our simulation and real robot experiments.
-
-    \begin{figure}[t!]
-      \centering
-			\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm, semithick]
-				\node[state] (A)                    {$0,0$};
-				\node[state] (B) [below left of=A]  {$1,0$};
-				\node[state] (C) [below right of=A] {$1,1$};
-
-				\path (A) edge              node {} (B)
-									edge [loop above] node {} (A)
-									edge [bend left=15]  node {} (C)
-							(B) edge [loop above] node {} (B)
-									edge [bend left=15]  node {} (C)
-							(C) edge [bend left=15]  node {} (A)
-									edge [bend left=15]  node {} (B);
-			\end{tikzpicture}
-      \label{fig:fsm}
-      \caption{State machine representation for two kin aggregation. (1,0) means robot $i$ has sensor state $I=0$, and $j$ has $I=1$}
-		\end{figure}
-
-    From Figure \ref{fig:kin_aggregation} we can define the coordinates of $p_i$, $p_j$, $p'_i$, and $p'_j$.
-
-    \begin{equation} \label{eq:two_kin_vars_1}
-      \begin{split}
-        p_i = \begin{bmatrix}0 \\ -R_1\end{bmatrix} \\
-        p_j = \begin{bmatrix}\delta \\ -(R_1+r_j)\end{bmatrix} \\
-        p'_i = \begin{bmatrix}R_1\sin(\theta_i) \\ -R_1\cos(\theta_i)\end{bmatrix} \\
-        p'_j = \begin{bmatrix}\delta - R_1\sin(\theta_i) \\ -(R_1+r) - (R_1-R_1\cos(\theta_i))\end{bmatrix} \\
-      \end{split}
-    \end{equation}
-
-    \begin{align}
-      \begin{split} \label{eq:theta_and_r}
-        \theta_i &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - 0.06667}{W} = \frac{2\Delta t}{15W} \\
-        R_1 &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + 0.06667}{0.2 - 0.06667}\bigg) = W
-      \end{split}
-    \end{align}
-
-      We can combine all of these small, simple proofs to define the conditions under which aggregation of two kin robots is guaranteed under any configuration.
-
+    Ultimately, if Equations \eqref{eq:two_kin_cond_1}, \eqref{eq:two_kin_cond_2}, and \eqref{eq:two_kin_cond_3} are satisfied, we can say that from any initial configuration, two kin robots will eventually aggregate in a sort of two-steps-forward one-step-back fashion. This behavior is clearly demonstrated in our simulation and real robot experiments.
 
   \subsection{Aggregation with Ring of Kin}
 
@@ -292,23 +272,24 @@
     \end{theorem}
     \begin{proof}
 
-      In this scenario, imagine a isolated kin robot which has sensed a ring of kin. If we consider the center of the ring static, we can extend Theorem \ref{thm:one_robot_sees_the_other} to determine the conditions under which it is guaranteed that the isolated robot will aggregate to the ring of kin. Imagine the ring of kin as robot $j$ but with a different (larger) radius than the isolated robot $i$. In this case, the coordinates of $p_j$ are a function of $r_j$ which no longer necessarily equals $r_i$. Following the same process, the condition in Equation \eqref{eq:ring_agg} described when aggregation is guaranteed.
+      In this scenario, imagine a isolated kin robot which has sensed a ring of kin. If we consider the center of the ring static, we can extend Theorem \ref{thm:one_robot_sees_the_other} to determine the conditions under which it is guaranteed that the isolated robot will aggregate to the ring of kin. Imagine the ring of kin as robot $j$ but with a different (larger) radius than the isolated robot $i$. In this case, the coordinates of $p_j$ are a function of the new $r_j$ which no longer necessarily equals $r$. Following the same process, the condition in Equation \eqref{eq:ring_agg} described when aggregation is guaranteed.
 
       \begin{equation} \label{eq:ring_agg}
         \begin{split}
+          beep boop
         \end{split}
       \end{equation}
 
       \end{proof}
 
-     Shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R_1$. Our goal is to show that the robots will always be closer after executing the controller. Like in our proof of two kin aggregation, we want to show that the robot and the other kin are closer after executing the controller (Equation \eqref{eq:agg}.
+     Shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R_1$. Our goal is to show that the robots will always be closer after executing the controller. Like in our proof of two kin aggregation, we want to show that the robot and the other kin are closer after executing the controller (see Equation \eqref{eq:agg}).
 
     With this coordinate system defined, we can define the coordinates of $p_i$, $p_j$, and $p'_i$ (Equation \eqref{eq:vars}). Next, we can write the variables $\theta_i$ and $R_1$ in terms of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \eqref{eq:theta_and_r}.
 
-    We then substitute these variables into Equation \eqref{eq:agg} and simplify, and the result is shown in Equation \eqref{eq:agg_result}. For the full derivation, see Appendix \ref{apx:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot or ring radius $r_j$ should not be large compared to the other robot radius $r_i$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static ring of kin robots.
+    We then substitute these variables into Equation \eqref{eq:agg} and simplify, and the result is shown in Equation \eqref{eq:agg_result}. For the full derivation, see Appendix \ref{apx:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot or ring radius $r_j$ should not be large compared to the other robot radius $r$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static ring of kin robots.
 
     \begin{equation} \label{eq:agg_result}
-      \sqrt{r^2_i + 2r_ir_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
+      \sqrt{r^2_i + 2rr_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
     \end{equation}
 
     Equation \eqref{eq:agg_result} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of the robots and the largest ring we expect to form. This condition may not hold true for all scenarios (such as those with thousands of small robots or large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest ring size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{apx:1}. From this table, we can see that the controller speeds are most effective on the foot-bot, which is expected because our grid search used the foot-bot.
@@ -318,7 +299,7 @@
       \centering
       \caption{Aggregation is guaranteed for many differential drive swarm robots.}
       \begin{tabular}{|c|c|c|c|} \hline
-        Robot & $r_i$ (m) & $W$ (m) & maximum $r_j$ (m) \\ \hline
+        Robot & $r$ (m) & $W$ (m) & maximum $r_j$ (m) \\ \hline
         foot-bot\footnote{\href{https://github.com/ilpincy/argos3/blob/master/src/plugins/robots/foot-bot/simulator/footbot_entity.cpp}{ARGoS file footbot\_entity.cpp}} &
             0.085 & 0.14 & 74.619 \\ \hline
         Khephera IV\footnote{Khephera IV User Manual, page 66.} &
@@ -332,7 +313,7 @@
     \end{table}
     \end{savenotes}
 
-    Ultimately, we can use this geometric proof to make a useful assertion about the behavior of an individual in our swarm. However, this is a very limited and unrealistic scenario where there is only one robot and the one kin or ring of kin which is assumed to be static.
+    Ultimately, we can use these geometric proof to make a useful assertions about the behavior of an individual in our swarm and of the swarm as a whole. While we have not shown that segregation is guaranteed in all cases, this may serve as a building block for more general claims.
 
 \section{Experimental Results}
 
@@ -423,6 +404,24 @@
 \appendix
 \section{Appendix}
 
+    \begin{align}
+      \begin{split} \label{eq:theta_and_r}
+        \theta_i &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - 0.06667}{W} = \frac{2\Delta t}{15W} \\
+        R_1 &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + 0.06667}{0.2 - 0.06667}\bigg) = W
+      \end{split}
+    \end{align}
+
+    From Figure \ref{fig:kin_aggregation} we can define the coordinates of $p_i$, $p_j$, $p'_i$, and $p'_j$.
+
+    \begin{equation} \label{eq:two_kin_vars_1}
+      \begin{split}
+        p_i = \begin{bmatrix}0 \\ -R_1\end{bmatrix} \\
+        p_j = \begin{bmatrix}\delta \\ -(R_1+r_j)\end{bmatrix} \\
+        p'_i = \begin{bmatrix}R_1\sin(\theta_i) \\ -R_1\cos(\theta_i)\end{bmatrix} \\
+        p'_j = \begin{bmatrix}\delta - R_1\sin(\theta_i) \\ -(R_1+r) - (R_1-R_1\cos(\theta_i))\end{bmatrix} \\
+      \end{split}
+    \end{equation}
+
   \begin{theorem} \label{thm:d-d}
     Robots aggregate by less the closer they are
   \end{theorem}
@@ -439,25 +438,25 @@
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{(\delta- 0)^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
         \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{\delta^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
-        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + (-(R_1+r_i) - R_1)^2}\bigg) &\leq 0 \\
-        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + r_i^2}\bigg) &\leq 0 \\
-        \frac{1}{2}\Big[(\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r_i^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
-        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r_i^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
-        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r_i^2)^{-\frac{1}{2}}(\delta) \\
-        (\delta^2 + r_i^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} && \text{all terms are positive, see Theorem \ref{thm:d-b}} \\
-        (\delta^2 + r_i^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} \\
-        (\delta^2 + r_i^2)(\delta-b)^2 &\leq (\delta)^2((\delta-b)^2 + a) \\
-        (\delta^2 + r_i^2)(\delta-b)^2 &\leq (\delta-b)^2(\delta^2 + a\delta^2) \\
-        (\delta^2 + r_i^2) &\leq (\delta^2 + a\delta^2) \\
-        r_i^2 &\leq a\delta^2 \\
-        \frac{r_i}{\sqrt{a}} &\leq \delta \\
-        \frac{r_i}{\sqrt{(-W-r_i+W\cos(\theta_i))^2}} &\leq \delta \\
-        \frac{r_i}{-W-r_i+W\cos(\theta_i)} &\leq \delta \\
-        \frac{r_i}{-W-r_i+W\cos(\theta_i)} &\leq \sqrt{2}r_i && \text{lower bound on }\delta \\
-        \frac{1}{-W-r_i+W\cos(\theta_i)} &\leq \sqrt{2} \\
+        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + (-(R_1+r) - R_1)^2}\bigg) &\leq 0 \\
+        \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + r^2}\bigg) &\leq 0 \\
+        \frac{1}{2}\Big[(\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
+        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
+        ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) \\
+        (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} && \text{all terms are positive, see Theorem \ref{thm:d-b}} \\
+        (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} \\
+        (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta)^2((\delta-b)^2 + a) \\
+        (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta-b)^2(\delta^2 + a\delta^2) \\
+        (\delta^2 + r^2) &\leq (\delta^2 + a\delta^2) \\
+        r^2 &\leq a\delta^2 \\
+        \frac{r}{\sqrt{a}} &\leq \delta \\
+        \frac{r}{\sqrt{(-W-r+W\cos(\theta_i))^2}} &\leq \delta \\
+        \frac{r}{-W-r+W\cos(\theta_i)} &\leq \delta \\
+        \frac{r}{-W-r+W\cos(\theta_i)} &\leq \sqrt{2}r && \text{lower bound on }\delta \\
+        \frac{1}{-W-r+W\cos(\theta_i)} &\leq \sqrt{2} \\
       \end{align*}
 
-      We have now shown that if $\frac{1}{-W-r_i+W\cos(\theta_i)} \leq \sqrt{2}$, then this implies that the change in distance $d'-d$ strictly decreases as $\delta$ increases. In other words, the amount that the two robots get closer is smallest when they are as close as possible. Because of this property, we can guarantee aggregation by showing that $d'-d<s$ when $d$ is at its minimum of $\sqrt{2}r_i$. In other words, if these two simple analytic conditions are satisfied, than aggregation between two kin robots is guaranteed. For convenience, we show the expanded forms of $d'-d$ for the two possible cases. To apply this, substitute the parameters of your robot into the two equations below and see if the conditions hold true.
+      We have now shown that if $\frac{1}{-W-r+W\cos(\theta_i)} \leq \sqrt{2}$, then this implies that the change in distance $d'-d$ strictly decreases as $\delta$ increases. In other words, the amount that the two robots get closer is smallest when they are as close as possible. Because of this property, we can guarantee aggregation by showing that $d'-d<s$ when $d$ is at its minimum of $\sqrt{2}r$. In other words, if these two simple analytic conditions are satisfied, than aggregation between two kin robots is guaranteed. For convenience, we show the expanded forms of $d'-d$ for the two possible cases. To apply this, substitute the parameters of your robot into the two equations below and see if the conditions hold true.
 
     }
 
@@ -511,8 +510,8 @@
     \begin{align*}
       \delta - b &> 0 \\
       \delta - W\sin(\theta_i) &> 0 \\
-      \sqrt{2}r_i - W\sin(\theta_i) &> 0 && \text{lower bound of }\delta \\
-      \sqrt{2}r_i - W\sin(\theta_i) &> 0 && \text{The robot must be wider than its track width, } r_i \geq \tfrac{W}{2} \\
+      \sqrt{2}r - W\sin(\theta_i) &> 0 && \text{lower bound of }\delta \\
+      \sqrt{2}r - W\sin(\theta_i) &> 0 && \text{The robot must be wider than its track width, } r \geq \tfrac{W}{2} \\
       \tfrac{\sqrt{2}}{2}W - W\sin(\theta_i) &> 0 \\
       \tfrac{\sqrt{2}}{2} - \sin(\theta_i) &> 0 \\
       \tfrac{\sqrt{2}}{2} &> \sin(\theta_i) \\
