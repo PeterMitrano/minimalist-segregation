@@ -267,32 +267,21 @@
 
   \subsection{Aggregation with Ring of Kin}
 
-    \begin{theorem} \label{thm:aggregation_with_ring_of_kin}
-      An isolated kin robot will aggregate to a ring of kin.
-    \end{theorem}
-    \begin{proof}
+      In this scenario, imagine a isolated kin robot which has sensed a ring of kin. Imagine the ring of kin as robot $j$ but with a different (larger) radius than the isolated robot $i$. If we consider the center of the ring static, we can define the conditions under which robot $i$ is guaranteed to be closer to the center of the ring. Robot $i$ starts at $p_i$ with sensor reading $I=1$. It then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ to the left and ends up at position $p'_i$. We show that for a small $\Delta t$ that the robot moves closer to the center of the ring at $p_j$.
 
-      In this scenario, imagine a isolated kin robot which has sensed a ring of kin. If we consider the center of the ring static, we can extend Theorem \ref{thm:one_robot_sees_the_other} to determine the conditions under which it is guaranteed that the isolated robot will aggregate to the ring of kin. Imagine the ring of kin as robot $j$ but with a different (larger) radius than the isolated robot $i$. In this case, the coordinates of $p_j$ are a function of the new $r_j$ which no longer necessarily equals $r$. Following the same process, the condition in Equation \eqref{eq:ring_agg} described when aggregation is guaranteed.
+      The condition we need to satisfy is shown in Equation \eqref{eq:ring_agg}. The variable $r_j$ how denotes the radius of this ring, whereas $r$ still refers to the radius of a single robot.
 
       \begin{equation} \label{eq:ring_agg}
-        \begin{split}
-          beep boop
-        \end{split}
+        \lVert p'_i - p_j \rVert < \lVert p_i - p_j \rVert
       \end{equation}
 
-      \end{proof}
+      We can expand Equation \eqref{eq:ring_agg} and derive a simple condition which describes for which values of $r$, $r_j$, $W$, $\Delta t$, this holds true for all $\delta$. The full derivation can be found in Appendix \ref{thm:aggregation_with_ring_of_kin}, and the result is shown in Equation \eqref{eq:ring_agg_result}.
 
-     Shown in Figure \ref{fig:kin_aggregation}. The controller dictates that since a kin robot is seen, $I=1$, so $v_{l_1} = 0.3333$ and $v_{r_1} = 1$. This will cause the robot to turn counter-clockwise with some radius $R_1$. Our goal is to show that the robots will always be closer after executing the controller. Like in our proof of two kin aggregation, we want to show that the robot and the other kin are closer after executing the controller (see Equation \eqref{eq:agg}).
+      \begin{equation} \label{eq:ring_agg_result}
+        \sqrt{r^2 + 2rr_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
+      \end{equation}
 
-    With this coordinate system defined, we can define the coordinates of $p_i$, $p_j$, and $p'_i$ (Equation \eqref{eq:vars}). Next, we can write the variables $\theta_i$ and $R_1$ in terms of $\Delta t$, the inter wheel diameter $W$, and the wheels speeds of the controller $v_{l_1}$ and $v_{r_1}$, which are shown in Equation \eqref{eq:theta_and_r}.
-
-    We then substitute these variables into Equation \eqref{eq:agg} and simplify, and the result is shown in Equation \eqref{eq:agg_result}. For the full derivation, see Appendix \ref{apx:1}. In other words, for aggregation to a static kin robot to be guaranteed, the robot sizes and controller period must meet this condition. Intuitively, the robot or ring radius $r_j$ should not be large compared to the other robot radius $r$, the time step should be small, and $W$ should not be too small. We emphasize that $r_j$ could be the radius of a single kin robot or the radius of a large static ring of kin robots.
-
-    \begin{equation} \label{eq:agg_result}
-      \sqrt{r^2_i + 2rr_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
-    \end{equation}
-
-    Equation \eqref{eq:agg_result} is useful because it tells us whether aggregation is guaranteed knowing only the sizes of the robots and the largest ring we expect to form. This condition may not hold true for all scenarios (such as those with thousands of small robots or large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest ring size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{apx:1}. From this table, we can see that the controller speeds are most effective on the foot-bot, which is expected because our grid search used the foot-bot.
+      In other words, for aggregation to a static ring of kin robots to be guaranteed, the robot sizes and controller period must meet this condition. This condition may not hold true for all scenarios (such as those with large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest ring size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{apx:1}. From this table, we can see that the controller speeds are most effective on the foot-bot, which is expected because our grid search used the foot-bot.
 
     \begin{savenotes}
     \begin{table}
@@ -492,14 +481,14 @@
   \end{theorem}
   \begin{proof}
 
-      \begin{align*}
-        d' - d  &< s \\
-        \lVert p'_j - p'_i \rVert - \lVert p_j - p_i \rVert &< s \\
-        \sqrt{(p'_{j_x} - p'_{i_x})^2 + (p'_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} &< s \\
-        \sqrt{((\sqrt{2}r_j - 2R_1\sin(\theta_i))^2 + ((-(R_1+r_j) - (R_1-R_1\cos(\theta_i))) - (-R_1\cos(\theta_i)))^2} - \sqrt{2r_j^2 + (-(R_1+r_j) - (-R_1))^2} &< s \\
-        \sqrt{(\sqrt{2}r_j - 2R_1\sin(\theta_i))^2 + (-r_j-2R_1+2R_1\cos(\theta_i))^2} - \sqrt{2r_j^2 + r_j^2} &< s \\
-        \sqrt{(\sqrt{2}r_j - 2W\sin(\theta_i))^2 + (-r_j-2W+2W\cos(\theta_i))^2} - \sqrt{3}r_j &< \frac{\Delta t}{15W}
-      \end{align*}
+    \begin{align*}
+      d' - d  &< s \\
+      \lVert p'_j - p'_i \rVert - \lVert p_j - p_i \rVert &< s \\
+      \sqrt{(p'_{j_x} - p'_{i_x})^2 + (p'_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} &< s \\
+      \sqrt{((\sqrt{2}r_j - 2R_1\sin(\theta_i))^2 + ((-(R_1+r_j) - (R_1-R_1\cos(\theta_i))) - (-R_1\cos(\theta_i)))^2} - \sqrt{2r_j^2 + (-(R_1+r_j) - (-R_1))^2} &< s \\
+      \sqrt{(\sqrt{2}r_j - 2R_1\sin(\theta_i))^2 + (-r_j-2R_1+2R_1\cos(\theta_i))^2} - \sqrt{2r_j^2 + r_j^2} &< s \\
+      \sqrt{(\sqrt{2}r_j - 2W\sin(\theta_i))^2 + (-r_j-2W+2W\cos(\theta_i))^2} - \sqrt{3}r_j &< \frac{\Delta t}{15W}
+    \end{align*}
 
   \end{proof}
 
@@ -516,6 +505,19 @@
       \tfrac{\sqrt{2}}{2} - \sin(\theta_i) &> 0 \\
       \tfrac{\sqrt{2}}{2} &> \sin(\theta_i) \\
       \tfrac{\pi}{4} &> \theta_i \\
+    \end{align*}
+  \end{proof}
+
+  \pagebreak
+
+  \begin{theorem} \label{thm:aggregation_with_ring_of_kin}
+    An isolated kin robot will aggregate to a ring of kin.
+  \end{theorem}
+  \begin{proof}
+    \begin{align*}
+      \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
+      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
+      \sqrt{r^2 + 2rr_j} &> (W+r_j)\tan{\frac{\Delta t}{15W}}
     \end{align*}
   \end{proof}
 
