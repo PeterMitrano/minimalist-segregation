@@ -151,7 +151,7 @@
 
 \section{Controller Analysis}
 
-  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first prove that aggregation between two isolated kin robots is guaranteed under weak assumptions. Then we show that kin will aggregate with a static ring of kin. Furthermore, we explain why groups of three or more robots usually form rings. Finally, we show that non-kin will aggregate faster to kin than non-kin. All together, this explains much of the emergent behavior. More generally it demonstrates that we can prove useful things about complex emergent swarm behavior of these simple robots and controllers. In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, that each motion is execute for the same $\Delta t$ at the same point in time, and that the robot has a fixed positive inter wheel distance $W$ and radius $r$.
+  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first define the conditions under which aggregation between two isolated kin robots is guaranteed. Then we show that kin will aggregate with a static ring of kin. Finally, we show that non-kin will aggregate faster to kin than non-kin. All together, this explains much of the emergent behavior. More generally it demonstrates that we can prove useful things about complex emergent swarm behavior of these simple robots and controllers. In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, that each motion is execute for the same $\Delta t$ at the same point in time, and that the robot has a fixed positive inter wheel distance $W$ and radius $r$.
 
     \begin{figure}[t!]
       \centering
@@ -242,7 +242,7 @@
       \end{split}
     \end{equation}
 
-    We need to show that, in transitions $y$ and $z$, the kin robots always aggregate more than $s$. We first demonstrate that the magnitude of aggregation, which can be described as $d'-d$ in Figure \ref{fig:kin_aggregation}, always increases as $\delta$ increases. In other words, the closer the robots are, the less by which they aggregate. The conditions under which this is true are derived in Equation \ref{thm:d-d}. Given this fact, if we can then also prove that the robots aggregate by more than $s$ at the smallest $\delta$, then they must also aggregate for all $\delta$. This second condition is derived in Equations \ref{thm:one_see_cond} and \ref{thm:both_see_cond}, and the final conditions are shown below. We know the lower bound of $\delta$ is $\sqrt{2}r$ because this is the point at which the two robots are touching.
+    We need to show that, in transitions $y$ and $z$, the kin robots always aggregate more than $s$. We first demonstrate that the magnitude of aggregation, which can be described as $d'-d$ in Figure \ref{fig:kin_aggregation}, always increases as $\delta$ increases. In other words, the closer the robots are, the less by which they aggregate. The conditions under which this is true are derived in Theorem\ref{thm:decrease}. Given this fact, if we can then also prove that the robots aggregate by more than $s$ at the smallest $\delta$, then they must also aggregate for all $\delta$. This second condition is derived in Theorem \ref{thm:one_see_cond} and \ref{thm:both_see_cond}, and the final conditions are shown below. We know the lower bound of $\delta$ is $\sqrt{2}r$ because this is the point at which the two robots are touching.
 
     \begin{equation} \label{eq:two_kin_cond_1}
         \frac{1}{-W-r+W\cos(\theta_i)} \leq \sqrt{2}
@@ -275,13 +275,24 @@
         \lVert p'_i - p_j \rVert < \lVert p_i - p_j \rVert
       \end{equation}
 
-      We can expand Equation \eqref{eq:ring_agg} and derive a simple condition which describes for which values of $r$, $r_j$, $W$, $\Delta t$, this holds true for all $\delta$. The full derivation can be found in Appendix \ref{thm:aggregation_with_ring_of_kin}, and the result is shown in Equation \eqref{eq:ring_agg_result}.
+      We can expand Equation \eqref{eq:ring_agg} and derive a simple condition which describes for which values of $r$, $r_j$, $W$, $\Delta t$, this holds true for all $\delta$. The full derivation can be found in Theorem \ref{thm:aggregation_with_ring_of_kin}, and the result is shown in Equation \eqref{eq:ring_agg_result}.
 
       \begin{equation} \label{eq:ring_agg_result}
-        \sqrt{r^2 + 2rr_j} > (W+r_j)\tan{\frac{\Delta t}{15W}}
+        \begin{split}
+          &\sqrt{(\sqrt{2}r_j - 2W\sin(\theta_i))^2 + (-r_j-2W+2W\cos(\theta_i))^2} \\
+          &-\sqrt{3}r_j < 0
+        \end{split}
       \end{equation}
 
-      In other words, for aggregation to a static ring of kin robots to be guaranteed, the robot sizes and controller period must meet this condition. This condition may not hold true for all scenarios (such as those with large $\Delta t$), but we show it holds true for many popular robots in Table \ref{table:robots}. This table shows that largest ring size $r_j$ for which aggregation is guaranteed, assuming a controller period of \SI{0.1}{\second}. The maximum size of $r_j$ can be computed analytically as we show in Appendix \ref{apx:1}. From this table, we can see that the controller speeds are most effective on the foot-bot, which is expected because our grid search used the foot-bot.
+      Ultimately, we can use these geometric proof to make a useful assertions about the behavior of an individual in our swarm and of the swarm as a whole. While we have not shown that segregation is guaranteed in all cases, this may serve as a building block for more general claims.
+
+  \subsection{Segregation}
+
+    So far all of the behaviors we have discussed are actually just aggregation behaviors. Here we partially explain why segregation occurs by showing that between two robots $i$ and $j$, the kin robots aggregate faster than the non-kin robots.
+
+  \subsection{Application to Real Swarm Robots}
+
+    The above conditions for not hold true for all scenarios (such as those with large $\Delta t$), but we show that they do hold true for many popular robots in Table \ref{table:robots}.
 
     \begin{savenotes}
     \begin{table}
@@ -301,8 +312,6 @@
       \label{table:robots}
     \end{table}
     \end{savenotes}
-
-    Ultimately, we can use these geometric proof to make a useful assertions about the behavior of an individual in our swarm and of the swarm as a whole. While we have not shown that segregation is guaranteed in all cases, this may serve as a building block for more general claims.
 
 \section{Experimental Results}
 
@@ -411,7 +420,7 @@
       \end{split}
     \end{equation}
 
-  \begin{theorem} \label{thm:d-d}
+  \begin{theorem} \label{thm:decrease}
     Robots aggregate by less the closer they are
   \end{theorem}
   \begin{proof}
@@ -514,11 +523,18 @@
     An isolated kin robot will aggregate to a ring of kin.
   \end{theorem}
   \begin{proof}
+
+    If the conditions in Theorem \ref{thm:decrease} hold, then we can again say that the distance by which the robots aggregate decreases as $\delta$ decreases. Therefore, if we show that aggregation is guaranteed for the minimum $\delta=\sqrt{r^2+r_j^2}$, then it is also guaranteed for all greater $\delta$.
+
     \begin{align*}
       \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
       \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
-      \sqrt{r^2 + 2rr_j} &> (W+r_j)\tan{\frac{\Delta t}{15W}}
+      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} &< 0 \\
+      \sqrt{(\sqrt{2}r_j - 2W\sin(\theta_i))^2 + (-r_j-2W+2W\cos(\theta_i))^2} - \sqrt{3}r_j &< 0
     \end{align*}
+
+    Again, If we have already shown that Theorem \ref{thm:one_see_cond} or \ref{thm:both_see_cond} are true then the above condition must also hold true because $s>0$. Since the condition for kin-to-ring aggregation is less strict, it may be guaranteed even if two-kin aggregation is not guaranteed.
+
   \end{proof}
 
   \pagebreak

@@ -11,13 +11,15 @@
 \BOOKMARK [1][-]{section.4}{Controller Analysis}{}% 11
 \BOOKMARK [2][-]{subsection.4.1}{Aggregation of Two Kin}{section.4}% 12
 \BOOKMARK [2][-]{subsection.4.2}{Aggregation with Ring of Kin}{section.4}% 13
-\BOOKMARK [1][-]{section.5}{Experimental Results}{}% 14
-\BOOKMARK [2][-]{subsection.5.1}{Evaluating the centroid-of-centroids cost function}{section.5}% 15
-\BOOKMARK [2][-]{subsection.5.2}{Scalability Study}{section.5}% 16
-\BOOKMARK [2][-]{subsection.5.3}{The Effect of Implementation Details of the sensor}{section.5}% 17
-\BOOKMARK [2][-]{subsection.5.4}{The Effect of the Beam Angle}{section.5}% 18
-\BOOKMARK [2][-]{subsection.5.5}{The Effect of Beam Length}{section.5}% 19
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 20
-\BOOKMARK [1][-]{section*.1}{References}{}% 21
-\BOOKMARK [1][-]{section*.2}{Appendix}{}% 22
-\BOOKMARK [2][-]{subsection.Appendix.A.1}{Grid Search Images}{section*.2}% 23
+\BOOKMARK [2][-]{subsection.4.3}{Segregation}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.4}{Application to Real Swarm Robots}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Experimental Results}{}% 16
+\BOOKMARK [2][-]{subsection.5.1}{Evaluating the centroid-of-centroids cost function}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.2}{Scalability Study}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.3}{The Effect of Implementation Details of the sensor}{section.5}% 19
+\BOOKMARK [2][-]{subsection.5.4}{The Effect of the Beam Angle}{section.5}% 20
+\BOOKMARK [2][-]{subsection.5.5}{The Effect of Beam Length}{section.5}% 21
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 22
+\BOOKMARK [1][-]{section*.1}{References}{}% 23
+\BOOKMARK [1][-]{section*.2}{Appendix}{}% 24
+\BOOKMARK [2][-]{subsection.Appendix.A.1}{Grid Search Images}{section*.2}% 25
