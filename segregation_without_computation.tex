@@ -290,7 +290,25 @@
 
   \subsection{Segregation}
 
-    So far all of the behaviors we have discussed are actually just aggregation behaviors. Here we partially explain why segregation occurs by showing that between two robots $i$ and $j$, the kin robots aggregate faster than the non-kin robots.
+    So far all of the behaviors we have discussed are actually just aggregation behaviors. Here we partially explain why segregation occurs by showing that between two robots $i$ and $j$, the kin robots aggregate faster than the non-kin robots. First, we need to explain why non-kin robots do in fact aggregate at all. It is counter intuitive that the optimal contorller for segregation aggregates non-kin. The key is that they aggregate more slowly, so only in absense of kin do non-kin aggregate. In our supplementary videos we include an example of an environment with only non-kin to demonstrate this.
+
+    The conditions for non-kin aggregating follows the same steps as the proof for kin aggregating, except with different coordinates for $p_i$, $p_j$, and $p'_i$. The derivation is shown in Theorem \ref{thm:decrease2} If the resulting conditions at met, then non-kin are guaranteed to aggregate to kin.
+
+    Next, to show that non-kin aggregate more slowly than kin, we show that the displacement during their kin step (the arc left with speeds $0.01666, 0.2$) is greater than the displacement during their non-kin step (with speeds $0.2, 0.0$).
+
+    \begin{theorem} \label{thm:seg}
+      The distance moved in the kin step is always greater than the distance moved in the non-kin step.
+    \end{theorem}
+    \begin{proof}
+      We compare the arc lengths derived from the wheels speeds.
+      \begin{align*}
+        \theta_1 R_1 &> \theta_2 R_2 \\
+        \frac{2\cancel{\Delta t}}{15\cancel{W}} \cancel{W} &> \frac{\cancel{2}\cancel{\Delta t}}{10\cancel{W}} \frac{\cancel{W}}{\cancel{2}} \\
+        \frac{2}{15} &> \frac{1}{10} \\
+      \end{align*}
+    \end{proof}
+
+    Note that we don't show that the kin step actully gets closer to the other robot, so in theory the longer kin step could aggregate less than the shorter non-kin step, but this at least partially justifies why kin aggregate faster.
 
   \subsection{Application to Real Swarm Robots}
 
@@ -437,7 +455,7 @@
       \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{\delta^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
       \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + (-(R_1+r) - R_1)^2}\bigg) &\leq 0 \\
       \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + r^2}\bigg) &\leq 0 \\
-      \frac{1}{2}\Big[(\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
+      \frac{1}{2}\Big[((\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
       ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
       ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) \\
       (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} && \text{all terms are positive, see Theorem \ref{thm:d-b}} \\
@@ -521,17 +539,41 @@
   \end{theorem}
   \begin{proof}
 
-    If the conditions in Theorem \ref{thm:decrease} hold, then we can again say that the distance by which the robots aggregate decreases as $\delta$ decreases. Therefore, if we show that aggregation is guaranteed for the minimum $\delta=\sqrt{r^2+r_j^2}$, then it is also guaranteed for all greater $\delta$.
+  \pagebreak
+
+
+  \begin{theorem} \label{thm:decrease2}
+    Robots aggregate by less the closer they are, in the non-kin case.
+  \end{theorem}
+  \begin{proof}
+
+    We show that $d'-d$ always decreases as $\delta$ decreases (until its minimum of $\sqrt{2}r$). This is true if the derivative $\frac{\partial}{\partial\delta}(d'-d) \leq 0$, $\forall \delta>\sqrt{2}r$.
 
     \begin{align*}
-      \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
-      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} &< \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} \\
-      \sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2} &< 0 \\
-      \sqrt{(\sqrt{2}r_j - 2W\sin(\theta_i))^2 + (-r_j-2W+2W\cos(\theta_i))^2} - \sqrt{3}r_j &< 0
+      \frac{\partial}{\partial\delta}(d'-d) &< 0 \\
+      \frac{\partial}{\partial\delta}\big(\lVert p_j - p'_i \rVert - \lVert p_j - p_i \rVert\big) &\leq 0 \\
+      \frac{\partial}{\partial\delta}\bigg(\sqrt{(p_{j_x} - p'_{i_x})^2 + (p_{j_y} - p'_{i_y})^2} - \sqrt{(p_{j_x} - p_{i_x})^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
+      \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{(\delta - 0)^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
+      \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta - b)^2 + a} - \sqrt{\delta^2 + (p_{j_y} - p_{i_y})^2}\bigg) &\leq 0 \\
+      \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + (r-0)^2}\bigg) &\leq 0 \\
+      \frac{\partial}{\partial\delta}\bigg(\sqrt{(\delta-b)^2 + a} - \sqrt{\delta^2 + r^2}\bigg) &\leq 0 \\
+      \frac{1}{2}\Big[((\delta-b)^2 + a)^{-\frac{1}{2}}(2\delta-2b) - (\delta^2 + r^2)^{-\frac{1}{2}}(2\delta)\Big] &\leq 0 \\
+      ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) - (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) &\leq 0 \\
+      ((\delta-b)^2 + a)^{-\frac{1}{2}}(\delta-b) &\leq (\delta^2 + r^2)^{-\frac{1}{2}}(\delta) \\
+      (\delta^2 + r^2)^{\frac{1}{2}}(\delta-b) &\leq (\delta)((\delta-b)^2 + a)^{\frac{1}{2}} && \text{all terms are positive, see Theorem \ref{thm:d-b}} \\
+      (\delta^2 + r^2)(\delta-b)^2 &\leq (\delta)^2((\delta-b)^2 + a) && \text{squaring preserves inequality for positive terms} \\
+      \cancel{\delta^2(\delta-b)^2} + r^2(\delta-b)^2 &\leq \cancel{\delta^2(\delta-b)^2} + a\delta^2 \\
+      r^2(\delta-b)^2 &\leq a\delta^2 \\
+      r^2(\delta^2-2b\delta+b^2) &\leq a\delta^2 \\
+      r^2\delta^2 - r^22b\delta + r^2b^2 &\leq a\delta^2 \\
+      (r^2 - a)\delta^2 - r^22b\delta + r^2b^2 &\leq 0 && \text{If parabola opens down} \\
+      \frac{\partial}{\partial\delta}\big((r^2 - a)\delta^2 - r^22b\delta + r^2b^2\big) &\leq 0 \\
+      2(r^2 - a)\delta - r^22b &\leq 0 \\
+      2(r^2 - a) &\leq 0 \\
+      \text{where}\  a=(-R_1-r-R_1\cos(\theta_i)),&\  b=-R_1\cos(\theta_i)
     \end{align*}
 
-    Again, If we have already shown that Theorem \ref{thm:one_see_cond} or \ref{thm:both_see_cond} are true then the above condition must also hold true because $s>0$. Since the condition for kin-to-ring aggregation is less strict, it may be guaranteed even if two-kin aggregation is not guaranteed.
-
+    If $2(r^2 - a) \leq 0$ and $(r^2 - a)2r^2 - r^22b\sqrt{2}r + r^2b^2 \leq 0$, then the change in distance $d'-d$ strictly decreases as $\delta$ increases.
   \end{proof}
 
   \pagebreak
