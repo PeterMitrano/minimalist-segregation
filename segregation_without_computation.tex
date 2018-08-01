@@ -156,57 +156,48 @@
     \begin{figure}[t!]
       \centering
       \begin{tikzpicture}[scale=25.0]
-        \draw[->] (0,0) -- (0.23,0);
-        \node at (0.22,.02) {x};
-        \draw[->] (0,0) -- (0,0.07);
-        \node at (-.02,0.07) {y};
+        \draw[->] (0.15,0) -- (0.23,0);
+        \node at (0.22,.01) {x};
+        \draw[->] (0.15,0) -- (0.15,0.07);
+        \node at (.14,0.07) {y};
 
          % c_i
-        \filldraw (0,0) circle (.002);
-        \node at (.02,.02) {$c_i$};
-        \draw[blue, dashed] (0,0) circle (0.053);
+        \filldraw (0,0.053) circle (.002);
+        \draw[blue, dashed] (0,0.053) circle (0.053);
 
          % p_i
-        \filldraw (0,-0.053) circle (.002);
-        \node at (0,-0.065) {$p_i$};
-        \draw[blue] (0,-.053) circle (0.035);
-        \node at (-0.01,-.03) {$R$};
-        \draw[dashed] (0,0) -- (0,-0.053);
-        \draw[dashed] (0,-0.053) -- (-0.035,-0.053);
-        \node at (-0.015,-0.061) {$r$};
-
-         % p'_i
-        \filldraw (0.0131,-0.051) circle (.002);
-        \node at (0.019,-0.038) {$p'_i$};
-        \draw[blue] (0.0131,-0.051) circle (0.035);
-        \draw[dashed] (0,0) -- (0.0131,-0.051);
-
-         % p_j
-        \filldraw (0.15, -0.088) circle (.002);
-        \node at (0.159, -0.095) {$p_j$};
-        \draw[red] (0.15, -0.088) circle (0.035);
-
-         % p'_j
-        \filldraw (0.1369, -0.09) circle (.002);
-        \node at (0.13, -0.1) {$p'_j$};
-        \draw[red] (0.1369, -0.09) circle (0.035);
+        \filldraw (0,-0.0) circle (.002);
+        \draw[blue] (0,-.0) circle (0.035);
+        \node at (-0.01,.044) {$R_1$};
+        \draw[dashed] (0,0) -- (0,-0.035);
+        \draw[dashed] (0,0.054) -- (0,0.0);
+        \node at (0.005,-0.023) {$r$};
+        \draw (-0.014,0.011) -- (-.002,.002);
+        \node at (-0.020,0.014) {$p_i$};
 
         % delta
-        \draw[blue] (0,-.053) -- (.15,-.053);
-        \draw[red] (0,-.088) -- (.15,-.088);
-        \node at (0.08, -0.045) {$\delta$};
+        \draw[blue] (0,.0) -- (.15,.0);
+        \node at (0.08, 0.008) {$\delta$};
+
+         % p'_i
+        \filldraw (0.0231,0.005) circle (.002);
+        \draw (0.027, 0.003) -- (.04,-0.010);
+        \draw[blue] (0.0231,0.005) circle (0.035);
+        \draw[dashed] (0,0.053) -- (0.0231,0.005);
+        \node at (0.045,-.010) {$p'_i$};
+
+         % p_j
+        \draw[dashed, red] (0.15, -0.035) circle (0.035);
+        \filldraw (0.15, 0.0) circle (.002);
+        \node at (0.159, 0.010) {$p_j$};
 
         % theta
-        \draw (0,-.03) arc [radius=.03, start angle=-90, end angle=-76];
-        % TODO add theta annotation back
-        \node at (.03,-.01) {$\theta_i$};
-        \draw (.025,-.012) -- (.005, -.028);
+        \draw (0,.0265) arc [radius=.03, start angle=-90, end angle=-69];
+        \node at (.035,.045) {$\theta_1$};
+        \draw (.005, .020) -- (.027,.042);
 
-        % d
-        \draw (0,-0.053) -- (0.15, -0.088);
-        \node at (0.06,-0.08) {$d$};
       \end{tikzpicture}
-      \caption{The configuration of a robot aggregating to another kin where both robots see each other. $R$ is the radius of the robots path around the ICC.}
+      \caption{The configuration of a robot aggregating to another kin. $R_1$ is the radius of the robots path around the ICC.}
       \label{fig:kin_aggregation}
     \end{figure}
 
