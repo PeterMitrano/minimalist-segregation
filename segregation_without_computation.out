@@ -9,8 +9,8 @@
 \BOOKMARK [2][-]{subsection.2.5}{Grid Search}{section.2}% 9
 \BOOKMARK [1][-]{section.3}{The Emergent Behavior}{}% 10
 \BOOKMARK [1][-]{section.4}{Controller Analysis}{}% 11
-\BOOKMARK [2][-]{subsection.4.1}{Aggregation of Two Kin}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.2}{Aggregation with Ring of Kin}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Aggregation with Kin}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Aggregation with Non-Kin}{section.4}% 13
 \BOOKMARK [2][-]{subsection.4.3}{Segregation}{section.4}% 14
 \BOOKMARK [2][-]{subsection.4.4}{Application to Real Swarm Robots}{section.4}% 15
 \BOOKMARK [1][-]{section.5}{Experimental Results}{}% 16
