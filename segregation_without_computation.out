@@ -14,7 +14,7 @@
 \BOOKMARK [2][-]{subsection.4.3}{Segregation}{section.4}% 14
 \BOOKMARK [2][-]{subsection.4.4}{Application to Real Swarm Robots}{section.4}% 15
 \BOOKMARK [1][-]{section.5}{Experimental Results}{}% 16
-\BOOKMARK [2][-]{subsection.5.1}{Evaluating the centroid-of-centroids cost function}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.1}{Comparing Cost Functions}{section.5}% 17
 \BOOKMARK [2][-]{subsection.5.2}{Scalability Study}{section.5}% 18
 \BOOKMARK [2][-]{subsection.5.3}{The Effect of Implementation Details of the sensor}{section.5}% 19
 \BOOKMARK [2][-]{subsection.5.4}{The Effect of the Beam Angle}{section.5}% 20
