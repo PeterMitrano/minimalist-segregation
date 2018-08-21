@@ -117,7 +117,7 @@
 
     Let $n$ be the number of classes of robots, and $T$ be the total number of time steps in the trial being evaluated. We apply this cost function for each class of robots and sum the cluster-metric cost for each class to get the total cost. The negative sign is present because the cluster metric is 0 when no robots are connected and 1 when all robots in a class are connected, so the negative sign assigns more connections a lower cost. We used this cost function in grid search and all following experiments.
 
-    The cluster metric in \eqref{eq:cluster_cost} is problematic because it considers a straight line of robots to be one cluster. For some tasks such as task allocation, we might care about how tightly the swarm is packed in its clusters. Therefore, we also experiented with a second cost metric. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. First compute all the centroids $\bar{p}_i^{(t)}$ for each class $i$ at time $t$ by taking the mean position $p=[x,y]^{T}$ of robot $j$ in that class. Next, compute the centroid of all of these centroids $\bar{P}^{(t)}$. Let $c_{\text{intra}}$ be the total cost of dispersion within all the classes of robots, which should be low because robots within the same class should be close to one another. $c_{\text{intra}}$ is then the cost of the dispersion of the centroids, which should be high because we want the clusters kin robots to be far apart. Like in the cluster-metric cost function, here we take the sum of these two components, and then accumulate this cost over time. We also multiply by $t$ over time to make low cost more important as time goes on. We call this the centroid-of-centroids cost function $c_{\text{total}}$, and it is defined formally in Equation \eqref{eq:centroid_cost}.
+    The cluster metric in \eqref{eq:cluster_cost} is problematic because it considers a straight line of robots to be one cluster. For some tasks such as task allocation, we might care about how tightly the swarm is packed in its clusters. Therefore, we also experiented with a second cost metric. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. First compute all the centroids $\bar{p}_i^{(t)}$ for each class $i$ at time $t$ by taking the current mean position $p_{i,j}^{(t)}=[x,y]^{T}$ of all robots (indexed by $j$) in that class. Next, compute the centroid of all of these centroids $\bar{P}^{(t)}$. Let $c_{\text{intra}}$ be the total cost of dispersion within all the classes of robots, which should be low because robots within the same class should be close to one another. $c_{\text{intra}}$ is then the cost of the dispersion of the centroids, which should be high because we want the clusters kin robots to be far apart. Like in the cluster-metric cost function, here we take the sum of these two components, and then accumulate this cost over time. We also multiply by $t$ over time to make low cost more important as time goes on. We call this the centroid-of-centroids cost function $c_{\text{total}}$, and it is defined formally in Equation \eqref{eq:centroid_cost}.
 
     \begin{equation} \label{eq:centroid_cost}
       \begin{split}
@@ -207,7 +207,7 @@
       \label{fig:kin_aggregation}
     \end{figure}
 
-    In this scenario, imagine an isolated kin robot, $i$ which has sensed another kin or a static ring of kin (kin entity), $j$. We can define the conditions under which robot $i$ is guaranteed to be closer to the point where the imaginary sensor beam meets the kin entity. This point is chosen as the origin. When robot $i$ starts at $p_i$ with sensor reading $I=1$, it then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ counterclockwise and ends up at position $p'_i$. The condition we need to satisfy is shown in Equation \eqref{eq:generic_agg}.
+    Imagine an isolated kin robot, $i$ which has sensed another kin or a static ring of kin (kin entity), $j$. This scneario is depicted in Figure \ref{fig:kin_aggregation}. We can define the conditions under which robot $i$ is guaranteed to be closer to the point where the imaginary sensor beam meets the kin entity. This point is chosen as the origin. When robot $i$ starts at $p_i$ with sensor reading $I=1$, it then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ counterclockwise and ends up at position $p'_i$. The condition we need to satisfy is shown in Equation \eqref{eq:generic_agg}.
 
     \begin{equation} \label{eq:generic_agg}
       \lVert p'_i - p_j \rVert < \lVert p_i - p_j \rVert
@@ -305,6 +305,10 @@
     Ultimately, we can use these geometric proof to make useful assertions about the behavior of an individual in our swarm and of the swarm as a whole. While we have not shown that segregation is guaranteed in all cases, this may serve as a building block for more general claims.
 
 \section{Experimental Results}
+
+  \subsection{Comparing Cost Functions} \label{section:evaluating_cost_functions}
+
+    We ran grid search using both of our cost functions.
 
   \subsection{Scalability Study} \label{section:scalability}
 
@@ -423,6 +427,7 @@
     Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ (Equation \eqref{eq:generic_agg}) for all $\delta > \sqrt{r^2+2rr_j}$.
 
     \begin{align*}
+      \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
       \sqrt{(p'_{ix} - p_{jx})^2 + (p'_{iy} - p_{jy})^2} &< \sqrt{(p_{ix} - p_{jx})^2 + (p_{iy} - p_{jy})^2} \\
       \sqrt{(-\delta+R_1\sin(\theta_1)-0)^2 + (R_1-R_1\cos(\theta_1-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
       \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + R_1^2\sin(\theta_1)^2 + R_1^2-2R_1^2\cos(\theta_1)+R_1^2\cos(\theta_1)^2} &< \delta \\
@@ -456,6 +461,7 @@
     Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ for all $\delta > \sqrt{r^2+2rr_j}$. This follows the same steps as the Theorem \ref{thm:aggregation_with_kin}.
 
     \begin{align*}
+      \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
       \sqrt{(-\delta+R_2\sin(\theta_2)-0)^2 + (-R_2+R_2\cos(\theta_2-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
       \sqrt{\delta^2-2\delta R_2\sin(\theta_2) + R_2^2\sin(\theta_2)^2 + R_2^2-2R_2^2\cos(\theta_2)+R_2^2\cos(\theta_2)^2} &< \delta \\
       \sqrt{\delta^2-2\delta R_2\sin(\theta_2) + 2R_2^2-2R_2^2\cos(\theta_2)} &< \delta \\
