@@ -48,7 +48,7 @@
 
 \section{Introduction and Related Work}
 
-  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way\cite{shlyakhov_survey_2017}, and \cite{gauci_self-organized_2014}\cite{gauci_clustering_2014} have shown the ability to perform such tasks with limited computation and sensing capabilities. Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to spread out and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. In this work we achieve segregation into an arbitrary number of groups with no messaging between robots, no complex sensors, no leaders or beacons, and no environmental cues.
+  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way\cite{shlyakhov_survey_2017}, and \cite{gauci_self-organized_2014}\cite{gauci_clustering_2014} have shown the ability to perform such tasks with limited computation and sensing capabilities. Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to diffuse and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. In this work we achieve segregation into an arbitrary number of groups with no messaging between robots, no complex sensors, no leaders or beacons, and no environmental cues.
 
   In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis \cite{batlle_molecular_2012}, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like $n$-class segregation can be achieved with a simple robot and controller.
 
@@ -64,23 +64,23 @@
 
     Finally, Gauci et al. consider a binary sensor that maps directly to wheel velocities \cite{gauci_self-organized_2014}. The authors demonstrate robust aggregation despite these limitations, and they also prove formally that aggregation is guaranteed and find theoretical bounds on aggregation time in simple situations. Gauci et al. also perform object aggregation, as opposed to robot aggregation, with the same restrictions on sensing and control \cite{gauci_clustering_2014}.
 
-    Segregation of robots has received little attention in swarm robotics, however many researchers have focused on sorting of objects \cite{vardy_accelerated_2012} \cite{holland_collective_1998} \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. Santos et al. shares our objective, however they assume that each class has the same number of robots and that each robot knows the position of all other robots \cite{santos_segregation_2014}. In contrast, we adhere to the memoryless computeless controller architecture with a simple ternary sensor. \cite{gross_segregation_2009} also explores segregation robots based on local interactions inspired by gravity, however they require a centralized broadcast or a consensus algorithm to agree on the source or direction of gravity.
+    Segregation of robots has received little attention in swarm robotics, however many researchers have focused on sorting of objects \cite{vardy_accelerated_2012} \cite{holland_collective_1998} \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. Santos et al. shares our objective, however they assume that each class has the same number of robots and that each robot knows the position of all other robots \cite{santos_segregation_2014}. In contrast, we adhere to the \texttt{if/elseif/else} controller architecture with a simple ternary sensor. \cite{gross_segregation_2009} also explores segregation robots based on local interactions inspired by gravity, however they require a centralized broadcast or a consensus algorithm to agree on the source or direction of gravity.
 
     %By analysing all the various controllers that we found which perform segregation, we can say that they can all be described by simple rules based on the wheel speeds. These rules are therefore also useful because they tell us something fundemental about the segregation behavior.
 
-  \subsection{Robots That Do Not Compute}
+  \subsection{Oblivious Robots}
 
-    The memoryless and computeless controllers originally proposed by Gauci et al. has been extended to other tasks and been modified in many ways by other researchers.
+    Oblivious robots is a These robots were originally proposed by Gauci et al., and have been extended to other tasks and been modified in many ways by other researchers.
 
-    Kernbach et al. propose an aggregation controller roughly based on observations of bees clustering in an optimal temperature location \cite{kernbach_re-embodiment_2009}. In their method, robots are only able to distinguish between collisions between another robot or a wall, can only sense the intensity of a light source when they have collided, and do not communicate information. Although the robots have limited sensing and communication capabilities, the authors show that robots can aggregate to an optimal light intensity location, and that the time to converge to the optimal location improves with increasing number of robots in the environment.
+    Kernbach et al. propose an aggregation controller inspired by bees clustering in an optimal temperature location \cite{kernbach_re-embodiment_2009}. In their method, robots are only able to distinguish between collisions between another robot or a wall, can only sense the intensity of a light source when they have collided, and do not communicate information. Although the robots have limited sensing and communication capabilities, the authors show that robots can aggregate to an optimal light intensity location, and that the time to converge to the optimal location improves with increasing number of robots in the environment.
 
-    Robots that do not compute and are memoryless have also been shown to aggregate around a specific object, circle in a ring around an object, and forage for obstacles \cite{johnson_evolving_2016}. In this work, the authors show one can construct simple cost functions to guide the evolution of controllers to do new, yet interesting tasks. However, they also report that in attempting to evolve a controller to rendezvous the robots around an object, they accidentally and consistently evolved a controller where the robots circled around the target object. They achieved rendezvous by initializing the controller at generation zero to the controller found in \cite{gauci_self-organized_2014} for simple aggregation.
+    Oblivious robots have also been shown to aggregate around a specific object, circle in a ring around an object, and forage for obstacles \cite{johnson_evolving_2016}. In this work, the authors show one can construct simple cost functions to guide the evolution of controllers to perform new, yet interesting tasks. However, they also report that in attempting to evolve a controller to rendezvous the robots around an object, they accidentally and consistently evolved a controller where the robots circled around the target object. They achieved rendezvous by initializing the controller at generation zero to the controller found in \cite{gauci_self-organized_2014} for simple aggregation.
 
 \section{Methodology}
 
   \subsection{Problem Formulation}
 
-    We consider a collection of differential drive robots all executing the same controller in a homogeneous, two dimensional, obstacle free environment. The robots are equipped with a single forward facing line of sight sensor which can distinguish between the presence of a kin robot, a non-kin robot, and the absence of a robot. This sensor is assumed to have infinite length (we consider non-infinite length in Section \ref{section:beam_length}). We assign $I=0$ to the state when no robot is seen, $I=1$ to the detection of a kin robot, and $I=2$ to the detection of a non-kin robot. We allow for any number of classes, but the robots need not distinguish between different non-kin classes. They need only to detect if a robot is of the same class or not. The objective is to segregate robots into clusters, ideally such that all the robots of the same class are packed into one cluster with no non-kin robots.
+    We consider a collection of differential-drive robots all executing the same controller in a homogeneous, two-dimensional, obstacle-free environment. We also introduce the concept of kinness. Two robots are kin if they are of the same class (denoted by color in our experiments), otherwise they are non-kin. The robots are equipped with a single forward-facing line=of-sight sensor which can distinguish between the presence of a kin robot, a non-kin robot, and the absence of a robot. This sensor is assumed to have infinite range (we consider non-infinite range in Section \ref{section:beam_range}). We assign $I=0$ to the state when no robot is seen, $I=1$ to the detection of a kin robot, and $I=2$ to the detection of a non-kin robot. We allow for any number of classes, but the robots need not distinguish between different non-kin classes. They need only to detect if a robot is of the same class or not. The objective is to segregate robots into clusters, ideally such that all the robots of the same class are packed into one cluster with no non-kin robots.
 
     \begin{algorithm}[t!]
       \begin{algorithmic}
@@ -101,7 +101,7 @@
 
   \subsection{Simulation Environment}
 
-    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range-and-bearing sensor to implement the theoretical line of sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. In our simulations, we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. This detail is required for the cluster metrics. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
+    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range-and-bearing sensor to implement the theoretical line-of-sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. In our simulations, we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. This detail is required for the cluster metrics. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
 
   \subsection{Evolving Segregation}
 
@@ -117,13 +117,15 @@
 
     Let $n$ be the number of classes of robots, and $T$ be the total number of time steps in the trial being evaluated. We apply this cost function for each class of robots and sum the cluster-metric cost for each class to get the total cost. The negative sign is present because the cluster metric is 0 when no robots are connected and 1 when all robots in a class are connected, so the negative sign assigns more connections a lower cost. We used this cost function in grid search and all following experiments.
 
-    The cluster metric in \eqref{eq:cluster_cost} is problematic because it considers a straight line of robots to be one cluster. For some tasks like task allocation, we might care about how tightly the swarm is packed in its clusters. Therefore, we also experiented with a second cost metric. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. Given all the centroids $\bar{p}_i^{(t)}$ for each class $i$, we call the centroid of all of these centroids $\bar{P}^{(t)}$. First, let $c_{\text{intra}}$ be the total cost of dispersion within all the classes of robots, which should be low because robots within the same class should be close to one another. $c_{\text{intra}}$ is then the cost of the dispersion of the centroids, which should be high because we want the clusters kin robots to be far apart. We call this the centroid-of-centroids cost function $c_{\text{total}}$, and it is defined formally in Equation \eqref{eq:centroid_cost}.
+    The cluster metric in \eqref{eq:cluster_cost} is problematic because it considers a straight line of robots to be one cluster. For some tasks such as task allocation, we might care about how tightly the swarm is packed in its clusters. Therefore, we also experiented with a second cost metric. This new metric uses the centroids of the robots in each class. We borrow the dispersion metric $u^{(t)}$ from \cite{gauci_self-organized_2014}, which essentially computes the sum of distances from each robot to the centroid, but in our case we apply this to each class of robots. Consider $u_i^{(t)}$ to be the dispersion of a particular class $i$ at time $t$. First compute all the centroids $\bar{p}_i^{(t)}$ for each class $i$ at time $t$ by taking the mean position $p=[x,y]^{T}$ of robot $j$ in that class. Next, compute the centroid of all of these centroids $\bar{P}^{(t)}$. Let $c_{\text{intra}}$ be the total cost of dispersion within all the classes of robots, which should be low because robots within the same class should be close to one another. $c_{\text{intra}}$ is then the cost of the dispersion of the centroids, which should be high because we want the clusters kin robots to be far apart. Like in the cluster-metric cost function, here we take the sum of these two components, and then accumulate this cost over time. We also multiply by $t$ over time to make low cost more important as time goes on. We call this the centroid-of-centroids cost function $c_{\text{total}}$, and it is defined formally in Equation \eqref{eq:centroid_cost}.
 
     \begin{equation} \label{eq:centroid_cost}
       \begin{split}
+        \bar{p}_i^{(t)} &= \frac{1}{m_{i}}\sum_{j=0}^{m_{i}} p_{i,j}^{(t)}\\
+        \bar{P}^{(t)} &= \frac{1}{n}\sum_{i=0}^{n} \bar{p}_{i}^{(t)}\\
         u_i^{(t)} &= -\frac{1} {4r^2}\sum_{j=1}^{m_{i}}{\lVert p_{i,j}^{(t)} - \bar{p}_{i,j}^{(t)} \rVert}^2 \\
         c_{\text{intra}} &= \sum_{i=1}^n u_i^{(t)} \\
-        c_{\text{inter}} &= -\frac{1} {4r^2}\sum_{i=1}^n{\lVert \bar{p}_i^{(t)} - \bar{P}_i^{(t)} \rVert}^2 \\
+        c_{\text{inter}} &= -\frac{1} {4r^2}\sum_{i=1}^n{\lVert \bar{p}_i^{(t)} - \bar{P}^{(t)} \rVert}^2 \\
         c_{\text{total}} &=  \sum_{t=0}^{T-1} t (c_{\text{intra}} + c_{\text{inter}}) \\
       \end{split}
     \end{equation}
@@ -138,7 +140,7 @@
 
 \section{The Emergent Behavior}
 
-    After running 10 generations with 10 genomes per generation, the lowest cost controller found was [0.5, -0.5, -0.2, 0.6, 0.6, 0.2]. Similarly, after running the grid search, the best controller was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. For both of these controllers, the resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely, the robots form shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
+    After running 10 generations with 10 genomes per generation, the lowest cost controller found was [0.5, -0.5, -0.2, 0.6, 0.6, 0.2]. Similarly, after running the grid search, the best controller was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. The controller found via grid search outperforms the one found via a genetic algorithm, however they both exhibit the same emergent behavior. For both of these controllers, the resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely, the robots form shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
 
     \begin{figure}
       \centering
@@ -149,13 +151,13 @@
 
     It's important to note that although we originally hoped that segregated clusters would be tightly packed, in our comprehensive grid search we never found any controller that was capable of this. Another important emergent behavior is that the rings expand over time. When we placed many kin robots together in a large area, they would quickly form a ring and this ring would slowly expand in radius, seemingly infinitely. Explaining or proving this formally is left for future work.
 
-    The dynamics of the robots is far more complex than merely forming rings. A complete description of the observed behavior is beyond the scope of this paper, but we encourage the curious reader to view the supplementary videos at \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}. For example, we notice that the rings, once formed, expand over time. If a ring is disturbed by non-kin robots that trying to pass through, the ring is disrupted and eventually reforms.
+    The dynamics of the robots is far more complex than merely forming rings. A complete description of the observed behavior is beyond the scope of this paper, but we encourage the reader to view the supplementary videos at \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}. For example, we notice that the rings, once formed, expand over time. If a ring is disturbed by non-kin robots that trying to pass through, the ring is disrupted and eventually reforms.
 
 \section{Controller Analysis}
 
-  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first define the conditions under which a kin robot will aggregate with a static kin or ring of kin. We then show that a robot also aggregates to a non-kin. However, we show that aggregation to kin is always faster than aggregation to non-kin. These three proofs partially explain why segregation occurs. More generally it demonstrates that we can prove useful things about complex emergent swarm behavior of these simple robots and controllers.
+  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first define the conditions under which a kin robot will aggregate with a static kin or ring of kin. We then show that a robot also aggregates to a non-kin. However, we show that aggregation to kin is always faster than aggregation to non-kin. These three proofs partially explain why segregation occurs.
 
-  In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, which means that each motion is executed for the same $\Delta t$ starting at the same point in time, and that all robots have a fixed positive inter wheel distance $W$ and radius $r$.
+  In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, which means that each motion is executed for the same $\Delta t$ starting at the same point in time, and that all robots have a fixed positive interwheel distance $W$ and radius $r$.
 
   \subsection{Aggregation with Kin}
 
@@ -205,7 +207,9 @@
       \label{fig:kin_aggregation}
     \end{figure}
 
-    In this scenario, imagine an isolated kin robot, $i$ which has sensed another kin or a static ring of kin (kin entity), $j$. We can define the conditions under which robot $i$ is guaranteed to be closer to the point where the imaginary sensor beam meets the kin entity. When robot $i$ starts at $p_i$ with sensor reading $I=1$, it then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ to the left and ends up at position $p'_i$. The condition we need to satisfy is shown in Equation \eqref{eq:generic_agg}.     \begin{equation} \label{eq:generic_agg}
+    In this scenario, imagine an isolated kin robot, $i$ which has sensed another kin or a static ring of kin (kin entity), $j$. We can define the conditions under which robot $i$ is guaranteed to be closer to the point where the imaginary sensor beam meets the kin entity. This point is chosen as the origin. When robot $i$ starts at $p_i$ with sensor reading $I=1$, it then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ counterclockwise and ends up at position $p'_i$. The condition we need to satisfy is shown in Equation \eqref{eq:generic_agg}.
+
+    \begin{equation} \label{eq:generic_agg}
       \lVert p'_i - p_j \rVert < \lVert p_i - p_j \rVert
     \end{equation}
 
@@ -302,18 +306,6 @@
 
 \section{Experimental Results}
 
-  \subsection{Evaluating the centroid-of-centroids cost function} \label{section:evaluting_cost_functions}
-
-    When we implemented the centroid-of-centroids style cost function, we quickly found examples of configurations which were ranked undesirably. One example is shown below in Figure \ref{fig:cost_function_fuckup}. The behavior that looks like aggregation was given lower cost of $-8\cdot 10^{9}$, versus the behavior that looks like segregation was given a cost of $-5\cdot 10^{9}$.
-
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=0.49\linewidth]{./images/individual_0_gen_0.png}
-      \includegraphics[width=0.49\linewidth]{./images/individual_0_gen_1_better.png}
-      \caption{The left picture was given lower cost than the right, which is not desirable.}
-      \label{fig:cost_function_fuckup}
-    \end{figure}
-
   \subsection{Scalability Study} \label{section:scalability}
 
     In this experiment we investigate how segregation behavior scales with the number of classes and number of robots in the environment. We varied the number of classes from 1 to 25 and ran 100 trials of robots uniformly randomly distributed.
@@ -367,20 +359,20 @@
       \label{fig:beam_angle}
     \end{figure}
 
-  \subsection{The Effect of Beam Length} \label{section:beam_length}
+  \subsection{The Effect of Beam Length} \label{section:beam_range}
 
-    We also consider what happens if our theoretically infinite sensor now has finite range. We use \ang{15} half beam angle and the same experimental setup as with the beam angle experiments. Analogously to \cite{gauci_self-organized_2014}, we consider the maximum range of the sensor as the diagonal length of the square in which the robot are initially distributed. In all our experiments, this square was \SI{5}{\meter} on each side, so we consider a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs for beam lengths as a fraction of this maximum range. As shown in Figure \ref{fig:beam_length}, a beam length of 35\% of the theoretical maximum performs just as well as an infinite sensor. Below this, the performance degrades. However, even a beam length of 7\% of unlimited is more effective than zero length at segregation.
+    We also consider what happens if our theoretically infinite sensor now has finite range. We use \ang{15} half beam angle and the same experimental setup as with the beam angle experiments. Analogously to \cite{gauci_self-organized_2014}, we consider the maximum range of the sensor as the diagonal length of the square in which the robot are initially distributed. In all our experiments, this square was \SI{5}{\meter} on each side, so we consider a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs for beam ranges as a fraction of this maximum range. As shown in Figure \ref{fig:beam_range}, a beam range of 35\% of the theoretical maximum performs just as well as an infinite sensor. Below this, the performance degrades. However, even a beam range of 7\% of unlimited is more effective than zero range at segregation.
 
     \begin{figure}
       \centering
       \includegraphics[width=1\linewidth]{./images/beam_length.png}
-      \caption{Segregation is robust to very finite sensor beam lengths. The blue bar indicates the worst (highest) attainable cost in which all robots are isolated from any kin.}
-      \label{fig:beam_length}
+      \caption{Segregation is robust to very finite sensor beam ranges. The blue bar indicates the worst (highest) attainable cost in which all robots are isolated from any kin.}
+      \label{fig:beam_range}
     \end{figure}
 
 \section{Conclusion}
 
-  In this paper, we demonstrate that memoryless, computeless robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple. This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm, but we also performed a grid search to make claims about the full parameter space. We investigated the effect of sensor implementation details and the number of robots and classes on performance. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when reasonable conditions on controller frequency and inner wheel distance are met.
+  In this paper, we demonstrate that oblivious robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple. This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm, but we also performed a grid search to make claims about the full parameter space. We investigated the effect of sensor implementation details and the number of robots and classes on performance. We find that robust segregation is possible, although not guaranteed. Instead, we prove that aggregation of kin robots is guaranteed when reasonable conditions on controller frequency and inner wheel distance are met.
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
@@ -394,6 +386,7 @@
     An isolated robot will aggregate to a kin entity.
   \end{theorem}
   \begin{proof}
+    Use the differential drive forward kinematics model to determine the coordinates of $p'_i$.
     \begin{align} \label{eq:kin_theta_and_r}
       \theta_1 &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - 0.06667}{W} = \frac{2\Delta t}{15W} \\
       R_1 &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + 0.06667}{0.2 - 0.06667}\bigg) = W
@@ -423,17 +416,20 @@
       \node at (1.7,.5) {$\delta_{\text{min}}$};
     \end{tikzpicture}
     \begin{align} \label{eq:min_delta}
-      \delta_{\text{min}} = \sqrt{r^2+2rr_j}
+      \delta_{\text{min}} = \sqrt{(r + r_j)^2 - (r_j)^2} = \sqrt{r^2 + 2rr_j + r_j^2 - r_j^2} = \sqrt{r^2+2rr_j}
     \end{align}
 
 
-    Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ for all $\delta > \sqrt{r^2+2rr_j}$.
+    Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ (Equation \eqref{eq:generic_agg}) for all $\delta > \sqrt{r^2+2rr_j}$.
 
     \begin{align*}
+      \sqrt{(p'_{ix} - p_{jx})^2 + (p'_{iy} - p_{jy})^2} &< \sqrt{(p_{ix} - p_{jx})^2 + (p_{iy} - p_{jy})^2} \\
       \sqrt{(-\delta+R_1\sin(\theta_1)-0)^2 + (R_1-R_1\cos(\theta_1-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
       \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + R_1^2\sin(\theta_1)^2 + R_1^2-2R_1^2\cos(\theta_1)+R_1^2\cos(\theta_1)^2} &< \delta \\
+      \intertext{Apply $\sin^2+\cos^2=1$}
       \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1)} &< \delta \\
-      -2\delta R_1\sin(\theta_1) - 2R_1^2\cos(\theta_1) + 2R_1^2 &< 0 \\
+      \delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1) &< \delta^2 \\
+      -\cancel{2}\delta \cancel{R_1}\sin(\theta_1) - \cancel{2}R_1^{\cancel{2}}\cos(\theta_1) + \cancel{2}R_1^{\cancel{2}} &< 0 \\
       -\delta \sin(\theta_1) - R_1\cos(\theta_1) + R_1 &< 0 \\
       \intertext{We assume $\theta_1\in(0,\sfrac{\pi}{2})$, so if the above condition holds for the smallest $\delta=\delta_{\text{min}}$, it holds for greater $\delta$.}
       -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W &< 0
@@ -457,7 +453,7 @@
       p'_i = \begin{bmatrix}-\delta+R_2\sin(\theta_2) \\ -R_2+R_2\cos(\theta_2)\end{bmatrix}
     \end{align}
 
-    Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ for all $\delta > \sqrt{r^2+2rr_j}$.
+    Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ for all $\delta > \sqrt{r^2+2rr_j}$. This follows the same steps as the Theorem \ref{thm:aggregation_with_kin}.
 
     \begin{align*}
       \sqrt{(-\delta+R_2\sin(\theta_2)-0)^2 + (-R_2+R_2\cos(\theta_2-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
