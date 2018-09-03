@@ -39,7 +39,7 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we demonstrate that robots which directly map a single ternary sensor readings to wheel speeds, perform no explicit communication are capable of $n$-class segregation. We evolve controllers with a genetic algorithm and perform a grid search over all parameters to understand the full parameter space. We then analyze the best controller, and prove that certain sub-behaviors of segregation are guaranteed. More broadly, this work demonstrates how to search for and study emergent behaviors in swarms of simple robots.
+  In this paper, we demonstrate that robots which directly map a single ternary sensor readings to wheel speeds, perform no explicit communication are capable of $n$-class segregation. We perform a grid search over all parameters to understand the full parameter space and then analyze the best controller. We prove that certain sub-behaviors of segregation are guaranteed.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -101,11 +101,7 @@
 
   \subsection{Simulation Environment}
 
-    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range-and-bearing sensor to implement the theoretical line-of-sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. In our simulations, we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. This detail is required for the cluster metrics. We now describe two approaches for finding these parameters, genetic algorithms and grid search.
-
-  \subsection{Evolving Segregation}
-
-    \cite{bahgeci_evolving_2005}\cite{johnson_evolving_2016}\cite{dorigo_evolving_2004} show that evolutionary strategies are effective for finding emergent behavior. In order to quickly search for parameters to achieve segregation, we use a simple genetic algorithm to evolve controller parameters. The genetic algorithm we used is unmodified from the example MPGA code\footnote{http://www.argos-sim.info/examples.php} provided with the ARGoS simulator. The mutation strategy is to mutate each of these 6 parameters with some probability $p$ ($0.05$ in our experiments). If a parameter is selected to be mutated, a uniformly random number from -1 to 1 is picked for the new value. Selection is performed by picking the two lowest cost individuals, and the next population is formed by crossing the parameters of these two individuals. The original two parents are always kept in the population so that the current lowest cost individual is never removed until a lower cost genome is discovered.
+    We use the ARGoS simulation environment to search for controller parameters and evaluate them, which has the advantage of allowing us to run trials much faster than on real robots \cite{pinciroli_argos:_2012}. In our simulations, we use a range-and-bearing sensor to implement the theoretical line-of-sight sensor. In our analysis, we describe the sensor as infinitely thin, but in practice it must have some small finite angle. We explore the performance effect of various beam angles in Section \ref{section:beam_angle}. In our simulations, we consider robots to be connected in a cluster if the gap between them is \SI{5}{\centi\meter} or less. This detail is required for the cluster metrics. We now describe how we found these parameters with a grid search.
 
   \subsection{Cost Functions}
 
@@ -121,17 +117,17 @@
 
   \subsection{Grid Search}
 
-    In order to exhaustively search the space of possible controllers, we conducted a grid search of the 6-dimensional parameter space. Due to limited computational resources, we were only able to search with a resolution of 7 values per parameter, which means in total we evaluated $7^6=117649$ parameter sets. For each parameter set, we ran 1 trial in 36 different initial configurations, with 180 seconds for each simulation. These initial configurations consisted of uniformly random placement, clusters, and lines of robots distributed throughout the environment. We chose to include some structure configurations (clusters and lines) because we discovered that they varied significantly in performance from uniform random configurations, and by explicitly evaluating on structure configurations we can speak more confidently about the ability of the controller to succeed in any configuration. Otherwise, we would need to have far more trials with uniformly random robot placement to make the same claims. We were able to parallelize across the 36 configurations and run at 75x real time, so it took approximately 4 days to evaluate all the controllers.
+    In order to exhaustively search the space of possible controllers, we conducted a grid search of the 6-dimensional parameter space. Due to limited computational resources, we were only able to search with a resolution of 7 values per parameter, which means in total we evaluated $7^6=117649$ parameter sets. For each parameter set, we ran 1 trial in 38 different initial configurations, with 100 seconds for each simulation. These initial configurations consisted of uniformly random placement, clusters, and lines of robots distributed throughout the environment. We chose to include some structure configurations (clusters and lines) because we discovered that they varied significantly in performance from uniform random configurations, and by explicitly evaluating on structure configurations we can speak more confidently about the ability of the controller to succeed in any configuration. Otherwise, we would need to have far more trials with uniformly random robot placement to make the same claims. We were able to parallelize across the 38 configurations and run at 75x real time, so it took approximately 5 days to evaluate all the controllers.
 
     Because the search space is six-dimensional, we chose to visualize it by plotting every pair of parameters against each other. For example, we consider how the cost changes as $v_{l_0}$ and $v_{r_0}$ change. We note that these graphs, shown in Appendix \ref{section:grid_search_images}, show very similar patterns to the same plots presented by \cite{gauci_self-organized_2014}. As an example of reading these plots, we can tell from the plot of parameters 2 and 3 ($I=1$) that there were no good controllers where the left and right wheel speeds were equal and negative (dark squares in the upper left), and that the best controllers had slightly unequal values close to 1 (lightest squares in the bottom left). These plots also visualize how there are some sharp discontinuities where performance changes dramatically.
 
 \section{The Emergent Behavior}
 
-    After running 10 generations with 10 genomes per generation, the lowest cost controller found was [0.5, -0.5, -0.2, 0.6, 0.6, 0.2]. Similarly, after running the grid search, the best controller was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. The controller found via grid search outperforms the one found via a genetic algorithm, however they both exhibit the same emergent behavior. For both of these controllers, the resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely, the robots form shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
+    After running the grid search, the controller with the lowest average cost over all 38 configurations was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. The resulting behavior is to turn away from kin but turn the opposite way when they see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line towards their kin, and when multiple robots execute this behavior the kin robots form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely, the robots form shrimp-like shapes which can also be seen in Figure \ref{fig:rings}.
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.7\linewidth]{./images/rings_example.png}
+      \includegraphics[width=0.5\linewidth]{./images/rings_example.png}
       \caption{the emergent behavior is rings of kin. These rings expand and drift over time.}
       \label{fig:rings}
     \end{figure}
@@ -363,7 +359,7 @@
 
 \section{Conclusion}
 
-  In this paper, we demonstrate that oblivious robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple. This controller is invariant to the number of classes, so any given controller can work for any number of classes. To quickly find a quality controller, we evolved one using a basic genetic algorithm, but we also performed a grid search to make claims about the full parameter space. We investigated the effect of sensor implementation details and the number of robots and classes on performance. We find that robust segregation is possible, although not guaranteed. Instead, we prove that kin robots will aggregate, non-kin robots will also aggregate, and kin robots aggregate faster than non-kin robots.
+  In this paper, we demonstrate that oblivious robots are capable of $n$-class segregation. We use a simple controller design consisting of a 6-tuple. This controller is invariant to the number of classes, so any given controller can work for any number of classes. We performed a grid search to learn about the full parameter space, and we investigated the effect of sensor implementation details and the number of robots and classes on performance. We find that robust segregation is possible, although not guaranteed. Instead, we prove that kin robots will aggregate, non-kin robots will also aggregate, and kin robots aggregate faster than non-kin robots.
 
 \bibliography{RBE595.bib}
 \bibliographystyle{unsrt}
