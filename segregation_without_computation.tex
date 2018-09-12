@@ -60,9 +60,68 @@
   TBD
 \end{IEEEkeywords}
 
-\section{Introduction and Related Work}
+\section{Introduction}
 
-  Many prior methods have demonstrated the ability to aggregate robots and objects in a distributed way \cite{shlyakhov_survey_2017}, and \cite{gauci_self-organized_2014}\cite{gauci_clustering_2014} have shown the ability to perform such tasks with limited computation and sensing capabilities. Segregation is the sorting of robots of different classes into clusters or groups, and is a natural extension of aggregation. Segregation can be seen as a precursor to object sorting, task allocation, or self-assembly. For example, swarms may need to split into arbitrary groups to diffuse and search different areas, or segregate by skill or capability in order to form useful heterogeneous teams. In this work we achieve segregation into an arbitrary number of groups with no messaging between robots, no complex sensors, no leaders or beacons, and no environmental cues.
+% Group formation
+% segregation as group formation
+% Spatially organizing behaviors
+%   of objects
+%   of robots
+%     aggregation
+%     circles
+% On the importance of minimalism
+% Minimalistic segregation
+Group formation is one of the most fundamental mechanisms a robot
+swarm must exhibit~\cite{}. Group formation can occur in several forms
+to satisfy different requirements. Segregation is a particular type of
+group formation in which the focus is on creating local aggregates of
+robots that share a common property. Segregation can be seen as a
+precursor to object sorting, task allocation, or self-assembly. For
+example, swarms may need to split into arbitrary groups to diffuse and
+search different areas, or segregate by skill or capability in order
+to form useful heterogeneous teams.
+
+Segregation is an example of the broader class of spatially organizing
+behaviors, whose purpose is to impose a structure in the environment
+(e.g., object clustering~\cite{}, object sorting~\cite{}, collective
+construction~\cite{}) or in the distribution of the robot (e.g.,
+aggregation~\cite{shlyakhov_survey_2017}, pattern formation~\cite{},
+self-assembly~\cite{}).
+
+A recent line of research in spatially organizing behaviors focuses
+the \emph{minimal} assumptions a swarm of robot must fulfill in order
+to perform the task. Johnson and Brown~\cite{johnson_evolving_2016}
+and Brown \emph{et al.}~\cite{brown_discovery_2018} characterized the
+set of possible behaviors that can be obtained using primordial
+control strategies based on a simple `if/then/else' structure, binary
+sensors, and differential-drive robots. Gauci \emph{et al.} provided
+the specific conditions for the emergence of
+aggregation~\cite{gauci_evolving_2014} and object
+clustering~\cite{gauci_clustering_2014}, while St.-Onge \emph{et
+  al.}~\cite{StOnge:IROS2018} studied the emergence of circular
+formations.
+
+This paper furthers this line of inquiry by studying the minimal
+assumptions for $n$-class segregation to emerge from local,
+decentralized interactions among robots. The term `$n$-class' refers
+to the creation of $n$ spatially distinct groups. We show that, for
+segregation to emerge, it is sufficient to equip an `if/then/else',
+differential drive robot with a \emph{ternary} sensor. This sensor
+detects the presence of a robot in range; when a robot is detected,
+the sensor can distinguish whether it is a \emph{kin}, i.e., it
+belongs to the same group as the sensing robot, or a \emph{non-kin},
+i.e., it belongs to a different group. When multiple robots are in
+range, the sensor returns information on only one of them. We analyze
+the performance of this approach under several criteria for the
+selection of such robot.
+
+The main contribution of this paper are \emph{(i)} A study of the
+parameter space that enables the emergence of $n$-class
+segregation. \emph{(ii)} A proof of convergence for the best parameter
+choice found; and \emph{(iii)} A validation of our approach with a
+swarm of 30 Kilobots.
+
+\section{Related Work}
 
   In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis \cite{batlle_molecular_2012}, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like $n$-class segregation can be achieved with a simple robot and controller.
 
