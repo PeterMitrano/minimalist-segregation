@@ -3,3 +3,5 @@
 *.bbl
 *.blg
 *.log
+*.out
+segregation_without_computation.pdf
