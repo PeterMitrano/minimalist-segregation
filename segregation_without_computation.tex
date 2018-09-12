@@ -19,7 +19,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
-\usetikzlibrary{automata, positioning, arrows}
+\usetikzlibrary{arrows.meta,automata,calc,positioning}
 \newtheorem{theorem}{Theorem}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -156,26 +156,86 @@ swarm of 30 Kilobots.
 
 \section{Methodology}
 
-  \subsection{Problem Formulation}
+\subsection{Problem Formulation}
 
-    We consider a collection of differential-drive robots all executing the same controller in a homogeneous, two-dimensional, obstacle-free environment. We also introduce the concept of kinness. Two robots are kin if they are of the same class (denoted by color in our experiments), otherwise they are non-kin. The robots are equipped with a single forward-facing line=of-sight sensor which can distinguish between the presence of a kin robot, a non-kin robot, and the absence of a robot. This sensor is assumed to have infinite range (we consider non-infinite range in Section \ref{section:beam_range}). We assign $I=0$ to the state when no robot is seen, $I=1$ to the detection of a kin robot, and $I=2$ to the detection of a non-kin robot. We allow for any number of classes, but the robots need not distinguish between different non-kin classes. They need only to detect if a robot is of the same class or not. The objective is to segregate robots into clusters, ideally such that all the robots of the same class are packed into one cluster with no non-kin robots.
+We consider a set of robots executing the same controller in a
+two-dimensional, obstacle-free environment. The robots are equipped
+with two wheels and their motion is modeled by the well-known
+differential-drive equations~\cite{Dudek2010}
+\begin{equation}
+  \label{eq:diffdrive}
+  \begin{aligned}
+    x(t)      &=  \frac{1}{2}\frac{v_r+v_l}{v_r-v_l}\sin\left(\frac{t}{l}(v_r-v_l)\right)\\
+    y(t)      &= -\frac{1}{2}\frac{v_r+v_l}{v_r-v_l}\cos\left(\frac{t}{l}(v_r-v_l)\right)\\
+    \theta(t) &=  \frac{t}{l}(v_r-v_l)
+  \end{aligned}
+\end{equation}
+where $t$ is time, $[x(t),y(t),\theta(t)]$ are the position and
+orientation of the robot, $l$ is the distance between the wheels, and
+$[v_l,v_r]$ are their linear speeds.
 
-    \begin{algorithm}[t!]
-      \begin{algorithmic}
-      \If {$I=0$} \State set wheel speeds to $v_{l_0}$, $v_{r_0}$
-      \ElsIf {$I=1$} \State set wheel speeds to $v_{l_1}$, $v_{r_1}$
-      \Else \State set wheel speeds to $v_{l_2}$, $v_{r_2}$
-      \EndIf
-      \end{algorithmic}
-      \caption{Controller Design}
-      \label{alg:controller}
-    \end{algorithm}
+\newcommand{\robot}[2]{%
+  \filldraw[draw=#2,fill=#2!20] (#1) circle(5mm);
+  \draw[draw=#2,->,-Stealth,rotate around={0:(#1)}] (#1) -- +(5mm,0);
+  \fill[fill=gray!20] ($(#1)+(5mm,0)$) -- +( 45:1cm) -- +(-45:1cm) -- cycle;%
+  \fill[fill=#2] ($(#1)+(5mm,0)$) circle (1mm);%
+}
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \coordinate (s0) at (0  cm,0cm);
+    \coordinate (s1) at (1.5cm,0cm);
+    \coordinate (s2) at (3  cm,0cm);
+    \robot{s0}{red};
+    \robot{s1}{red};
+    \robot{s2}{blue};
+    \node[below=of s0]{\texttt{S=1}};
+    \node[below=of s1]{\texttt{S=2}};
+    \node[below=of s2]{\texttt{S=0}};
+  \end{tikzpicture}
+  \caption{A diagram of the ternary sensor in which classes are depicted
+    as colors. The left red robot detects a kin robot, so its sensor
+    returns 1. The middle red robot detects a blue robot, so its sensor
+    returns 2. The right robot detects no robot, so its sensor returns
+    0.}
+  \label{fig:sensor}
+\end{figure}
+The robots are also equipped with a ternary sensor that is able to
+detect the presence of nearby robots and their ``kinness''. Two robots
+are \emph{kin} if they belong to the same class (denoted by color in
+our experiments); they are \emph{non-kin} otherwise. The sensor is
+assumed to have infinite range (we consider non-infinite range in
+Sec.~\ref{section:beam_range}). As depicted in Fig.~\ref{fig:sensor},
+the sensor returns a reading $S=0$ when no robot is detected, $S=1$
+when a kin robot is detected, and $S=2$ when a non-kin robot is
+detected. We allow for any number of classes, but the sensor need not
+distinguish between different non-kin classes---it only detects
+whether a nearby robot belongs to the same class or not.
 
-    The controllers we use in our experiments are of the same form as in \cite{gauci_self-organized_2014}. The controller maps each of the three sensor values to a set of wheel speeds. Pseudo-code for the controller is shown in Algorithm \ref{alg:controller}. This controller has six parameters:
+The objective of our algorithm is to group robots into clusters, such
+that all the robots of the same class are packed into one cluster with
+no non-kin robots.
 
-    $$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
+\begin{algorithm}[t!]
+  \begin{algorithmic}
+    \If {$I=0$} \State set wheel speeds to $v_{l_0}$, $v_{r_0}$
+    \ElsIf {$I=1$} \State set wheel speeds to $v_{l_1}$, $v_{r_1}$
+    \Else \State set wheel speeds to $v_{l_2}$, $v_{r_2}$
+    \EndIf
+  \end{algorithmic}
+  \caption{Controller Design}
+  \label{alg:controller}
+\end{algorithm}
 
-    Keeping with the form used in \cite{gauci_self-organized_2014}, we let these parameters range from -1 to 1. In simulation, we then scale this parameter to range from \SI{-20}{\centi\meter\per\second} to \SI{20}{\centi\meter\per\second}.
+The controllers we use in our experiments are of the same form as in
+\cite{gauci_self-organized_2014}. The controller maps each of the
+three sensor values to a set of wheel speeds. Pseudo-code for the
+controller is shown in Algorithm \ref{alg:controller}. This controller
+has six parameters:
+
+$$[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,]$$
+
+Keeping with the form used in \cite{gauci_self-organized_2014}, we let these parameters range from -1 to 1. In simulation, we then scale this parameter to range from \SI{-20}{\centi\meter\per\second} to \SI{20}{\centi\meter\per\second}.
 
   \subsection{Simulation Environment}
 
