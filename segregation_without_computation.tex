@@ -29,7 +29,8 @@
 
 \begin{document}
 
-\title{Segregation without Computation}
+\title{A Minimalistic Approach to Segregation\\
+  in Robot Swarms}
 
 \author{
   \IEEEauthorblockN{Peter Mitrano\IEEEauthorrefmark{1} , Jordan Burkland\IEEEauthorrefmark{1}, Michael Giancola\IEEEauthorrefmark{1}, Carlo Pinciroli\IEEEauthorrefmark{1}}
@@ -39,11 +40,24 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we demonstrate that robots which directly map a single ternary sensor readings to wheel speeds, perform no explicit communication are capable of $n$-class segregation. We perform a grid search over all parameters to understand the full parameter space and then analyze the best controller. We prove that certain sub-behaviors of segregation are guaranteed.
+  We present a decentralized algorithm to achieve segregation into an
+  arbitrary number of groups with swarms of autonomous robots. The
+  distinguishing feature of our approach is in the minimalistic
+  assumptions on which it is based. Specifically, we assume that (i)
+  Each robot is equipped with a ternary sensor capable of detecting
+  the presence of a single nearby robot, and, if that robot is
+  present, whether or not it belongs to same group as the sensing
+  robot; (ii) The robots move according to a differential drive model;
+  and (iii) The structure of the control system is purely reactive,
+  and it maps directly the sensor readings to the wheel speeds with no
+  computation beyond a simple `if' statement. We present a thorough
+  analysis of the parameter space that enables this behavior to
+  emerge, along with proofs of convergence and a validation performed
+  with real robots.
 \end{abstract}
 
 \begin{IEEEkeywords}
-  swarm robotics, robot aggregation, robot segregation
+  TBD
 \end{IEEEkeywords}
 
 \section{Introduction and Related Work}
