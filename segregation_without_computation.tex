@@ -293,14 +293,17 @@ parameter values in the general case.
 To define our cost function, we first establish the notion of
 `cluster'. Denoting with $r$ the radius of the body of a robot, and defining
 $\vec{p}_i(t) = [x_i(t)\;y_i(t)]$, we consider any two robots to be
-\emph{connected} if $\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon$,
-$i \ne j, \epsilon \in \mathbb{R}^+$. In our experiments, we set
-$\epsilon = \SI{5}{\centi\meter}$.  A \emph{cluster} can be intuitively defined
-as an `island' of connected robots, and it can be found with a depth-first
-search across the robots. Since we are interested in segregating the robots in
-$N$ classes, the final result of a trial is expected to be a set of $N$ distinct
-clusters \emph{composed of kin robots}. Hence, we define a cluster as an island
-of connected kin robots.
+\emph{connected} if
+$$
+\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \quad (i \ne j, \epsilon \in \mathbb{R}^+).
+$$
+In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.  A
+\emph{cluster} can be intuitively defined as an `island' of connected
+robots, and it can be found with a depth-first search across the
+robots. Since we are interested in segregating the robots in $N$
+classes, the final result of a trial is expected to be a set of $N$
+distinct clusters \emph{composed of kin robots}. Hence, we define a
+cluster as an island of connected kin robots.
 
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
