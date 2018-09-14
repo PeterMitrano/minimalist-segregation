@@ -231,7 +231,7 @@ The control logic followed by the robots is formalized in
 Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
 the sensor readings $S$ directly into wheel speeds $v_l$ and $v_r$. The latter
 are the parameters whose value we intend to study, and they can be encoded as a
-6-dimensional vector
+six-dimensional vector
 $$
 [\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,].
 $$
@@ -267,9 +267,10 @@ robot. The message payload was an integer that encoded the id of the group to
 which the sender belonged. The range-and-bearing sensor is simulated through ray
 casting. This allowed us to assume that the sensor reading is infinitely thin, a
 choice that simplifies the mathematical analysis presented in
-Sec.~\ref{}. However, in practical applications, the sensor can be expected to
-cast a cone-shaped range with non-zero aperture angle. We explore the
-performance effect of various angles in Sec.~\ref{sec:aperture_angle}.
+Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
+expected to cast a cone-shaped sensory range with non-zero aperture angle. We
+explore the performance effect of various angles in
+Sec.~\ref{sec:aperture_angle}.
 
 \subsection{Grid Search}
 \label{sec:gridsearch}
@@ -277,7 +278,7 @@ performance effect of various angles in Sec.~\ref{sec:aperture_angle}.
 \myparagraph{Trial setup}
 In order to exhaustively search the space of possible controllers, we conducted
 a grid search of the 6-dimensional parameter space. Due to limited computational
-resources, we were only able to search with a resolution of 7 values per
+resources, we were only able to search with a resolution of $7$ values per
 parameter, which means in total we evaluated $7^6=117,649$ parameter sets. For
 each parameter set, we tested 38 different initial configurations, with 100
 simulated seconds for each trial. These initial configurations consisted of
@@ -293,12 +294,13 @@ To define our cost function, we first establish the notion of
 `cluster'. Denoting with $r$ the radius of the body of a robot, and defining
 $\vec{p}_i(t) = [x_i(t)\;y_i(t)]$, we consider any two robots to be
 \emph{connected} if $\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon$,
-$i \ne j$. In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.  A
-\emph{cluster} can be intuitively defined as an `island' of connected robots,
-and it can be found with a depth-first search across the robots. Since we are
-interested in segregating the robots in $N$ classes, the final result of a trial
-is expected to be a set of $N$ distinct clusters \emph{composed of kin
-  robots}. Hence, we define a cluster as an island of connected kin robots.
+$i \ne j, \epsilon \in \mathbb{R}^+$. In our experiments, we set
+$\epsilon = \SI{5}{\centi\meter}$.  A \emph{cluster} can be intuitively defined
+as an `island' of connected robots, and it can be found with a depth-first
+search across the robots. Since we are interested in segregating the robots in
+$N$ classes, the final result of a trial is expected to be a set of $N$ distinct
+clusters \emph{composed of kin robots}. Hence, we define a cluster as an island
+of connected kin robots.
 
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
@@ -310,37 +312,41 @@ $$
 \gamma_i(t) = \frac{c_i(t)}{C_i}
 $$
 where $C_i$ is the number of robots that belongs to class $i$. Our cost function
-then
+is then
 \begin{equation}
   \label{eq:cost_function}
-  c_{\text{total}} =  \frac{1}{n}\sum_i^N\sum_{t=0}^{T-1} -t \gamma_i(t)
+  c_{\text{total}} =  \frac{1}{n}\sum_{i=1}^N\sum_{t=0}^{T-1} -t \gamma_i(t)
 \end{equation}
 in which we denote the total trial time (100 seconds) with $T$. Since
 $\gamma_i(t)$ is lowest when no robots in a specific class are connected and $1$
 when they are all connected, the negative sign assigns larger clusters a lower
-cost. In our experiments, we found that this cost function correctly assigns
-cost in most scenarios and it fits our analysis purposes. However, this cost
-function considers a straight line of robots to be a cluster, and as such it
-might not be ideal for scenarios in which the clusters are required to be tight.
+cost. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
+emergence of clusters as the trial time proceeds: we cannot expect large
+clusters to be present at the beginning of a trial, but good parameter settings
+should grow (and maintain) clusters over time. In our experiments, we found that
+$c_{\text{total}}$ correctly assigns cost in most scenarios, thus fitting well
+our analysis purposes. However, this cost function considers a straight line of
+robots to be a cluster, and as such it might not be ideal for scenarios in which
+the clusters are required to be tight.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.29\linewidth]{./images/0_1_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/2_3_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/4_5_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/0_3_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/0_5_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/1_4_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/1_2_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/3_4_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/2_5_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/0_4_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/1_5_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/0_2_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/1_3_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/2_4_grid_img.png}
-  \includegraphics[width=0.29\linewidth]{./images/3_5_grid_img.png}
-  \caption{Heatmaps that compare relevant pairs of wheel speeds.}
+  \includegraphics[width=0.32\linewidth]{./images/0_1_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/2_3_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/4_5_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/0_3_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/0_5_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/1_4_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/1_2_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/3_4_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/2_5_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/0_4_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/1_5_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/0_2_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/1_3_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/2_4_grid_img}
+  \includegraphics[width=0.32\linewidth]{./images/3_5_grid_img}
+  \caption{Heatmaps that relate relevant pairs of wheel speeds.}
   \label{fig:gridsearch}
 \end{figure}
 
@@ -390,6 +396,7 @@ disturbed by non-kin robots that trying to pass through, the ring is disrupted
 and eventually reforms.
 
 \section{Controller Analysis}
+\label{sec:analysis}
 
   We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first define the conditions under which a kin robot will aggregate with a static kin or ring of kin. We then show that a robot also aggregates to a non-kin. However, we show that aggregation to kin is always faster than aggregation to non-kin. These three proofs partially explain why segregation occurs.
 
