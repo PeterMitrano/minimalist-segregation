@@ -42,7 +42,7 @@
     Peter~Mitrano,
     Jordan~Burkland,
     Michael~Giancola,
-    Carlo~Pinciroli\IEEEmembership{Member,~IEEE}}
+    Carlo~Pinciroli~\IEEEmembership{Member,~IEEE}}
   \IEEEauthorblockA{Robotics Engineering, Worcester Polytechnic Institute, Worcester, MA, USA\\
     Email: cpinciroli@wpi.edu}
 }
@@ -64,9 +64,9 @@
   convergence and a study of non-ideal aspects in the robot design.
 \end{abstract}
 
-\begin{IEEEkeywords}
-  TBD
-\end{IEEEkeywords}
+% \begin{IEEEkeywords}
+%   TBD
+% \end{IEEEkeywords}
 
 \section{Introduction}
 
@@ -90,10 +90,10 @@ by skill or capability in order to form useful heterogeneous teams.
 
 Segregation is an example of the broader class of spatially organizing
 behaviors, whose purpose is to impose a structure in the environment (e.g.,
-object clustering~\cite{}, object sorting~\cite{}, collective
-construction~\cite{}) or in the distribution of the robot (e.g.,
-aggregation~\cite{shlyakhov_survey_2017}, pattern formation~\cite{},
-self-assembly~\cite{}).
+object clustering~\cite{gauci_clustering_2014}, collective
+construction~\cite{Bolger2010}) or in the distribution of the robot (e.g.,
+aggregation~\cite{shlyakhov_survey_2017}, pattern
+formation~\cite{Pinciroli:DARS2016}, self-assembly~\cite{gross2008self}).
 
 A recent line of research in spatially organizing behaviors focuses the
 \emph{minimal} assumptions a swarm of robot must fulfill in order to perform the
@@ -130,10 +130,68 @@ of why convergence is guaranteed for the best parameter choice found; and
 the robot design.
 
 \section{Related Work}
+Segregation is a common behavior in nature, and it can be observed across
+scales. For example, cell segregation is a basic building block of embryogeneis
+in tissue generation processes~\cite{batlle_molecular_2012,Steinberg1963}; while
+social insects, such as ants, organize their brood into ring-like
+structures~\cite{Franks1992}.
 
-  % In nature, we can find a few examples of aggregation and segregation. Segregation occurs in cells during embryogenesis \cite{batlle_molecular_2012}, and segregation of objects can be found in ants who sort their brood \cite{santos_segregation_2014}. These examples motivate the study of simple controllers for segregation, but our main motivation comes from the broader question of whether a complex behavior like $N$-class segregation can be achieved with a simple robot and controller.
+In robotics, segregation is a problem that has not received considerable
+attention. The main methods that have been proposed so far are based on some
+variation of the artificial potential approach~\cite{Spears2004}, which assumes
+that the robots can detect each other and estimate relative distance vectors to
+each other.
 
-  % We make no claims that the controllers studied here are the most practical engineering solutions, but rather that they are an example of how complex behavior can emerge from simple rules. The advantages of simple robots is that they are inexpensive, easier to implement. It is also easy to understand and construct proofs about the behavior of these simple robots and their controllers.
+Gro\ss \emph{et al.}~\cite{gross_segregation_2009} proposed an
+algorithm inspired by the Brazil Nut effect, in which the robots form regular
+layers simulating gravity by sharing a common direction. This work was later
+extended to work on e-pucks robots~\cite{Chen2012}. To simulate gravity, this
+approach requires the robots to share a common target vector, which can be
+obtained through centralized controllers or a distributed consensus algorithm.
+
+Kumar \emph{et al.}~\cite{kumar_segregation_2010} introduced the concept of
+``differential potential'', whereby two robots experience a different artificial
+potential depending on their being part of the same class or not. The
+convergence of this approach is guaranteed for two classes, but when more
+classes are employed local minima prevent segregation from emerging.
+
+Santos \emph{et al.}~\cite{santos_segregation_2014} took inspiration
+from~\cite{kumar_segregation_2010} to devise an algorithm based on the
+Differential Adhesion Hypothesis, which states that kin cells tend to adhere
+stronger than non-kin cells. One limitation of this approach is the assumption
+that the robots have global knowledge about the positions of other robots.
+
+To the best of our knowledge, this paper is the first to propose an approach to
+segregation that is not based on communication and sensing of multiple
+neighbors.
+
+% Santos [20] [21]
+% - segregation with velocity obstacles
+% - 
+
+
+
+% In nature, we can find several examples of segregation. Segregation occurs in cells during embryogenesis
+% \cite{batlle_molecular_2012}, and segregation of objects can be found in ants
+% who sort their brood \cite{santos_segregation_2014}. These examples motivate the
+% study of simple controllers for segregation, but our main motivation comes from
+% the broader question of whether a complex behavior like $N$-class segregation
+% can be achieved with a simple robot and controller.
+
+% Segregation of robots has received little attention in swarm robotics, however
+% many researchers have focused on sorting of objects
+% \cite{vardy_accelerated_2012} \cite{holland_collective_1998}
+% \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. Santos et
+% al. shares our objective, however they assume that each class has the same
+% number of robots and that each robot knows the position of all other robots
+% \cite{santos_segregation_2014}. In contrast, we adhere to the
+% \texttt{if/elseif/else} controller architecture with a simple ternary sensor. In
+% \cite{gross_segregation_2009}, Gro\ss\ et al. also explore segregation robots
+% based on local interactions inspired by gravity, however they require a
+% centralized broadcast or a consensus algorithm to agree on the source or
+% direction of gravity.
+
+  %   We make no claims that the controllers studied here are the most practical engineering solutions, but rather that they are an example of how complex behavior can emerge from simple rules. The advantages of simple robots is that they are inexpensive, easier to implement. It is also easy to understand and construct proofs about the behavior of these simple robots and their controllers.
 
   % We also provide analysis of a specific emergent behaviors that allows the segregation to work. This analysis, while specific to the segregation behavior and controllers we found, is an example of how to make provable claims about emergent behavior of simple controllers. This is important because having guarantees on swarm behavior and well understand limitations allows one to make an informed decision about whether to deploy the controller in untested environments. If swarm robotics are to actually be used in disaster relief, as is so often proposed, it's important to know the conditions under which certain behavior is guaranteed. In these scenarios, using the simplistic robot and controllers may actually be advantageous.
 
@@ -145,7 +203,6 @@ the robot design.
 
   %   Finally, Gauci et al. consider a binary sensor that maps directly to wheel velocities \cite{gauci_self-organized_2014}. The authors demonstrate robust aggregation despite these limitations, and they also prove formally that aggregation is guaranteed and find theoretical bounds on aggregation time in simple situations. Gauci et al. also perform object aggregation, as opposed to robot aggregation, with the same restrictions on sensing and control \cite{gauci_clustering_2014}.
 
-  %   Segregation of robots has received little attention in swarm robotics, however many researchers have focused on sorting of objects \cite{vardy_accelerated_2012} \cite{holland_collective_1998} \cite{tao_wang_collective_2004} \cite{holland_stigmergy_1999}. Santos et al. shares our objective, however they assume that each class has the same number of robots and that each robot knows the position of all other robots \cite{santos_segregation_2014}. In contrast, we adhere to the \texttt{if/elseif/else} controller architecture with a simple ternary sensor. In \cite{gross_segregation_2009}, Gro\ss\ et al. also explore segregation robots based on local interactions inspired by gravity, however they require a centralized broadcast or a consensus algorithm to agree on the source or direction of gravity.
 
   %   %By analysing all the various controllers that we found which perform segregation, we can say that they can all be described by simple rules based on the wheel speeds. These rules are therefore also useful because they tell us something fundemental about the segregation behavior.
 
@@ -243,7 +300,6 @@ robot belongs to the same class or not.
 
 \newcommand{\vPN}[2]{\ensuremath{v_{\text{#1}}}^{S=#2}}
 \myparagraph{Control logic}
-
 The control logic followed by the robots is formalized in
 Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
 the sensor readings $S$ directly into normalized wheel speeds $[\,\vL\;\vR\,]$. The
@@ -267,11 +323,12 @@ are packed into one cluster with no non-kin robots.
 
 \subsection{Simulation Environment and Robots}
 
-\myparagraph{Simulation platform}
-We utilized the ARGoS multi-robot simulator~\cite{pinciroli_argos:_2012} to
-search for controller parameters and evaluate them. ARGoS offers accurate models
-for several differential-drive robots, such as the foot-bot~\cite{}, the Khepera
-IV~\cite{}, and the Kilobot~\cite{}.
+\myparagraph{Simulation platform} We utilized the ARGoS multi-robot
+simulator~\cite{pinciroli_argos:_2012} to search for controller parameters and
+evaluate them. ARGoS offers accurate models for several differential-drive
+robots, such as the foot-bot~\cite{Bonani2010}, the Khepera
+IV\footnote{https://www.k-team.com/khepera-iv}, and the
+Kilobot~\cite{Rubenstein2012}.
 
 \myparagraph{Robot platform}
 For the simulated experiments we opted to use the foot-bot, because of the
@@ -394,7 +451,7 @@ configurations was
 \tag{C}
 \end{equation}
 
-\begin{figure}
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.5\linewidth]{./images/rings_example.png}
   \caption{The segregation behavior found by grid search consists in the
@@ -977,7 +1034,6 @@ occlusions between robots are more likely, navigation is more difficult, and the
 cluster do not have a chance to coalesce.
 
 \myparagraph{Fixed total number of robots}
-
 We considered the scenario in which a fixed number of robots is split into an
 increasing number of classes. We set the number of robots to 100, so with 25
 classes 4 robots were still assigned to each class. As reported in
@@ -989,14 +1045,14 @@ tend to form large islands of kins. As the number of classes increases, we
 conjecture that the oscillations are an artifact of the random initial
 conditions of each experiment.
 
-\begin{figure}[H]
+\begin{figure}[t]
   \centering
   \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
   \caption{The average cost with 100 robots divided into $N$ classes.}
   \label{fig:num_classes_100}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[t]
   \centering
   \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class.png}
   \caption{The average cost with $N$ classes, 10 robots per class.}
@@ -1036,7 +1092,7 @@ because larger beam angles cause the rings to enlarge faster, which in turn
 causes the rings to be so large that they are not considered a cluster anymore
 by our cost function.
 
-\begin{figure}[H]
+\begin{figure}[t]
   \centering
   \includegraphics[width=1\linewidth]{./images/beam_angle.png}
   \begin{tikzpicture}
@@ -1065,7 +1121,7 @@ performs just as well as an infinite sensor. Below this, the performance
 degrades. However, even a beam range of 7\% of the maximum is more effective
 than zero range at segregation.
 
-\begin{figure}
+\begin{figure}[t]
   \centering
   \includegraphics[width=1\linewidth]{./images/beam_length.png}
   \caption{Segregation is robust to small sensor beam ranges. The blue bar
