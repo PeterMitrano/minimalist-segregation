@@ -55,12 +55,12 @@
   of our approach is in the minimalistic assumptions on which it is
   based. Specifically, we assume that (i) Each robot is equipped with a ternary
   sensor capable of detecting the presence of a single nearby robot, and, if
-  that robot is present, whether or not it belongs to same group as the sensing
-  robot; (ii) The robots move according to a differential drive model; and (iii)
-  The structure of the control system is purely reactive, and it maps directly
-  the sensor readings to the wheel speeds with no computation beyond a simple
-  `if' statement. We present a thorough analysis of the parameter space that
-  enables this behavior to emerge, along with conditions for guaranteed
+  that robot is present, whether or not it belongs to the same group as the
+  sensing robot; (ii) The robots move according to a differential drive model;
+  and (iii) The structure of the control system is purely reactive, and it maps
+  directly the sensor readings to the wheel speeds with no computation beyond a
+  simple `if' statement. We present a thorough analysis of the parameter space
+  that enables this behavior to emerge, along with conditions for guaranteed
   convergence and a study of non-ideal aspects in the robot design.
 \end{abstract}
 
@@ -119,9 +119,8 @@ groups. We show that, for segregation to emerge, it is sufficient to equip an
 sensor detects the presence of a robot in range; when a robot is detected, the
 sensor can distinguish whether it is a \emph{kin}, i.e., it belongs to the same
 group as the sensing robot, or a \emph{non-kin}, i.e., it belongs to a different
-group. When multiple robots are in range, the sensor returns information on only
-one of them. We analyze the performance of this approach under several criteria
-for the selection of such robot.
+group. When multiple robots are in range, the sensor returns information on the
+closest one of them.
 
 The main contribution of this paper are \emph{(i)} A study of the parameter
 space that enables the emergence of $N$-class segregation. \emph{(ii)} A study
