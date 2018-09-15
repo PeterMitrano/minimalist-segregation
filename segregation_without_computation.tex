@@ -1,12 +1,13 @@
-\documentclass[conference]{IEEEtran}
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
 \IEEEoverridecommandlockouts
+\overrideIEEEmargins
 \usepackage{cite}
 \usepackage{xcolor}
 \usepackage{mathtools}
 \usepackage{footnote}
 \usepackage{cancel}
 \usepackage{xfrac}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
@@ -34,20 +35,21 @@
 
 \begin{document}
 
-\title{A Minimalistic Approach to Segregation\\
+\title{\LARGE \bf
+  A Minimalistic Approach to Segregation\\
   in Robot Swarms}
 
 \author{
-  \IEEEauthorblockN{%
     Peter~Mitrano,
-    Jordan~Burkland,
+    Jordan~Burklund,
     Michael~Giancola,
-    Carlo~Pinciroli~\IEEEmembership{Member,~IEEE}}
-  \IEEEauthorblockA{Robotics Engineering, Worcester Polytechnic Institute, Worcester, MA, USA\\
-    Email: cpinciroli@wpi.edu}
+    Carlo~Pinciroli%
+\thanks{$^{1}$ Robotics Engineering, Worcester Polytechnic Institute, MA, USA. Email: {\sf \{cpinciroli,jupatel\}@wpi.edu}}%
 }
 
 \maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
 
 \begin{abstract}
   We present a decentralized algorithm to achieve segregation into an arbitrary
@@ -564,7 +566,7 @@ differential-drive robot~\cite{Dudek2010}:
   A robot moves towards a kin robot if
   \begin{equation}
     \label{eq:movetokin}
-    \VM\Delta t \le \frac{3\pi}{2}l - 3l\tan^{-1}\left[\frac{l}{\sqrt{l^2+3r^2}}\right].
+    \VM\Delta t \le 3l\tan^{-1}\left[\frac{\sqrt{3}r}{l}\right].
     \tag{S1}
   \end{equation}
 \end{lemma}
@@ -584,7 +586,7 @@ differential-drive robot~\cite{Dudek2010}:
   we can calculate
   \begin{equation}
     \label{eq:theta2}
-    \frac{\bar{\theta}}{2} = \frac{\pi}{2} - \tan^{-1}\frac{|R|}{\sqrt{R^2+D^2}}
+    \frac{\bar{\theta}}{2} = \tan^{-1}\frac{D}{|R|}
   \end{equation}
   where we defined $D = \lVert\vec{p}_i - \vec{p}_j\rVert$. The rhs of this
   inequality monotonically increases with $D$, hence to find the most strict
@@ -606,7 +608,7 @@ differential-drive robot~\cite{Dudek2010}:
   Robot $i$ moves towards the kin robot if
   \begin{equation}
     \label{eq:movetonone}
-    \VM\Delta t \le \frac{3}{5} \pi l - \frac{6}{5}l\tan^{-1}\left[\frac{\sfrac{l}{10}}{\sqrt{\sfrac{l^2}{100}+3r^2}}\right].
+    \VM\Delta t \le \frac{6}{5}l\tan^{-1}\left[\frac{10\sqrt{3}r}{l}\right].
     \tag{S0}
   \end{equation}
 \end{lemma}
@@ -621,7 +623,7 @@ differential-drive robot~\cite{Dudek2010}:
   Robot $i$ moves towards the kin robot if
   \begin{equation}
     \label{eq:movetononkin}
-    \VM\Delta t \le \pi l - 2l\tan^{-1}\left[\frac{l}{\sqrt{l^2+12r^2}}\right].
+    \VM\Delta t \le 2l\tan^{-1}\left[\frac{2\sqrt{3}r}{l}\right].
     \tag{S2}
   \end{equation}
 \end{lemma}
@@ -635,8 +637,7 @@ differential-drive robot~\cite{Dudek2010}:
   \includegraphics{condition}
   \caption{A graphical proof that \eqref{eq:movetonone} is the strictest
     condition. The graph relates the length of the interwheel distance to the
-    value of the conditions, for a constant value of the robot body radius
-    $r=\unit[1]{m}$}.
+    value of the conditions, for a constant value of the robot body radius.}.
   \label{fig:conditions}
 \end{figure}
 \begin{theorem}[Chaining]
