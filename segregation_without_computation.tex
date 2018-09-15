@@ -19,7 +19,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
-\usetikzlibrary{arrows.meta,automata,calc,positioning}
+\usetikzlibrary{arrows.meta,automata,calc,intersections,positioning}
 \newtheorem{theorem}{Theorem}
 
 % \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -160,22 +160,36 @@ validation of our approach with a swarm of 30 Kilobots.
 
 \subsection{Problem Formulation}
 
+\newcommand{\vL}{\ensuremath{v_{\text{left}}}}
+\newcommand{\vR}{\ensuremath{v_{\text{right}}}}
+\newcommand{\vaL}{\ensuremath{V_{\text{left}}}}
+\newcommand{\vaR}{\ensuremath{V_{\text{right}}}}
+\newcommand{\VM}{\ensuremath{V_{\text{max}}}}
 \myparagraph{Motion model}
 We consider a set of robots executing the same controller in a two-dimensional,
-obstacle-free environment. The robots are equipped with two wheels and their
-motion is modeled by the well-known differential-drive
+obstacle-free environment. The robots are equipped with two wheels for which
+$[\vL,\vR]$ denote their \emph{normalized} linear speeds. By `normalized' we
+mean that the speed values are in the range $[-1, 1]$. Using normalized speeds
+allows us to reason in a general way over the specific speeds attainable by any
+robot. To transform from normalized speeds $[\vL,\vR]$ into actual speeds
+$[\vaL,\vaR]$, we introduce a parameter $\VM$ that denotes the maximum linear
+speed possible with a specific robot and define
+\begin{align}
+  \vaL &= \VM \vL\\
+  \vaR &= \VM \vR.
+\end{align}
+The robots' motion is modeled by the well-known differential-drive
 equations~\cite{Dudek2010}
 \begin{equation}
   \label{eq:diffdrive}
   \begin{aligned}
-    x(t)      &=  \frac{1}{2}\frac{v_r+v_l}{v_r-v_l}\sin\left(\frac{t}{l}(v_r-v_l)\right)\\
-    y(t)      &= -\frac{1}{2}\frac{v_r+v_l}{v_r-v_l}\cos\left(\frac{t}{l}(v_r-v_l)\right)\\
-    \theta(t) &=  \frac{t}{l}(v_r-v_l)
+    x(t)      &=  \frac{l}{2}\frac{\vaR+\vaL}{\vaR-\vaL}\sin\left(\frac{\vaR-\vaL}{l}t\right)\\
+    y(t)      &= -\frac{l}{2}\frac{\vaR+\vaL}{\vaR-\vaL}\cos\left(\frac{\vaR-\vaL}{l}t\right)\\
+    \theta(t) &=  \frac{\vaR-\vaL}{l}t
   \end{aligned}
 \end{equation}
-where $t$ is time, $[x(t),y(t),\theta(t)]$ are the position and orientation of
-the robot, $l$ is the distance between the wheels, and $[v_l,v_r]$ are their
-linear speeds.
+where $t$ is time, $[\,x\;y\;\theta\,]^T$ is the pose of the robot, and $l$ is
+the distance between the wheels.
 
 \newcommand{\robot}[2]{%
   \filldraw[draw=#2,fill=#2!20] (#1) circle(5mm);
@@ -226,19 +240,24 @@ detected. We allow for any number of classes, but the sensor need not
 distinguish between different non-kin classes---it only detects whether a nearby
 robot belongs to the same class or not.
 
+\newcommand{\vPN}[2]{\ensuremath{v_{\text{#1}}}^{S=#2}}
 \myparagraph{Control logic}
+
 The control logic followed by the robots is formalized in
 Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
-the sensor readings $S$ directly into wheel speeds $v_l$ and $v_r$. The latter
-are the parameters whose value we intend to study, and they can be encoded as a
-six-dimensional vector
+the sensor readings $S$ directly into normalized wheel speeds $[\,\vL\;\vR\,]$. The
+latter are the parameters whose value we intend to study, and they can be
+encoded as a six-dimensional vector
 $$
-[\,v_{l_0}, v_{r_0}, v_{l_1}, v_{r_1}, v_{l_2}, v_{r_2}\,].
+[\,
+\vPN{left}{0}\;
+\vPN{right}{0}\;
+\vPN{left}{1}\;
+\vPN{right}{1}\;
+\vPN{left}{2}\;
+\vPN{right}{2}\;
+\,].
 $$
-Similarly to Gauci \emph{et al.}'s approach \cite{gauci_self-organized_2014}, we
-let these parameters range from -1 to 1. On the actual robots, we then scale
-these parameters to range from \SI{-20}{\centi\meter\per\second} to
-\SI{20}{\centi\meter\per\second}.
 
 \myparagraph{Objective}
 The objective of our study is to find the values of the speed parameters for
@@ -295,7 +314,7 @@ To define our cost function, we first establish the notion of
 $\vec{p}_i(t) = [x_i(t)\;y_i(t)]$, we consider any two robots to be
 \emph{connected} if
 $$
-\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \quad (i \ne j, \epsilon \in \mathbb{R}^+).
+\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+).
 $$
 In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.  A
 \emph{cluster} can be intuitively defined as an `island' of connected
@@ -327,10 +346,10 @@ cost. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
 emergence of clusters as the trial time proceeds: we cannot expect large
 clusters to be present at the beginning of a trial, but good parameter settings
 should grow (and maintain) clusters over time. In our experiments, we found that
-$c_{\text{total}}$ correctly assigns cost in most scenarios, thus fitting well
-our analysis purposes. However, this cost function considers a straight line of
-robots to be a cluster, and as such it might not be ideal for scenarios in which
-the clusters are required to be tight.
+$c_{\text{total}}(t)$ correctly assigns cost in most scenarios, thus fitting
+well our analysis purposes. However, this cost function considers a straight
+line of robots to be a cluster, and as such it might not be ideal for scenarios
+in which the clusters are required to be tight.
 
 \begin{figure}[t]
   \centering
@@ -353,6 +372,7 @@ the clusters are required to be tight.
   \label{fig:gridsearch}
 \end{figure}
 
+\section{The Emergent Behavior}
 \myparagraph{Visualizing grid search}
 The results of grid search are reported in Fig.~\ref{fig:gridsearch}. Because
 the search space is six-dimensional, we chose to visualize it by plotting every
@@ -364,167 +384,484 @@ squares in the upper left), and that the best controllers had slightly unequal
 values close to 1 (lightest squares in the bottom left). These plots also convey
 the presence of sharp discontinuities where performance changes dramatically.
 
-\section{The Emergent Behavior}
-
-After running the grid search, the controller with the lowest average cost over
-all 38 configurations was [1, -$\sfrac{2}{3}$, $\sfrac{1}{3}$, 1, 1, 0]. The
-resulting behavior is to turn away from kin but turn the opposite way when they
-see nothing or non-kin. This behavior causes the kin robots to zig-zag in a line
-towards their kin, and when multiple robots execute this behavior the kin robots
-form rings. An example of this can be seen in Figure \ref{fig:rings}. Rarely,
-the robots form shrimp-like shapes which can also be seen in Figure
-\ref{fig:rings}.
+\myparagraph{The emergent behavior}
+After running the grid search, the parameters with the lowest cost across all 38
+configurations was
+\begin{equation}
+\label{eq:controller}
+[1, -\sfrac{2}{3}, \sfrac{1}{3}, 1, 1, 0].
+\tag{C}
+\end{equation}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.5\linewidth]{./images/rings_example.png}
-  \caption{the emergent behavior is rings of kin. These rings expand and drift over time.}
+  \caption{The segregation behavior found by grid search consists in the
+    formation of homogeneous rings or spiraling structures that keep spinning
+    over time. The rings tend to grow over time, disband, and reform.}
   \label{fig:rings}
 \end{figure}
+The resulting behavior is for a robot to turn away from kin, but turn the
+opposite way when the robot sees nothing or non-kin. This behavior amounts to
+robots zig-zagging in a line towards their kin. As discussed
+in~\cite{StOnge:IROS2018}, when multiple robots execute this zig-zag behavior,
+spinning rings are formed. The remarkable aspect, in our case, is that spinning
+rings of \emph{kin} robots emerge, eventually segregating the swarm in
+homogeneous groups. An example of this phenomenon as observed in simulated
+experiments is reported in Fig.~\ref{fig:rings}. We also noted that, rarely, the
+robots form spinning spiral shapes, which can also be seen in
+Fig.~\ref{fig:rings}.
 
-It is important to note that although we originally hoped that segregated
-clusters would be tightly packed, in our comprehensive grid search we never
-found any controller that was capable of this. Another important emergent
-behavior is that the rings expand over time. When we placed many kin robots
-together in a large area, they would quickly form a ring and this ring would
-slowly expand in radius, seemingly infinitely. Explaining or proving this
-formally is left for future work.
+\myparagraph{Interesting phenomena}
+It is important to note that, although we originally hoped that segregated
+clusters would be tightly packed, in our grid search we never found any
+parameter setting that was capable of creating tight clusters. In addition, we
+observed that the spinning rings formed by the robots tended to expand over
+time, disband into smaller structures, and eventually reappear. In addition, if
+a ring is disturbed by non-kin robots passing through it, the ring is disrupted
+but it eventually reforms. The growing and self-repairing dynamics is compatible
+with the findings in the work of St.-Onge \emph{et al.}~\cite{StOnge:IROS2018},
+in which ring formation is decomposed in four simpler behavioral traits:
+scouting, chaining, looping, and merging. This segregation behavior follows the
+same phases, and it constitutes a further example of structured space-time
+coordination arising from minimalistic assumptions on the capabilities of the
+robot. To better appreciate the dynamics of this behavior, we invite the
+interested reader to watch the videos at
+\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
-The dynamics of the robots is far more complex than merely forming rings. A
-complete description of the observed behavior is beyond the scope of this paper,
-but we encourage the reader to view the supplementary videos at
-\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}. For
-example, we notice that the rings, once formed, expand over time. If a ring is
-disturbed by non-kin robots that trying to pass through, the ring is disrupted
-and eventually reforms.
-
-\section{Controller Analysis}
+\section{Behavior Analysis}
 \label{sec:analysis}
+Using the parameter settings~\eqref{eq:controller} as a basis, we now analyze
+the emerging behavior with the purpose of explaining how and why it emerges. In
+particular, we discuss the conditions under which segregation is guaranteed.
+\newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
-  We found from grid search that the parameters [$1$, $-0.6667$, $0.3333$, $1.0$, $1.0$, $0.0$] best achieve segregation as defined by our cluster metric cost function. The actual wheel speeds, which are scaled by $0.2$ to convert to \SI{}{\meter\per\second} are therefore [$0.2$, $-0.1333$, $0.06667$, $0.2$, $0.2$, $0.0$]. Now that we have found parameters that achieve what we consider segregation, we define the conditions under segregation is guaranteed. We first define the conditions under which a kin robot will aggregate with a static kin or ring of kin. We then show that a robot also aggregates to a non-kin. However, we show that aggregation to kin is always faster than aggregation to non-kin. These three proofs partially explain why segregation occurs.
+In the proofs, we employ the well-known equations that govern the instantaneous
+radius of curvature $R$ and rotation speed $\omega$ of the path followed a
+differential-drive robot~\cite{Dudek2010}:
+\begin{equation}
+  \label{eq:Ricc}
+  \begin{aligned}
+    R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
+    \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
+  \end{aligned}
+\end{equation}
 
-  In all of these proofs we will consider the controller found via grid search since it is the best controller. We also assume the controllers are in sync, which means that each motion is executed for the same $\Delta t$ starting at the same point in time, and that all robots have a fixed positive interwheel distance $W$ and radius $r$.
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    % Coordinates
+    \coordinate(Pi)  at (0,0);
+    \coordinate(Pj)  at ($(Pi)+(5cm,0cm)$);
+    \coordinate(ICC) at ($(Pi)+(0cm,2cm)$);
+    \coordinate(Qi)  at ($(Pj)!5cm!-21.812:(ICC)$);
+    % Label R
+    \draw (ICC) -- (Pi) node[left,midway]{$R$};
+    % Label delta
+    \draw (Pi) -- (Pj) node[below,midway]{$D$};
+    % Label theta
+    \draw ($(ICC)-(0,1cm)$) arc (-90:46.376:1cm) node[pos=0.75,below right]{$\bar{\theta}$};
+    % Qi to ICC
+    \draw (Qi) -- (ICC);
+    % Pj to ICC
+    \draw (Pj) -- (ICC);
+    % Pj to Qi
+    \draw (Pj) -- (Qi);
+    % Trajectory and ICC
+    \draw[dashed,very thick,green!60!black,-{Stealth[]},shorten >=2mm] ($(ICC)-(0,2cm)$) arc (-90:46.376:2cm);
+    \fill (ICC) circle (1mm);
+    \node[left] at (ICC) {$\ICC$};
+    % Blue robot
+    \draw[very thick,blue] (Pi) circle (5mm);
+    \fill[blue] (Pi) circle (1mm);
+    \node[below] at (Pi) {$\vec{p}_i$};
+    % Qi
+    \fill[blue] (Qi) circle (1mm);
+    \node[right] at (Qi) {$\vec{q}_i$};
+    % Red robot
+    \draw[very thick,red] ($(Pj)-(0,5mm)$) circle (5mm);
+    \fill[red] (Pj) circle (1mm);
+    \node[below] at (Pj) {$\vec{p}_j$};
+  \end{tikzpicture}
+  \caption{A diagram for the geometry of motion towards kin robots. The red
+    circle ($\vec{p}_j$) depicts the detected kin neighbor; the blue circle
+    indicates the robot whose motion is being modeled ($\vec{p}_i$); the dashed
+    green arc is the path followed by the robot, up to the limit point
+    $\vec{q}_i$. Beyond the latter point, the blue robot ceases to move closer
+    to the red robot.}
+  \label{fig:movetokin}
+\end{figure}
+\begin{theorem}[Motion towards kin]
+  A robot moves towards a kin robot if
+  \begin{equation}
+    \label{eq:movetokin}
+    \VM\Delta t \le \frac{3\pi}{2}l - 3l\tan^{-1}\left[\frac{l}{\sqrt{l^2+3r^2}}\right].
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  When a robot encounters a kin, it picks the speeds
+  $\vPN{left}{1} = \sfrac{1}{3}$ and $\vPN{right}{1} = 1$. This corresponds to a
+  path that arcs counterclockwise, as reported in the diagram of
+  Fig.~\ref{fig:movetokin}. We indicate the position of the moving robot as
+  $\vec{p}_i$ and the position of the kin as $\vec{p}_j$. For robot $i$ to move
+  towards $j$, its trajectory path must be an arc that does not move past a
+  limit point $\vec{q}_i$ because, beyond this point, the distance between $i$
+  and $j$ would increase. We can express this condition as
+  $\omega\Delta t\le \bar{\theta}$, where $\bar{\theta}$ is the angle of the arc
+  connecting $\vec{p}_i$ and $\vec{q}_i$.
 
-  \subsection{Aggregation with Kin}
+  Reasoning on the triangle formed by $\vec{p}_i$, $\vec{p}_j$ and the $\ICC$,
+  we can calculate
+  \begin{equation}
+    \label{eq:theta2}
+    \frac{\bar{\theta}}{2} = \frac{\pi}{2} - \tan^{-1}\frac{R}{\sqrt{R^2+D^2}}
+  \end{equation}
+  where we defined $D = \lVert\vec{p}_i - \vec{p}_j\rVert$. The rhs of this
+  inequality monotonically increases with $D$, hence to find the most strict
+  condition we need to consider the smallest value of $D$ possible. This value
+  corresponds to the situation in which $i$ and $j$ are tangent to each other;
+  in this case, $D=\sqrt{3}r$, where $r$ indicates the robot radius (assumed
+  identical for both robots). Using \eqref{eq:Ricc} with the values of
+  $\vPN{left}{1}$ and $\vPN{right}{1}$, we obtain:
+  \begin{align*}
+    R &= \frac{l}{2}\frac{1+\sfrac{1}{3}}{1-\sfrac{1}{3}} = l\\
+    \omega &= \frac{\VM(1-\sfrac{1}{3})}{l} = \frac{2}{3}\frac{\VM}{l}.
+  \end{align*}
+  Plugging these expressions in \eqref{eq:theta2}, we obtain the theorem
+  statement.
+\end{proof}
 
-    \begin{figure}[t!]
-      \centering
-      \begin{tikzpicture}[scale=25.0]
-        \draw[->] (0.15,0) -- (0.23,0);
-        \node at (0.22,.01) {x};
-        \draw[->] (0.15,0) -- (0.15,0.07);
-        \node at (.14,0.07) {y};
+\begin{theorem}[Motion towards non-kin]
+  A robot moves towards a non-kin robot if
+  \begin{equation}
+    \label{eq:movetononkin}
+    \VM\Delta t \le \pi l - 2l\tan^{-1}\left[\frac{l}{\sqrt{l^2+12r^2}}\right].
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  This proof follows the same reasoning as in Theorem 1. The only difference, in
+  this case, is that the wheels speeds are $\vPN{left}{2} = 1$ and
+  $\vPN{right}{2} = 0$, so the robot moves clockwise.
+\end{proof}
 
-         % c_i
-        \filldraw (0,0.053) circle (.002);
-        \draw[blue, dashed] (0,0.053) circle (0.053);
+% In Sec.~\ref{sec:analysiskin} we focus on the case in which a kin robot
+% aggregates with a static kin or ring of kin. We then show in
+% Sec.~\ref{sec:analysisnonkin} that a robot also aggregates to
+% non-kin. However, we show that aggregation to kin is always faster than
+% aggregation to non-kin, thus resulting in emerging segregation. In our analysis,
+% we assume that the controllers are synchronized in time, i.e., every robot's
+% motion is executed for the same $\Delta t$ starting at the same instant.
 
-         % p_i
-        \filldraw (0,-0.0) circle (.002);
-        \draw[blue] (0,-.0) circle (0.035);
-        \node at (-0.01,.044) {$R_1$};
-        \draw[dashed] (0,0.054) -- (0,0.0);
-        \draw (-0.014,0.011) -- (-.002,.002);
-        \node at (-0.020,0.014) {$p_i$};
+% The instantaneous center of curvature ($\ICC$) is~\cite{Dudek2010}
+% \begin{equation*}
+%   \ICC =
+%   \begin{bmatrix}
+%     x - R\sin\theta\\
+%     y + R\cos\theta
+%   \end{bmatrix}
+% \end{equation*}
+% and \eqref{eq:diffdrive} can be rewritten as
+% \begin{equation}
+%   \label{eq:diffdrive2}
+%   \begin{split}
+%     \begin{bmatrix}
+%       x'\\
+%       y'\\
+%       \theta'
+%     \end{bmatrix}
+%     =
+%     &\begin{bmatrix}
+%       \cos(\omega\Delta t) & -\sin(\omega\Delta t) & 0\\
+%       \sin(\omega\Delta t) \cos(\omega\Delta t) & 0\\
+%       0 & 0 & 1
+%     \end{bmatrix}
+%     \times\\
+%     &
+%     \begin{bmatrix}
+%       x - \ICC_x\\
+%       y - \ICC_y\\
+%       \theta
+%     \end{bmatrix}
+%     +
+%     \begin{bmatrix}
+%       \ICC_x\\
+%       \ICC_y\\
+%       \omega\Delta t
+%     \end{bmatrix}.
+%   \end{split}
+% \end{equation}
 
-        % delta
-        \draw[blue] (0,.0) -- (.15,.0);
-        \node at (0.08, 0.008) {$\delta$};
+% \subsection{Motion towards Kin}
+% \label{sec:analysiskin}
 
-         % p'_i
-        \filldraw (0.0231,0.005) circle (.002);
-        \draw (0.027, 0.003) -- (.04,-0.010);
-        \draw[blue] (0.0231,0.005) circle (0.035);
-        \draw[dashed] (0,0.053) -- (0.0231,0.005);
-        \node at (0.045,-.010) {$p'_i$};
+% \begin{figure}[t]
+%   \centering
+%   \begin{tikzpicture}[scale=25.0]
+%     \draw[->] (0.15,0) -- (0.23,0);
+%     \node at (0.22,.01) {x};
+%     \draw[->] (0.15,0) -- (0.15,0.07);
+%     \node at (.14,0.07) {y};
 
-         % p_j
-        \draw[dashed, red] (0.15, -0.035) circle (0.035);
-        \filldraw (0.15, 0.0) circle (.002);
-        \node at (0.159, 0.010) {$p_j$};
+%     % c_i
+%     \filldraw (0,0.053) circle (.002);
+%     \draw[blue, dashed] (0,0.053) circle (0.053);
 
-        % theta
-        \draw (0,.0265) arc [radius=.03, start angle=-90, end angle=-69];
-        \node at (.035,.045) {$\theta_1$};
-        \draw (.005, .020) -- (.027,.042);
+%     % p_i
+%     \filldraw (0,-0.0) circle (.002);
+%     \draw[blue] (0,-.0) circle (0.035);
+%     \node at (-0.02,.044) {$R_\text{kin}$};
+%     \draw[dashed] (0,0.054) -- (0,0.0);
+%     \draw (-0.014,0.011) -- (-.002,.002);
+%     \node at (-0.020,0.014) {$\vec{p}_i$};
 
-      \end{tikzpicture}
-      \caption{The configuration of a robot aggregating to another kin. $R_1$ is the radius of the robots path around the ICC.}
-      \label{fig:kin_aggregation}
-    \end{figure}
+%     % delta
+%     \draw[blue] (0,.0) -- (.15,.0);
+%     \node at (0.08, 0.008) {$\delta$};
 
-    Imagine an isolated kin robot, $i$ which has sensed another kin or a static ring of kin (kin entity), $j$. This scneario is depicted in Figure \ref{fig:kin_aggregation}. We can define the conditions under which robot $i$ is guaranteed to be closer to the point where the imaginary sensor beam meets the kin entity. This point is chosen as the origin. When robot $i$ starts at $p_i$ with sensor reading $I=1$, it then executes $v_{l_1} = 0.06667$ and $v_{r_1} = 0.2$ and arcs with radius $R_1$ counterclockwise and ends up at position $p'_i$. The condition we need to satisfy is shown in Equation \eqref{eq:generic_agg}.
+%     % p'_i
+%     \filldraw (0.0231,0.005) circle (.002);
+%     \draw (0.027, 0.003) -- (.04,-0.010);
+%     \draw[blue] (0.0231,0.005) circle (0.035);
+%     \draw[dashed] (0,0.053) -- (0.0231,0.005);
+%     \node at (0.045,-.010) {$\vec{p}'_i$};
 
-    \begin{equation} \label{eq:generic_agg}
-      \lVert p'_i - p_j \rVert < \lVert p_i - p_j \rVert
-    \end{equation}
+%     % p_j
+%     \draw[dashed, red] (0.15, -0.035) circle (0.035);
+%     \filldraw (0.15, 0.0) circle (.002);
+%     \node at (0.159, 0.010) {$\vec{p}_j$};
 
-    We can expand Equation \eqref{eq:generic_agg} and derive a simple condition which describes for which values of $r$, $r_j$, $W$, $\Delta t$ aggregation is guaranteed. The full derivation can be found in Theorem \ref{thm:aggregation_with_kin}, and the result is shown in Equation \eqref{eq:kin_agg_result}. The variable $r_j$ denotes the radius of the kin entity, whereas $r$ still refers to the radius of the single robot $i$.
+%     % theta
+%     \draw (0,.0265) arc [radius=.03, start angle=-90, end angle=-69];
+%     \node at (.035,.047) {$\theta_\text{kin}$};
+%     \draw (.005, .020) -- (.027,.042);
 
-    \begin{equation} \label{eq:kin_agg_result}
-      -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W < 0
-    \end{equation}
+%   \end{tikzpicture}
+%   \caption{A diagram depicting the geometry of a robot (in blue) aggregating to
+%     a kin robot (in red).  The configuration of a robot aggregating to another
+%     kin. $R_{\text{kin}}$ is the radius of the robot's path around the
+%     instantaneous center of curvature.}
+%   \label{fig:kin_aggregation}
+% \end{figure}
+% Consider an isolated robot $i$ which has sensed another kin robot $j$. This
+% scenario is depicted in Fig.~\ref{fig:kin_aggregation}, in which the blue
+% circles denote robot $i$ and the red circle is robot $j$.
 
-    One can substitute in the parameters of their robot into this equation, and if the condition holds true then the behavior described here is guaranteed.
+% To characterize kin clustering, we consider the case in which robot $j$ is
+% static. We define the conditions under which robot $i$ is guaranteed to move
+% closer to the point $\vec{p}_j$ where the sensor beam of $i$ meets the kin robot
+% $j$. Robot $i$ starts its motion at $\vec{p}_i$ with sensor reading $S=1$. The
+% robot then sets the wheel speeds $\vPN{left}{1} = \sfrac{1}{3}$ and
+% $\vPN{right}{1} = 1$, which results in a path that arcs counterclockwise with
+% radius $R$ and ends at position $\vec{p}'_i$ at time $t + \Delta t$. For robot
+% $i$ to be closer to entity $j$ after this motion, it must hold that
+% \begin{equation*}
+%   \lVert \vec{p}'_i - \vec{p}_j \rVert < \lVert \vec{p}_i - \vec{p}_j \rVert.
+% \end{equation*}
+% To simplify our analysis, and without loss of generality, we set
+% $\vec{p}_j = \vec{0}$ and define the x axis along the vector that connects
+% $\vec{p}_i$ to the origin, obtaining
+% \begin{equation}
+%   \label{eq:generic_agg}
+%   \lVert \vec{p}'_i \rVert < \lVert \vec{p}_i \rVert.
+% \end{equation}
 
-  \subsection{Aggregation with Non-Kin}
+% Expanding \eqref{eq:generic_agg}, we can derive the following condition for
+% aggregation to be guaranteed.
 
-    \begin{figure}[t!]
-      \centering
-      \begin{tikzpicture}[scale=25.0]
-        \draw[->] (0.15,0) -- (0.23,0);
-        \node at (0.22,.01) {x};
-        \draw[->] (0.15,0) -- (0.15,0.07);
-        \node at (.14,0.07) {y};
+% \begin{theorem}
+%   \label{thm:aggregation_with_kin}
+%   An isolated robot radius $r$ and interwheel distance $l$ aggregates with a kin
+%   entity if
+%   \begin{equation}
+%     \label{eq:aggwithkin}
+%     (3 - 2\sqrt{3})r \ge 2l(l-1).
+%   \end{equation}
+% \end{theorem}
 
-         % c_i
-        \filldraw (0,-0.025) circle (.002);
-        \draw[blue, dashed] (0,-0.025) circle (0.025);
+% \begin{proof}
+%   To simplify our notation, let $\delta = \lVert\vec{p}_i\rVert$. Then, because
+%   of the way the axes are defined, $\vec{p}_i = [\,-\delta\;0\,]^T$. To prove
+%   \eqref{eq:aggwithkin}, we calculate the coordinates of $\vec{p}'_i$ using
+%   \eqref{eq:diffdrive2}:
+%   \begin{equation*}
+%     \vec{p}'_i = \begin{bmatrix}
+%       -\delta + R\sin(\omega\Delta t)\\
+%       R - R\cos(\omega\Delta t)\\
+%     \end{bmatrix}
+%   \end{equation*}
+%   and calculate
+%   \begin{equation*}
+%     R = \frac{l}{2} \frac{1 + \sfrac{1}{3}}{1 - \sfrac{1}{3}} = l.
+%   \end{equation*}
+%   We now rewrite \eqref{eq:generic_agg} as
+%   \begin{equation*}
+%     \sqrt{(-\delta+l\sin(\omega\Delta t))^2 + (l - l\cos(\omega\Delta t))^2}\le\delta
+%   \end{equation*}
+%   For this inequality to hold, we need
+%   \begin{align}
+%     (-\delta+l\sin(\omega\Delta t))^2 + (l - l\cos(\omega\Delta t))^2 &\ge 0\label{eq:cond1}\tag{I1}\\
+%     \delta &\ge 0\label{eq:cond2}\tag{I2}\\
+%     (-\delta+l\sin(\omega\Delta t))^2 + (l - l\cos(\omega\Delta t))^2 &\le \delta^2.\label{eq:cond3}\tag{I3}
+%   \end{align}
+%   Inequality~\eqref{eq:cond2} is trivially true. Inequality~\eqref{eq:cond3} expands to
+%   \begin{equation*}
+%     l - \delta\sin(\omega\Delta t) - l\cos(\omega\Delta t) \le 0
+%   \end{equation*}
+%   and, since sine and cosine are bound in $[\,-1,1\,]$, we replace them with 1
+%   and impose the more stringent (but mathematically simpler) condition
+%   \begin{equation*}
+%     l - \delta - l\le 0 \Rightarrow \delta \ge 0
+%   \end{equation*}
+%   which is, again, trivially true. Inequality~\eqref{eq:cond1} expands to
+%   \begin{equation*}
+%     \delta^2 + 2l - 2\delta l \sin(\omega\Delta t)-2 l^2 \cos(\omega\Delta t) \ge 0
+%   \end{equation*}
+%   and, similarly to what discussed for \eqref{eq:cond3}, we replace the
+%   trigonometric functions with 1 and obtain the more stringent condition
+%   \begin{equation*}
+%     \delta^2-2\delta l + 2l -2l^2 \ge 0.
+%   \end{equation*}
+%   This inequality is quadratic in $\delta$ and it is satisfied if
+%   $\delta \ge l + \sqrt{3l^2-2l}$.
+  
 
-         % p_i
-        \filldraw (0,-0.0) circle (.002);
-        \draw[blue] (0,-.0) circle (0.035);
-        \node at (-0.01,-.017) {$R_2$};
-        \draw (-0.002,0.011) -- (0,.004);
-        \node at (-0.002,0.014) {$p_i$};
 
-        % delta
-        \draw[blue] (0,.0) -- (.15,.0);
-        \node at (0.08, 0.008) {$\delta$};
+  
+%   which expands to
+%   \begin{equation*}
+%     \sqrt{\delta^2+2R^2-2\delta R\sin(\omega\Delta t)-2R^2\cos(\omega\Delta t)}\le\delta
+%   \end{equation*}
 
-         % p'_i
-        \filldraw (0.01,-0.003) circle (.002);
-        \draw[blue] (0.01,-0.003) circle (0.035);
-        \draw[dashed] (0,-0.025) -- (0.01,-0.003);
-        \draw[dashed] (0,0.0)-- (0,-0.025);
-        \draw (0.014, -0.003) -- (.04,-0.012);
-        \node at (0.055,-.010) {$p'_i$};
 
-         % p_j
-        \draw[dashed, red] (0.15, -0.035) circle (0.035);
-        \filldraw (0.15, 0.0) circle (.002);
-        \node at (0.159, 0.010) {$p_j$};
 
-        % theta
-        \draw (0,-.01) arc [radius=.025, start angle=90, end angle=75];
-        \node at (.035,-.045) {$\theta_2$};
-        \draw (.002, -.015) -- (.027,-.042);
 
-      \end{tikzpicture}
-      \caption{The configuration of a robot aggregating to a non-kin. $R_2$ is the radius of the robots path around the ICC.}
-      \label{fig:non_kin_aggregation}
-    \end{figure}
+  
+%   Use the differential drive forward kinematics model to determine the coordinates of $p'_i$.
+%   \begin{align} \label{eq:kin_theta_and_r}
+%     \theta_1 &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - 0.06667}{W} = \frac{2\Delta t}{15W} \\
+%     R_1 &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + 0.06667}{0.2 - 0.06667}\bigg) = W
+%   \end{align}
 
-    This scenario and proof follows the same pattern as with kin, but the resulting condition is slightly different. We can again expand Equation \eqref{eq:generic_agg}, this time with different coordinates for $p'_i$. The full derivation can be found in Theorem \ref{thm:aggregation_with_non_kin}, and the result is shown in Equation \eqref{eq:non_kin_agg_result}.
+%   We can define the coordinates of $p_i$, $p_j$, and $p'_i$.
+  
+%   \begin{align} \label{eq:kin_coordinates}
+%     p_i &= \begin{bmatrix}-\delta \\ 0\end{bmatrix} \\
+%     p_j &= \begin{bmatrix}0 \\ 0\end{bmatrix} \\
+%     p'_i &= \begin{bmatrix}-\delta+R_1\sin(\theta_1) \\ R_1-R_1\cos(\theta_1)\end{bmatrix}
+%   \end{align}
+  
+%   We also define the minimum possible $\delta$, which is acheived when the robots and tangent.
+  
+%   \begin{tikzpicture} [scale=0.5]
+%     \draw (0,0) circle (1);
+%     \filldraw (0,0) circle (0.1);
+%     \node at (0.15,-0.6) {$r$};
+%     \filldraw (2.6457,-3) circle (0.1);
+%     \draw (2.6457,-3) circle (3);
+%     \node at (1.9,-1.5) {$r_j$};
+%     \draw (2.6457,0) -- (2.6457,-3);
+%     \filldraw (.66,-.74) circle (0.1);
+%     \draw (0,0) -- (2.6457,-3);
+%     \draw (0,0) -- (2.6457,0);
+%     \node at (1.7,.5) {$\delta_{\text{min}}$};
+%   \end{tikzpicture}
+%   \begin{align} \label{eq:min_delta}
+%     \delta_{\text{min}} = \sqrt{(r + r_j)^2 - (r_j)^2} = \sqrt{r^2 + 2rr_j + r_j^2 - r_j^2} = \sqrt{r^2+2rr_j}
+%   \end{align}
+  
+  
+%   Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ (Equation \eqref{eq:generic_agg}) for all $\delta > \sqrt{r^2+2rr_j}$.
+  
+%   \begin{align*}
+%     \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
+%     \sqrt{(p'_{ix} - p_{jx})^2 + (p'_{iy} - p_{jy})^2} &< \sqrt{(p_{ix} - p_{jx})^2 + (p_{iy} - p_{jy})^2} \\
+%     \sqrt{(-\delta+R_1\sin(\theta_1)-0)^2 + (R_1-R_1\cos(\theta_1-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
+%     \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + R_1^2\sin(\theta_1)^2 + R_1^2-2R_1^2\cos(\theta_1)+R_1^2\cos(\theta_1)^2} &< \delta \\
+%     \intertext{Apply $\sin^2+\cos^2=1$}
+%     \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1)} &< \delta \\
+%     \delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1) &< \delta^2 \\
+%     -\cancel{2}\delta \cancel{R_1}\sin(\theta_1) - \cancel{2}R_1^{\cancel{2}}\cos(\theta_1) + \cancel{2}R_1^{\cancel{2}} &< 0 \\
+%     -\delta \sin(\theta_1) - R_1\cos(\theta_1) + R_1 &< 0 \\
+%     \intertext{We assume $\theta_1\in(0,\sfrac{\pi}{2})$, so if the above condition holds for the smallest $\delta=\delta_{\text{min}}$, it holds for greater $\delta$.}
+%     -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W &< 0
+%   \end{align*}
+% \end{proof}
 
-    \begin{equation} \label{eq:non_kin_agg_result}
-      -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{10W}\bigg) - \frac{W}{2}\cos\bigg(\frac{2\Delta t}{10W}\bigg) + \frac{W}{2} < 0
-    \end{equation}
 
-  \subsection{Segregation}
 
-    So far all of the behaviors we have discussed are actually just aggregation behaviors. Here we partially explain why segregation occurs by showing that kin robots aggregate faster than the non-kin robots. To show that non-kin aggregate more slowly than kin, we show that the displacement during their kin step (the arc left with speeds $0.06667, 0.2$) is greater than the displacement during their non-kin step (with speeds $0.2, 0.0$). This proof can be found with Theorem \ref{thm:seg}. Note that we only consider the magnitude of the step, not the direction, so in theory the longer kin step could aggregate less than the shorter non-kin step, but this partially justifies why kin aggregate faster then non-kin.
 
+
+
+
+
+
+%     \begin{equation} \label{eq:kin_agg_result}
+%       -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W < 0
+%     \end{equation}
+
+%     One can substitute in the parameters of their robot into this equation, and if the condition holds true then the behavior described here is guaranteed.
+
+%     \subsection{Aggregation with Non-Kin}
+%     \label{sec:analysisnonkin}
+%     \begin{figure}[t!]
+%       \centering
+%       \begin{tikzpicture}[scale=25.0]
+%         \draw[->] (0.15,0) -- (0.23,0);
+%         \node at (0.22,.01) {x};
+%         \draw[->] (0.15,0) -- (0.15,0.07);
+%         \node at (.14,0.07) {y};
+
+%         % c_i
+%         \filldraw (0,-0.025) circle (.002);
+%         \draw[blue, dashed] (0,-0.025) circle (0.025);
+
+%         % p_i
+%         \filldraw (0,-0.0) circle (.002);
+%         \draw[blue] (0,-.0) circle (0.035);
+%         \node at (-0.05,-.017) {$R_\text{nonkin}$};
+%         \draw (-0.002,0.011) -- (0,.004);
+%         \node at (-0.002,0.014) {$p_i$};
+
+%         % delta
+%         \draw[blue] (0,.0) -- (.15,.0);
+%         \node at (0.08, 0.008) {$\delta$};
+
+%         % p'_i
+%         \filldraw (0.01,-0.003) circle (.002);
+%         \draw[blue] (0.01,-0.003) circle (0.035);
+%         \draw[dashed] (0,-0.025) -- (0.01,-0.003);
+%         \draw[dashed] (0,0.0)-- (0,-0.025);
+%         \draw (0.014, -0.003) -- (.04,-0.012);
+%         \node at (0.055,-.010) {$p'_i$};
+
+%         % p_j
+%         \draw[dashed, red] (0.15, -0.035) circle (0.035);
+%         \filldraw (0.15, 0.0) circle (.002);
+%         \node at (0.159, 0.010) {$p_j$};
+
+%         % theta
+%         \draw (0,-.01) arc [radius=.025, start angle=90, end angle=75];
+%         \node at (.035,-.045) {$\theta_\text{nonkin}$};
+%         \draw (.002, -.015) -- (.027,-.042);
+
+%       \end{tikzpicture}
+%       \caption{A diagram depicting the geometry of a robot (in blue) aggregating
+%         to a non-kin robot (in red).  The configuration of a robot aggregating
+%         to another kin. $R_{\text{nonkin}}$ is the radius of the robots path
+%         around the instantaneous radius of curvature.}
+%       \label{fig:non_kin_aggregation}
+%     \end{figure}
+
+%     This scenario and proof follows the same pattern as with kin, but the resulting condition is slightly different. We can again expand Equation \eqref{eq:generic_agg}, this time with different coordinates for $p'_i$. The full derivation can be found in Theorem \ref{thm:aggregation_with_non_kin}, and the result is shown in Equation \eqref{eq:non_kin_agg_result}.
+
+%     \begin{equation} \label{eq:non_kin_agg_result}
+%       -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{10W}\bigg) - \frac{W}{2}\cos\bigg(\frac{2\Delta t}{10W}\bigg) + \frac{W}{2} < 0
+%     \end{equation}
+
+%     \subsection{Segregation}
+
+%     So far all of the behaviors we have discussed are actually just aggregation behaviors. Here we partially explain why segregation occurs by showing that kin robots aggregate faster than the non-kin robots. To show that non-kin aggregate more slowly than kin, we show that the displacement during their kin step (the arc left with speeds $0.06667, 0.2$) is greater than the displacement during their non-kin step (with speeds $0.2, 0.0$). This proof can be found with Theorem \ref{thm:seg}. Note that we only consider the magnitude of the step, not the direction, so in theory the longer kin step could aggregate less than the shorter non-kin step, but this partially justifies why kin aggregate faster then non-kin.
+    
   \subsection{Application to Real Swarm Robots}
 
     The above conditions do not hold true for all scenarios (such as those with large $\Delta t$), but we show that they do hold true for a number of popular robots in Table \ref{table:robots}.
@@ -632,60 +969,6 @@ and eventually reforms.
 \section{Appendix}
 
 
-  \begin{theorem} \label{thm:aggregation_with_kin}
-    An isolated robot will aggregate to a kin entity.
-  \end{theorem}
-  \begin{proof}
-    Use the differential drive forward kinematics model to determine the coordinates of $p'_i$.
-    \begin{align} \label{eq:kin_theta_and_r}
-      \theta_1 &= \Delta t\omega = \Delta t \frac{v_{r_1} - v_{l_1}}{W} = \Delta t \frac{0.2 - 0.06667}{W} = \frac{2\Delta t}{15W} \\
-      R_1 &= \frac{W}{2}\bigg(\frac{v_{r_1} + v_{l_1}}{v_{r_1} - v_{l_1}}\bigg) = \frac{W}{2}\bigg(\frac{0.2 + 0.06667}{0.2 - 0.06667}\bigg) = W
-    \end{align}
-
-    We can define the coordinates of $p_i$, $p_j$, and $p'_i$.
-
-    \begin{align} \label{eq:kin_coordinates}
-      p_i &= \begin{bmatrix}-\delta \\ 0\end{bmatrix} \\
-      p_j &= \begin{bmatrix}0 \\ 0\end{bmatrix} \\
-      p'_i &= \begin{bmatrix}-\delta+R_1\sin(\theta_1) \\ R_1-R_1\cos(\theta_1)\end{bmatrix}
-    \end{align}
-
-    We also define the minimum possible $\delta$, which is acheived when the robots and tangent.
-
-    \begin{tikzpicture} [scale=0.5]
-      \draw (0,0) circle (1);
-      \filldraw (0,0) circle (0.1);
-      \node at (0.15,-0.6) {$r$};
-      \filldraw (2.6457,-3) circle (0.1);
-      \draw (2.6457,-3) circle (3);
-      \node at (1.9,-1.5) {$r_j$};
-      \draw (2.6457,0) -- (2.6457,-3);
-      \filldraw (.66,-.74) circle (0.1);
-      \draw (0,0) -- (2.6457,-3);
-      \draw (0,0) -- (2.6457,0);
-      \node at (1.7,.5) {$\delta_{\text{min}}$};
-    \end{tikzpicture}
-    \begin{align} \label{eq:min_delta}
-      \delta_{\text{min}} = \sqrt{(r + r_j)^2 - (r_j)^2} = \sqrt{r^2 + 2rr_j + r_j^2 - r_j^2} = \sqrt{r^2+2rr_j}
-    \end{align}
-
-
-    Show that $\lVert p'_i - p_j\rVert < \lVert p_i - p_j\rVert$ (Equation \eqref{eq:generic_agg}) for all $\delta > \sqrt{r^2+2rr_j}$.
-
-    \begin{align*}
-      \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
-      \sqrt{(p'_{ix} - p_{jx})^2 + (p'_{iy} - p_{jy})^2} &< \sqrt{(p_{ix} - p_{jx})^2 + (p_{iy} - p_{jy})^2} \\
-      \sqrt{(-\delta+R_1\sin(\theta_1)-0)^2 + (R_1-R_1\cos(\theta_1-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
-      \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + R_1^2\sin(\theta_1)^2 + R_1^2-2R_1^2\cos(\theta_1)+R_1^2\cos(\theta_1)^2} &< \delta \\
-      \intertext{Apply $\sin^2+\cos^2=1$}
-      \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1)} &< \delta \\
-      \delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1) &< \delta^2 \\
-      -\cancel{2}\delta \cancel{R_1}\sin(\theta_1) - \cancel{2}R_1^{\cancel{2}}\cos(\theta_1) + \cancel{2}R_1^{\cancel{2}} &< 0 \\
-      -\delta \sin(\theta_1) - R_1\cos(\theta_1) + R_1 &< 0 \\
-      \intertext{We assume $\theta_1\in(0,\sfrac{\pi}{2})$, so if the above condition holds for the smallest $\delta=\delta_{\text{min}}$, it holds for greater $\delta$.}
-      -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W &< 0
-    \end{align*}
-  \end{proof}
 
   \begin{theorem} \label{thm:aggregation_with_non_kin}
     An isolated robot will aggregate to a non kin entity.
@@ -732,6 +1015,20 @@ and eventually reforms.
 
   \subsection{Grid Search Images} \label{section:grid_search_images}
 
+
+    \begin{align*}
+    \lVert p'_i - p_j \rVert &< \lVert p_i - p_j \rVert \\
+    \sqrt{(p'_{ix} - p_{jx})^2 + (p'_{iy} - p_{jy})^2} &< \sqrt{(p_{ix} - p_{jx})^2 + (p_{iy} - p_{jy})^2} \\
+    \sqrt{(-\delta+R_1\sin(\theta_1)-0)^2 + (R_1-R_1\cos(\theta_1-0)^2} &< \sqrt{(-\delta-0)^2 + (0-0)^2} \\
+    \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + R_1^2\sin(\theta_1)^2 + R_1^2-2R_1^2\cos(\theta_1)+R_1^2\cos(\theta_1)^2} &< \delta \\
+    \intertext{Apply $\sin^2+\cos^2=1$}
+    \sqrt{\delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1)} &< \delta \\
+    \delta^2-2\delta R_1\sin(\theta_1) + 2R_1^2-2R_1^2\cos(\theta_1) &< \delta^2 \\
+    -\cancel{2}\delta \cancel{R_1}\sin(\theta_1) - \cancel{2}R_1^{\cancel{2}}\cos(\theta_1) + \cancel{2}R_1^{\cancel{2}} &< 0 \\
+    -\delta \sin(\theta_1) - R_1\cos(\theta_1) + R_1 &< 0 \\
+    \intertext{We assume $\theta_1\in(0,\sfrac{\pi}{2})$, so if the above condition holds for the smallest $\delta=\delta_{\text{min}}$, it holds for greater $\delta$.}
+    -\sqrt{r^2+2rr_j}\sin\bigg(\frac{2\Delta t}{15W}\bigg) - W\cos\bigg(\frac{2\Delta t}{15W}\bigg) + W &< 0
+  \end{align*}
 
 
 \end{document}
