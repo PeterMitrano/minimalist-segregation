@@ -726,11 +726,12 @@ than zero range at segregation.
 
 \section{Conclusion}
 
-In this paper, we show how oblivious robots are capable of $N$-class
-segregation. We use a simple controller design consisting of a 6-tuple. This
-controller is invariant to the number of classes, so any given controller can
-work for any number of classes. We performed a grid search to learn about the
-full parameter space, and we investigated the effect of sensor implementation
+In this paper, we show how robots with only a ternary sensor and a controller
+which maps these to wheel speeds is capable of $N$-class segregation.
+This controller is invariant to the number of classes, and using the best found parameters
+we are able to construct formal guarantees on the emergent behavior.
+We performed a grid search to learn about the full parameter space,
+and we investigated the effect of sensor implementation
 details and the number of robots and classes on performance. Our findings
 indicate that robust segregation in reality is possible, although not
 guaranteed.
