@@ -122,8 +122,8 @@ group as the sensing robot, or a \emph{non-kin}, i.e., it belongs to a different
 group. When multiple robots are in range, the sensor returns information on the
 closest one of them.
 
-The main contribution of this paper are \emph{(i)} A study of the parameter
-space that enables the emergence of $N$-class segregation. \emph{(ii)} A study
+The main contributions of this paper are \emph{(i)} A study of the parameter
+space that enables the emergence of $N$-class segregation; \emph{(ii)} A study
 of why convergence is guaranteed for the best parameter choice found; and
 \emph{(iii)} An analysis of the robustness of the algorithm to non-idealities in
 the robot design.
@@ -138,10 +138,9 @@ structures~\cite{Franks1992}.
 In robotics, segregation is a problem that has not received considerable
 attention. The main methods that have been proposed so far are based on some
 variation of the artificial potential approach~\cite{Spears2004}, which assumes
-that the robots can detect each other and estimate relative distance vectors to
-each other.
+that the robots can detect each other and estimate relative distance vectors.
 
-Gro\ss \emph{et al.}~\cite{gross_segregation_2009} proposed an
+Gro\ss~\emph{et al.}~\cite{gross_segregation_2009} proposed an
 algorithm inspired by the Brazil Nut effect, in which the robots form regular
 layers simulating gravity by sharing a common direction. This work was later
 extended to work on e-pucks robots~\cite{Chen2012}. To simulate gravity, this
@@ -155,14 +154,14 @@ convergence of this approach is guaranteed for two classes, but when more
 classes are employed local minima prevent segregation from emerging.
 
 Santos \emph{et al.}~\cite{santos_segregation_2014} took inspiration
-from~\cite{kumar_segregation_2010} to devise an algorithm based on the
+from~\cite{kumar_segregation_2010} to devise an approach based on the
 Differential Adhesion Hypothesis, which states that kin cells tend to adhere
-stronger than non-kin cells. One limitation of this approach is the assumption
+stronger than non-kin cells. Hower, one limitation is the assumption
 that the robots have global knowledge about the positions of other robots.
 
-To the best of our knowledge, this paper is the first to propose an approach to
-segregation that is not based on communication and sensing of multiple
-neighbors.
+To the best of our knowledge, this paper is the first to propose a segregation
+algorithm that is not based on global information nor on communication and
+sensing of multiple neighbors.
 
 % Santos [20] [21]
 % - segregation with velocity obstacles
@@ -248,6 +247,7 @@ equations~\cite{Dudek2010}
 where $t$ is time, $[\,x\;y\;\theta\,]^T$ is the pose of the robot, and $l$ is
 the distance between the wheels.
 
+\newcommand{\vPN}[2]{\ensuremath{v_{\text{#1}}}^{S=#2}}
 \newcommand{\robot}[2]{%
   \filldraw[draw=#2,fill=#2!20] (#1) circle(5mm);
   \draw[draw=#2,->,-Stealth,rotate around={0:(#1)}] (#1) -- +(5mm,0);
@@ -276,9 +276,9 @@ the distance between the wheels.
 \end{figure}
 \begin{algorithm}[t]
   \begin{algorithmic}
-    \If {$S=0$} \State set wheel speeds to $v_{l_0}$, $v_{r_0}$
-    \ElsIf {$S=1$} \State set wheel speeds to $v_{l_1}$, $v_{r_1}$
-    \Else \State set wheel speeds to $v_{l_2}$, $v_{r_2}$
+    \If {$S=0$} \State set wheel speeds to $\vPN{left}{0}$, $\vPN{right}{0}$
+    \ElsIf {$S=1$} \State set wheel speeds to $\vPN{left}{1}$, $\vPN{right}{1}$
+    \Else \State set wheel speeds to $\vPN{left}{2}$, $\vPN{right}{2}$
     \EndIf
   \end{algorithmic}
   \caption{The segregation control algorithm.}
@@ -297,7 +297,6 @@ detected. We allow for any number of classes, but the sensor need not
 distinguish between different non-kin classes---it only detects whether a nearby
 robot belongs to the same class or not.
 
-\newcommand{\vPN}[2]{\ensuremath{v_{\text{#1}}}^{S=#2}}
 \myparagraph{Control logic}
 The control logic followed by the robots is formalized in
 Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
@@ -434,12 +433,13 @@ in which the clusters are required to be tight.
 The results of grid search are reported in Fig.~\ref{fig:gridsearch}. Because
 the search space is six-dimensional, we chose to visualize it by plotting every
 pair of parameters against each other. For example, we consider how the cost
-changes as $v_{l_0}$ and $v_{r_0}$ change. As an example of reading these plots,
-we can tell from the plot of parameters 2 and 3 ($S=1$) that there were no good
-controllers where the left and right wheel speeds were equal and negative (dark
-squares in the upper left), and that the best controllers had slightly unequal
-values close to 1 (lightest squares in the bottom left). These plots also convey
-the presence of sharp discontinuities where performance changes dramatically.
+changes as $\vPN{left}{0}$ and $\vPN{right}{0}$ change. As an example of reading
+these plots, we can tell from the plot of $\vPN{left}{1}$ and $\vPN{right}{1}$
+that there were no good controllers where the left and right wheel speeds were
+equal and negative (dark squares in the upper left), and that the best
+controllers had slightly unequal values close to 1 (lightest squares in the
+bottom left). These plots also convey the presence of sharp discontinuities
+where performance changes dramatically.
 
 \myparagraph{The emergent behavior}
 After running the grid search, the parameters with the lowest cost across all 38
@@ -611,7 +611,7 @@ differential-drive robot~\cite{Dudek2010}:
   \end{equation}
 \end{lemma}
 \begin{proof}
-  This proof follows the same reasoning as in Lemma 1 with the wheels speeds
+  This proof follows the same reasoning as in Lemma 1 with the wheel speeds
   $\vPN{left}{0} = 1$ and $\vPN{right}{0} = -\sfrac{2}{3}$.
 \end{proof}
 
@@ -626,7 +626,7 @@ differential-drive robot~\cite{Dudek2010}:
   \end{equation}
 \end{lemma}
 \begin{proof}
-  This proof follows the same reasoning as in Lemma 1 with the wheels speeds
+  This proof follows the same reasoning as in Lemma 1 with the wheel speeds
   $\vPN{left}{2} = 1$ and $\vPN{right}{2} = 0$.
 \end{proof}
 
@@ -649,7 +649,7 @@ differential-drive robot~\cite{Dudek2010}:
   detect the kin anymore it turns counterclockwise. If both
   \eqref{eq:movetonone} and \eqref{eq:movetononkin} hold, then it is guaranteed
   robot $i$ moves closer to the kin. Eventually robot $i$ will see the kin
-  again, and the cycle continue. This reasoning can be repeated for any pair of
+  again, and the cycle continues. This reasoning can be repeated for any pair of
   robots, and a chain self-sustains if the three conditions are satisfied at the
   same time. This occurs when the strictest among them holds. As shown
   graphically in Fig.~\ref{fig:conditions}, the strictest condition is
@@ -1030,7 +1030,7 @@ plotted in Figure \ref{fig:num_classes_10}. We observe that the cost increases
 with the number of classes. This occurs because, as the number of classes
 increases, the density of the robots increases too. Hence, line-of-sight
 occlusions between robots are more likely, navigation is more difficult, and the
-cluster do not have a chance to coalesce.
+clusters do not have a chance to coalesce.
 
 \myparagraph{Fixed total number of robots}
 We considered the scenario in which a fixed number of robots is split into an
