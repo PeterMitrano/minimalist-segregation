@@ -35,11 +35,11 @@
   in Robot Swarms}
 
 \author{
-    Peter~Mitrano,
-    Jordan~Burklund,
-    Michael~Giancola,
-    Carlo~Pinciroli%
-\thanks{$^{1}$ Robotics Engineering, Worcester Polytechnic Institute, MA, USA. Email: {\sf \{cpinciroli,jupatel\}@wpi.edu}}%
+    Peter~Mitrano$^{1}$,
+    Jordan~Burklund$^{1}$,
+    Michael~Giancola$^{1}$,
+    Carlo~Pinciroli$^{1}$%
+\thanks{$^{1}$ Robotics Engineering, Worcester Polytechnic Institute, MA, USA. Email: {\sf cpinciroli@wpi.edu}}%
 }
 
 \maketitle
@@ -83,7 +83,7 @@ construction~\cite{Bolger2010}) or in the distribution of the robots (e.g.,
 aggregation~\cite{shlyakhov_survey_2017}, pattern
 formation~\cite{Pinciroli:DARS2016}, self-assembly~\cite{gross2008self}).
 
-A recent line of research in spatially organizing behaviors focuses the
+A recent line of research in spatially organizing behaviors focuses on the
 \emph{minimal} assumptions a swarm of robots must fulfill in order to perform the
 task. Johnson and Brown~\cite{johnson_evolving_2016} and Brown \emph{et
   al.}~\cite{brown_discovery_2018} characterized the set of possible behaviors
@@ -112,14 +112,14 @@ closest one of them.
 
 The main contributions of this paper are \emph{(i)} A study of the parameter
 space that enables the emergence of $N$-class segregation; \emph{(ii)} A study
-of why convergence is guaranteed for the best parameters we found; and
-\emph{(iii)} An analysis of the robustness of the algorithm to noise, scale,
-and other aspects of the robot design.
+of why convergence is guaranteed for the best parameter choice found; and
+\emph{(iii)} An analysis of the robustness of the algorithm to non-idealities in
+the robot design.
 
 \section{Related Work}
-Segregation is a behavior that can be found in nature from the cellular level to the
-colony level. For example, cell segregation is a basic building block of embryogeneis
-in the tissue generation processes~\cite{batlle_molecular_2012,Steinberg1963}; while
+Segregation is a common behavior in nature, and it can be observed across
+scales. For example, cell segregation is a basic building block of embryogeneis
+in tissue generation processes~\cite{batlle_molecular_2012,Steinberg1963}; while
 social insects, such as ants, organize their brood into ring-like
 structures~\cite{Franks1992}.
 
@@ -130,7 +130,7 @@ that the robots can detect each other and estimate relative distance vectors.
 
 Gro\ss~\emph{et al.}~\cite{gross_segregation_2009} proposed an
 algorithm inspired by the Brazil Nut effect, in which the robots form regular
-layers simulating gravity by sharing a common direction. This work was later
+layers simulating gravity by sharing a common direction. This study was later
 extended to work on e-pucks robots~\cite{Chen2012}. To simulate gravity, this
 approach requires the robots to share a common target vector, which can be
 obtained through centralized controllers or a distributed consensus algorithm.
@@ -268,17 +268,18 @@ IV\footnote{https://www.k-team.com/khepera-iv}, and the
 Kilobot~\cite{Rubenstein2012}.
 
 \myparagraph{Robot platform}
-For the simulated experiments we opted to use the foot-bot.
-To implement the ternary sensor, we used the range-and-bearing communication system
-built into ARGoS. We chose this method because it was computationally more efficient
-than simulating vision or other methods. This allowed us to run faster simulations.
-In practice, any tenary sensor meeting the conditions described earlier will work.
-The range-and-bearing system allows two robots to exchange messages when they are in direct line-of-sight;
-upon receiving a message from a nearby robot, a robot knows the relative position of the sender.
-Our robot controller kept the message of the closest robot.
-The message payload was an integer id of the group to which the sender belonged.
-The range-and-bearing sensor is simulated through ray casting.
-This allowed us to assume that the sensor reading is infinitely thin, a
+For the simulated experiments we opted to use the foot-bot, because of the
+possibility to utilize its range-and-bearing communication system as a base for
+the ternary sensor. The advantage of using the range-and-bearing system is that
+its model is simple and, as a consequence, a large number of simulations could
+be completed in a short time. The range-and-bearing system allows two robots to
+exchange messages when they are in direct line-of-sight; upon receiving a
+message, a robot can also estimate the relative position of the sender. This
+sensor, in principle, receives messages from all the nearby robots. To simulate
+the ternary sensor, our robot controller kept the message of the closest
+robot. The message payload was an integer that encoded the id of the group to
+which the sender belonged. The range-and-bearing sensor is simulated through ray
+casting. This allowed us to assume that the sensor reading is infinitely thin, a
 choice that simplifies the mathematical analysis presented in
 Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
 expected to cast a cone-shaped sensory range with non-zero aperture angle. We
@@ -287,13 +288,12 @@ Sec.~\ref{sec:aperture_angle}.
 
 \subsection{Grid Search}
 \label{sec:gridsearch}
-
+  
 \myparagraph{Trial setup}
 In order to exhaustively search the space of possible controllers, we conducted
 a grid search of the 6-dimensional parameter space. Due to limited computational
 resources, we were only able to search with a resolution of $7$ values per
-parameter: $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.
-In total we evaluated $7^6=117,649$ parameter sets. For
+parameter, which means in total we evaluated $7^6=117,649$ parameter sets. For
 each parameter set, we tested 38 different initial configurations, with 100
 simulated seconds for each trial. These initial configurations consisted of
 uniformly random placement, clusters, and lines of robots distributed throughout
@@ -306,19 +306,19 @@ can be seen in our supplementary videos:
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
 \myparagraph{Clusters}
-To define our cost function, we first establish the notion of a cluster.
-A cluster can be intuitively defined as an island of connected kin robots.
-Formally, a cluster is a set of kin robots which are \emph{connected}.
-Denoting with $r$ the radius of the body of a robot, and defining
-$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot at time $t$, we consider any two kin robots to be
-connected if
+To define our cost function, we first establish the notion of `cluster',
+intuitively defined as an island of connected kin robots.  Denoting with $r$ the
+radius of the body of a robot, and defining
+$\vec{p}_i(t) = [\,x_i(t)\;y_i(t)\,]$ as the $x$ and $y$ coordinates of the
+robot at time $t$, we consider any two kin robots to be connected if
 $$
 \lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+).
 $$
-In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.
-We find clusters by first constructing an adjacency matrix and then performing a depth-first search.
-Since we are interested in segregating the robots in $N$ classes,
-the final result of a trial is expected to be a set of $N$ distinct clusters composed of kin robots.
+In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.  We find clusters
+by first constructing an adjacency matrix and then performing a depth-first
+search.  Since we are interested in segregating the robots in $N$ classes, the
+final result of a trial is expected to be a set of $N$ distinct clusters
+composed of kin robots.
 
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
@@ -412,21 +412,21 @@ Fig.~\ref{fig:rings}.
 
 \myparagraph{Interesting phenomena}
 It is important to note that, although we originally hoped that segregated
-clusters would be tightly packed, none of the top scoring parameters according to our cost
-function form tightly packed clusters. There \emph{are} parameters
-which acheive tightly packed segregation, but they do so aggonizingly slowly,
-and therefore our cost function correctly penalized them heavily for being too slow
-to be useful. In addition, we observed that the spinning rings formed by the robots tended to expand over
-time, disband into smaller structures, and eventually reappear. In addition, if
-a ring is disturbed by non-kin robots passing through it, the ring is disrupted
-but it eventually reforms. The growing and self-repairing dynamics is compatible
-with the findings in the work of St.-Onge \emph{et al.}~\cite{StOnge:IROS2018},
-in which ring formation is decomposed in four simpler behavioral traits:
-scouting, chaining, looping, and merging. This segregation behavior follows the
-same phases, and it constitutes a further example of structured space-time
-coordination arising from minimalistic assumptions on the capabilities of the
-robot. To better appreciate the dynamics of this behavior, we invite the
-interested reader to watch the videos at
+clusters would be tightly packed, none of the top scoring parameters according
+to our cost function form tightly packed clusters. There \emph{are} parameters
+which achieve tightly packed segregation, but they do so extremely slowly, and
+therefore our cost function correctly penalized them heavily for being too slow
+to be useful. In addition, we observed that the spinning rings formed by the
+robots tended to expand over time, disband into smaller structures, and
+eventually reappear. In addition, if a ring is disturbed by non-kin robots
+passing through it, the ring is disrupted but it eventually reforms. The growing
+and self-repairing dynamics is compatible with the findings in the work of
+St.-Onge \emph{et al.}~\cite{StOnge:IROS2018}, in which ring formation is
+decomposed in four simpler behavioral traits: scouting, chaining, looping, and
+merging. This segregation behavior follows the same phases, and it constitutes a
+further example of structured space-time coordination arising from minimalistic
+assumptions on the capabilities of the robot. To better appreciate the dynamics
+of this behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
 \section{Behavior Analysis}
@@ -621,7 +621,7 @@ distributed.
 
 \myparagraph{Fixed number of robots per class}
 We studied the case in which every class has 10 robots. The results of this are
-plotted in Figure \ref{fig:num_classes_10}. We observe that the cost increases
+plotted in Fig.~\ref{fig:num_classes_10}. We observe that the cost increases
 with the number of classes. This occurs because, as the number of classes
 increases, the density of the robots increases too. Hence, line-of-sight
 occlusions between robots are more likely, navigation is more difficult, and the
@@ -653,7 +653,7 @@ conditions of each experiment.
   \label{fig:num_classes_100}
 \end{figure}
 
-\subsection{The Effect of Implementation Details of the sensor} \label{section:sensor_impl}
+\subsection{The Effect of Implementation Details of the Sensor} \label{section:sensor_impl}
 
 We observed that the implementation details of the sensor have a significant
 effect on the behavior of the controller.
@@ -710,7 +710,7 @@ diagonal length of the square in which the robot are initially distributed. In
 all our experiments, this square was \SI{5}{\meter} on each side, so we consider
 a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs
 for beam ranges as a fraction of this maximum range. As shown in
-Figure~\ref{fig:beam_range}, a beam range of 35\% of the theoretical maximum
+Fig.~\ref{fig:beam_range}, a beam range of 35\% of the theoretical maximum
 performs just as well as an infinite sensor. Below this, the performance
 degrades. However, even a beam range of 7\% of the maximum is more effective
 than zero range at segregation.
@@ -725,16 +725,15 @@ than zero range at segregation.
 \section{Conclusion}
 
 In this paper, we show how robots with only a ternary sensor and a controller
-which maps these to wheel speeds is capable of $N$-class segregation.
-This controller is invariant to the number of classes, and using the best found parameters
-we are able to construct formal guarantees on the emergent behavior.
-We performed a grid search to learn about the full parameter space,
-and we investigated the effect of sensor implementation
-details and the number of robots and classes on performance. Our findings
-indicate that robust segregation in reality is possible, although not
-guaranteed.
+which maps sensor readings to wheel speeds is capable of $N$-class segregation.
+This controller is invariant to the number of classes, and using the best found
+parameters we are able to construct formal guarantees on the emergent behavior.
+We performed a grid search to learn about the full parameter space, and we
+investigated the effect of sensor implementation details and the number of
+robots and classes on performance. Our findings indicate that robust segregation
+with non-ideal sensors in reality is possible, although not guaranteed.
 
+\bibliographystyle{IEEEtran}
 \bibliography{RBE595.bib}
-\bibliographystyle{unsrt}
 
 \end{document}
