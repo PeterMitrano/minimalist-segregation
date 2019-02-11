@@ -1,5 +1,5 @@
 all:
-	pdflatex --interaction=batchmode segregation_without_computation.tex
-	bibtex segregation_without_computation.aux
-	pdflatex --interaction=batchmode segregation_without_computation.tex
-	pdflatex --interaction=batchmode segregation_without_computation.tex
+	pdflatex --interaction=batchmode minimalistic_segregation.tex
+	bibtex minimalistic_segregation.aux
+	pdflatex --interaction=batchmode minimalistic_segregation.tex
+	pdflatex --interaction=batchmode minimalistic_segregation.tex
