@@ -57,7 +57,7 @@
   and (iii) The structure of the control system is purely reactive, and it maps
   directly the sensor readings to the wheel speeds with a simple `if' statement.
   We present a thorough analysis of the parameter space
-  that enables this behavior to emerge, along with conditions for guaranteed
+  that enables this behavior to emerge, along with idealized conditions for
   convergence and a study of non-ideal aspects in the robot design.
 \end{abstract}
 
@@ -144,7 +144,7 @@ classes are employed local minima prevent segregation from emerging.
 Santos \emph{et al.}~\cite{santos_segregation_2014} took inspiration
 from~\cite{kumar_segregation_2010} to devise an approach based on the
 Differential Adhesion Hypothesis, which states that kin cells tend to adhere
-stronger than non-kin cells. Hower, one limitation is the assumption
+stronger than non-kin cells. However, one limitation is the assumption
 that the robots have global knowledge about the positions of other robots.
 
 To the best of our knowledge, this paper is the first to propose a segregation
@@ -173,18 +173,8 @@ speed possible with a specific robot and define
   \vaL &= \VM \vL\\
   \vaR &= \VM \vR.
 \end{align}
-The robots' motion is modeled by the well-known differential-drive
-equations~\cite{Dudek2010}
-\begin{equation}
-  \label{eq:diffdrive}
-  \begin{aligned}
-    x(t)      &=  \frac{l}{2}\frac{\vaR+\vaL}{\vaR-\vaL}\sin\left(\frac{\vaR-\vaL}{l}t\right)\\
-    y(t)      &= -\frac{l}{2}\frac{\vaR+\vaL}{\vaR-\vaL}\cos\left(\frac{\vaR-\vaL}{l}t\right)\\
-    \theta(t) &=  \frac{\vaR-\vaL}{l}t
-  \end{aligned}
-\end{equation}
-where $t$ is time, $[\,x\;y\;\theta\,]^T$ is the pose of the robot, and $l$ is
-the distance between the wheels.
+The robots' motion assuming constant wheel velocities is modeled by the well-known differential-drive
+equations, shown in Equation \eqref{eq:motion}.
 
 \newcommand{\vPN}[2]{\ensuremath{v_{\text{#1}}}^{S=#2}}
 \newcommand{\robot}[2]{%
@@ -295,31 +285,30 @@ a grid search of the 6-dimensional parameter space. Due to limited computational
 resources, we were only able to search with a resolution of $7$ values per
 parameter: $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.
 In total we evaluated $7^6=117,649$ parameter sets. For
-each parameter set, we tested 36 different initial configurations, with 100
-simulated seconds for each trial. These initial configurations consisted of
+each parameter set, we tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20 with 4-class),
+with 100 simulated seconds for each trial. These initial configurations consisted of
 uniformly random placement, clusters, and lines of robots distributed throughout
 the environment. We chose to include some structured configurations (clusters
 and lines) because we discovered that they affected significantly the
 performance with respect to uniform random configurations. Hence, by explicitly
 evaluating diverse initial configurations, we could better estimate the best
 parameter values in the general case. Examples of these starting configurations
-can be seen in our supplementary videos:
-\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
+can be seen in our supplementary videos~\footnote{\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}}.
 
 \myparagraph{Clusters}
-To define our cost function, we first establish the notion of `cluster',
-intuitively defined as an island of connected kin robots.  Denoting with $r$ the
-radius of the body of a robot, and defining
-$\vec{p}_i(t) = [\,x_i(t)\;y_i(t)\,]$ as the $x$ and $y$ coordinates of the
-robot at time $t$, we consider any two kin robots to be connected if
-$$
-\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+).
-$$
-In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.  We find clusters
-by first constructing an adjacency matrix and then performing a depth-first
-search.  Since we are interested in segregating the robots in $N$ classes, the
-final result of a trial is expected to be a set of $N$ distinct clusters
-composed of kin robots.
+To define our cost function, we first establish the notion of a cluster.
+A cluster can be intuitively defined as an island of connected kin robots.
+Formally, a cluster is a set of kin robots which are \emph{connected}.
+Denoting with $r$ the radius of the body of a robot, and defining
+$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot at time $t$, we consider any two kin robots to be
+connected if
+\begin{equation} \label{eq:connected}
+\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+)
+\end{equation}
+In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.
+We find clusters by first constructing an adjacency matrix and then performing a depth-first search.
+Since we are interested in segregating the robots in $N$ classes,
+the final result of a trial is expected to be a set of $N$ distinct clusters composed of kin robots.
 
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
@@ -366,7 +355,7 @@ in which the clusters are required to be tight.
   \includegraphics[width=0.32\linewidth]{./images/1_3_grid_img}
   \includegraphics[width=0.32\linewidth]{./images/2_4_grid_img}
   \includegraphics[width=0.32\linewidth]{./images/3_5_grid_img}
-  \caption{Heatmaps that relate relevant pairs of wheel speeds.}
+  \caption{Heatmaps that relate relevant pairs of wheel speeds. Darker is worse.}
   \label{fig:gridsearch}
 \end{figure}
 
@@ -385,7 +374,7 @@ where performance changes dramatically.
 
 \myparagraph{The emergent behavior}
 After running the grid search, the parameters with the lowest mean cost across all 36
-configurations was
+configurations
 \begin{equation}
 \label{eq:controller}
 [1, -\sfrac{2}{3}, \sfrac{1}{3}, 1, 1, 0].
@@ -432,16 +421,16 @@ of this behavior, we invite the interested reader to watch the videos at
 
 \section{Behavior Analysis}
 \label{sec:analysis}
-Using the parameter settings~\eqref{eq:controller} as a basis, we now analyze
-the emerging behavior with the purpose of explaining how and why it emerges. In
-particular, we discuss the conditions under which segregation is guaranteed.
+Using the parameter settings~\eqref{eq:controller}, we now analyze
+the emerging behavior and explain how and why it emerges.
+In particular, we discuss the conditions under which segregation is guaranteed
+in the ideal sensor case with just two robots.
 \newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
 In the proofs, we employ the well-known equations that govern the instantaneous
 radius of curvature $R$ and rotation speed $\omega$ of the path followed a
 differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek2010}:
-\begin{equation}
-  \label{eq:Ricc}
+\begin{equation} \label{eq:motion}
   \begin{aligned}
     R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
     \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
@@ -500,8 +489,8 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
     circle ($\vec{p}_j$) depicts the detected kin neighbor; the blue circle
     indicates the robot whose motion is being modeled ($\vec{p}_i$); the dashed
     green arc is the path followed by the robot, up to the limit point
-    $\vec{q}_i$. Beyond the latter point, the blue robot ceases to move closer
-    to the red robot.}
+    $\vec{q}_i$. Beyond the latter point, the blue robot is further from the red robot
+    then it was initially.}
   \label{fig:movetokin}
 \end{figure}
 \begin{lemma}[Motion towards kin when kin detected]
@@ -518,9 +507,9 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
   path that arcs counterclockwise, as reported in the diagram of
   Fig.~\ref{fig:movetokin}. We indicate the position of the moving robot as
   $\vec{p}_i$ and the position of the kin as $\vec{p}_j$. For robot $i$ to move
-  towards $j$, its trajectory path must be an arc that does not move past a
+  towards $j$, its path must be an arc that does not move past a
   limit point $\vec{q}_i$ because, beyond this point, the distance between $i$
-  and $j$ would increase. We can express this condition as
+  and $j$ would be greater than the initial distance. We can express this condition as
   $$|\omega|\Delta t\le \bar{\theta}$$
   where $\bar{\theta}$ is the angle of the arc connecting $\vec{p}_i$ and $\vec{q}_i$.
 
@@ -535,7 +524,7 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
   condition we need to consider the smallest value of $D$ possible. This value
   corresponds to the situation in which $i$ and $j$ are tangent to each other;
   in this case, $D=\sqrt{3}r$, where $r$ indicates the robot radius (assumed
-  identical for both robots). Using \eqref{eq:Ricc} with the values of
+  identical for both robots). Using \eqref{eq:motion} with the values of
   $\vPN{left}{1}$ and $\vPN{right}{1}$, we obtain:
   \begin{align*}
     R &= \frac{l}{2}\frac{1+\sfrac{1}{3}}{1-\sfrac{1}{3}} = l\\
@@ -683,9 +672,9 @@ and angles smaller or larger became progressively worse. We found that at lower
 beam angles, it was possible for a robot to become stuck in groups of two or
 three, and the robots spent all their time looking at each other instead of
 peeking around them to find kin. At larger angles, we suspect the behavior fails
-because larger beam angles cause the rings to enlarge faster, which in turn
-causes the rings to be so large that they are not considered a cluster anymore
-by our cost function.
+because larger beam angles cause the rings to enlarge faster. When the rings become
+too large and the space between robots exceeds $2r+\epsilon$
+and are no longer a cluster as defined by \eqref{eq:connected}.
 
 \begin{figure}[t]
   \centering
@@ -727,8 +716,8 @@ than zero range at segregation.
 
 In this paper, we show how robots with only a ternary sensor and a controller
 which maps sensor readings to wheel speeds is capable of $N$-class segregation.
-This controller is invariant to the number of classes, and using the best found
-parameters we are able to construct formal guarantees on the emergent behavior.
+This controller is invariant to the number of classes, and using the best found parameters
+we are able to construct theoretical guarantees on the emergent behavior in a simplified setting.
 We performed a grid search to learn about the full parameter space, and we
 investigated the effect of sensor implementation details and the number of
 robots and classes on performance. Our findings indicate that robust segregation
