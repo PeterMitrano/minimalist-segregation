@@ -257,7 +257,7 @@ robots, such as the foot-bot~\cite{Bonani2010}, the Khepera
 IV\footnote{https://www.k-team.com/khepera-iv}, and the
 Kilobot~\cite{Rubenstein2012}.
 
-\myparagraph{Robot platform}
+\myparagraph{Simulated Robot platform}
 For the simulated experiments we opted to use the foot-bot, because of the
 possibility to utilize its range-and-bearing communication system as a base for
 the ternary sensor. The advantage of using the range-and-bearing system is that
@@ -275,6 +275,14 @@ Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
 expected to cast a cone-shaped sensory range with non-zero aperture angle. We
 explore the performance effect of various angles in
 Sec.~\ref{sec:aperture_angle}.
+
+\myparagraph{Real Robot platform}
+We used the Turtlebot 3 robots equipped with Raspberry Pi cameras.
+To implement the ternary sensor, we placed bightly color skirts on each robot
+and used OpenCV blob-detection to identify the color of the robot. Each robot
+knows it's own color, this way kin versus non-kin robots can be identified.
+We use a threshold on blob size and color values to distinguish whether there
+are any robots in our line of sight.
 
 \subsection{Grid Search}
 \label{sec:gridsearch}
@@ -368,7 +376,7 @@ changes as $\vPN{left}{0}$ and $\vPN{right}{0}$ change. As an example of reading
 these plots, we can tell from the plot of $\vPN{left}{1}$ and $\vPN{right}{1}$
 that there were no good controllers where the left and right wheel speeds were
 equal and negative (dark squares in the upper left), and that the best
-controllers had slightly unequal values close to 1 (lightest squares in the
+controllers had unequal values close to 1 (lightest squares in the
 bottom left). These plots also convey the presence of sharp discontinuities
 where performance changes dramatically.
 
@@ -381,42 +389,15 @@ configurations
 \tag{C}
 \end{equation}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.5\linewidth]{./images/rings_example.png}
-  \caption{The segregation behavior found by grid search consists in the
-    formation of homogeneous rings or spiraling structures that keep spinning
-    over time. The rings tend to grow over time, disband, and reform.}
-  \label{fig:rings}
-\end{figure}
-The resulting behavior is for a robot to turn away from kin, but turn the
-opposite way when the robot sees nothing or non-kin. This behavior amounts to
-robots zig-zagging in a line towards their kin. As discussed
-in~\cite{StOnge:IROS2018}, when multiple robots execute this zig-zag behavior,
-spinning rings are formed. The remarkable aspect, in our case, is that spinning
-rings of \emph{kin} robots emerge, eventually segregating the swarm in
-homogeneous groups. An example of this phenomenon as observed in simulated
-experiments is reported in Fig.~\ref{fig:rings}. We also noted that occasionally the
-robots form spinning spiral shapes, which can also be seen in
-Fig.~\ref{fig:rings}.
-
-\myparagraph{Interesting phenomena}
-It is important to note that, although we originally hoped that segregated
-clusters would be tightly packed, none of the top scoring parameters according
-to our cost function form tightly packed clusters. There \emph{are} parameters
-which achieve tightly packed segregation, but they do so extremely slowly, and
-therefore our cost function correctly penalized them heavily for being too slow
-to be useful. In addition, we observed that the spinning rings formed by the
-robots tended to expand over time, disband into smaller structures, and
-eventually reappear. In addition, if a ring is disturbed by non-kin robots
-passing through it, the ring is disrupted but it eventually reforms. The growing
-and self-repairing dynamics is compatible with the findings in the work of
-St.-Onge \emph{et al.}~\cite{StOnge:IROS2018}, in which ring formation is
-decomposed in four simpler behavioral traits: scouting, chaining, looping, and
-merging. This segregation behavior follows the same phases, and it constitutes a
-further example of structured space-time coordination arising from minimalistic
-assumptions on the capabilities of the robot. To better appreciate the dynamics
-of this behavior, we invite the interested reader to watch the videos at
+The resulting behavior is for a robot to turn sharply until it detects a kin,
+then turn less sharply while it sees the kin. This change in the radius of rotation
+moves the robot closer to its kin. When a non-kin is seed, the robot turns in place,
+and therefore it does not advance as rapidly towards the non-kin as it does towards the kin.
+In isolation, the emergent behavior is similar to the aggergation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
+in that the robots are always turning in the same direction (counter-clockwise for our parameters).
+To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
+This was not only true for the best parameters, but for all of the top-scoring paramters settings we observed.
+To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
 \section{Behavior Analysis}
@@ -563,71 +544,33 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
   $\vPN{left}{2} = 1$ and $\vPN{right}{2} = 0$.
 \end{proof}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.8\linewidth]{condition}
-  \caption{A graphical proof that \eqref{eq:movetonone} is the strictest
-    condition. The graph relates the length of the interwheel distance to the
-    value of the conditions, for a constant value of the robot body radius.}.
-  \label{fig:conditions}
-\end{figure}
-\begin{theorem}[Chaining]
-  A robot $i$ eventually follows a kin $j$ if \eqref{eq:movetonone} holds.
-\end{theorem}
-\begin{proof}
-  Because of Theorem 1, a robot that has not detected a kin rotates clockwise
-  until it finds one. After this, the robot turns counterclockwise and, if
-  \eqref{eq:movetokin} holds, it steps closer to the kin. When the robot cannot
-  detect the kin anymore it turns clockwise. If both
-  \eqref{eq:movetonone} and \eqref{eq:movetononkin} hold, then it is guaranteed
-  robot $i$ moves closer to the kin. Eventually robot $i$ will see the kin
-  again, and the cycle continues. This reasoning can be repeated for any pair of
-  robots, and a chain self-sustains if the three conditions are satisfied at the
-  same time. This occurs when the strictest among them holds. As shown
-  graphically in Fig.~\ref{fig:conditions}, the strictest condition is
-  \eqref{eq:movetonone}.
-\end{proof}
-
-\begin{theorem}[Looping]
-  A chain of kin robots eventually forms a loop.
-\end{theorem}
-\begin{proof}
-  When a chain is formed, the robot in front either detects a kin, in which case
-  it follows it (thus growing the chain); or it does not detect a kin, in which
-  case it moves clockwise until it detects one of the kin robots that follow it
-  in the chain. Since every robot behind the front robot performs the chaining
-  behavior, this results in the chain looping on itself until the tail is
-  reached and the loop is closed.
-\end{proof}
-
 \section{Experimental Results}
 
+\subsection{Real Robot Study} \label{section:real_robots}
 \subsection{Scalability Study} \label{section:scalability}
 
 In this experiment we investigate how the segregation behavior scales with the
 number of classes and the number of robots in the environment. We varied the
 number of classes from 1 to 25 and ran 100 trials with robots uniformly randomly
-distributed.
+distributed. All trials lasted 180 seconds.
 
 \myparagraph{Fixed number of robots per class}
 We studied the case in which every class has 10 robots. The results of this are
 plotted in Fig.~\ref{fig:num_classes_10}. We observe that the cost increases
-with the number of classes. This occurs because, as the number of classes
-increases, the density of the robots increases too. Hence, line-of-sight
-occlusions between robots are more likely, navigation is more difficult, and the
-clusters do not have a chance to coalesce.
+with the number of classes. As the number of classes increases,
+the density of the robots increases too. Hence, line-of-sight occlusions between robots are more likely,
+navigation is more difficult, and the clusters do not have a chance to coalesce.
+The important trend is that as the number of robots increases, the cost increase sublinearly.
+This suggests that our method scales well with the total number of robots.
 
 \myparagraph{Fixed total number of robots}
 We considered the scenario in which a fixed number of robots is split into an
 increasing number of classes. We set the number of robots to 100, so with 25
 classes 4 robots were still assigned to each class. As reported in
-Fig.~\ref{fig:num_classes_100}, the cost is high for small numbers of classes
-but its value decreases fast and eventually oscillates lightly. The initial high
-cost is due to the fact that, with 100 robots to divided among few classes, it
-is difficult for every robot to join the same cluster. The clusters, instead,
-tend to form large islands of kins. As the number of classes increases, we
-conjecture that the oscillations are an artifact of the random initial
-conditions of each experiment.
+Fig.~\ref{fig:num_classes_100}, the cost is very low for small numbers of classes
+and above 5 classes has no trend in cost. The initial low cost is due to the fact that
+with 100 robots to divided among few classes, line-of-sight to a kin is highly likely.
+Here the trend indicates that our methods scaled well with the number of classes.
 
 \begin{figure}[t]
   \centering
@@ -653,9 +596,9 @@ range-and-bearing system was to consider all the robots within some small angle
 in front of the robot and pick the closest one. This is very similar to what
 would be provided by a real-world camera that uses colored skirts on each robot
 and picks the largest blob as the robot to be detected. This sensor
-implementation works well and was used in the grid search experiments. However,
+implementation works well and was used in all our experiments. However,
 we found later that, if the robots instead always prefer to react to kin over
-non-kin, larger rings form more quickly and robustly. For example, if there are
+non-kin, clusters form more quickly and robustly. For example, if there are
 two robots within the field of view of a robot's sensor and the non-kin robot is
 closer, the robot would ignore it and execute the $S=1$ logic, which drives the
 robot towards the farther kin robot. Exploring exactly which of the various
@@ -664,15 +607,16 @@ implementation details have what effect on cost is left for future work.
 \subsection{The Effect of the Beam Angle} \label{sec:aperture_angle}
 
 On a real robot, there must be some finite beam angle to the theoretically
-line-of-sight sensor. We ran 100 trials in simulation with uniformly random
+line-of-sight sensor. We ran 100 trials 180 seconds each in simulation with uniformly random
 initial distributions of 40 robots with various beam
 angles. Fig.~\ref{fig:beam_angle} shows the results, along with a diagram
-showing how we define beam angle. The best beam angle we tested was \ang{15},
+showing how we define beam angle. The best beam angle we tested was \ang{20},
 and angles smaller or larger became progressively worse. We found that at lower
 beam angles, it was possible for a robot to become stuck in groups of two or
 three, and the robots spent all their time looking at each other instead of
 peeking around them to find kin. At larger angles, we suspect the behavior fails
 because larger beam angles cause the rings to enlarge faster. When the rings become
+% FIXME %
 too large and the space between robots exceeds $2r+\epsilon$
 and are no longer a cluster as defined by \eqref{eq:connected}.
 
@@ -700,15 +644,14 @@ diagonal length of the square in which the robot are initially distributed. In
 all our experiments, this square was \SI{5}{\meter} on each side, so we consider
 a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs
 for beam ranges as a fraction of this maximum range. As shown in
-Fig.~\ref{fig:beam_range}, a beam range of 35\% of the theoretical maximum
+Fig.~\ref{fig:beam_range}, a beam range of 25\% of the theoretical maximum
 performs just as well as an infinite sensor. Below this, the performance
-degrades. However, even a beam range of 7\% of the maximum is more effective
-than zero range at segregation.
+degrades.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=1\linewidth]{./images/beam_length.png}
-  \caption{Segregation is robust to small sensor beam ranges. The performance at 35\% of maximum range is indistinguishable from infinite range.}
+  \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
   \label{fig:beam_range}
 \end{figure}
 
