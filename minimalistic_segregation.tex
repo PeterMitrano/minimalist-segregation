@@ -31,15 +31,15 @@
 \begin{document}
 
 \title{\LARGE \bf
-  A Minimalistic Approach to Segregation\\
-  in Robot Swarms}
+A Minimalistic Approach to Segregation\\
+in Robot Swarms}
 
 \author{
-    Peter~Mitrano$^{1}$,
-    Jordan~Burklund$^{1}$,
-    Michael~Giancola$^{1}$,
-    Carlo~Pinciroli$^{1}$%
-\thanks{$^{1}$ Robotics Engineering, Worcester Polytechnic Institute, MA, USA. Email: {\sf cpinciroli@wpi.edu}}%
+  Peter~Mitrano$^{1}$,
+  Jordan~Burklund$^{1}$,
+  Michael~Giancola$^{1}$,
+  Carlo~Pinciroli$^{1}$%
+  \thanks{$^{1}$ Robotics Engineering, Worcester Polytechnic Institute, MA, USA. Email: {\sf cpinciroli@wpi.edu}}%
 }
 
 \maketitle
@@ -82,13 +82,13 @@ formation~\cite{Pinciroli:DARS2016}, self-assembly~\cite{gross2008self}).
 A recent line of research in spatially organizing behaviors focuses on the
 \emph{minimal} assumptions a swarm of robots must fulfill in order to perform the
 task. Johnson and Brown~\cite{johnson_evolving_2016} and Brown \emph{et
-  al.}~\cite{brown_discovery_2018} characterized the set of possible behaviors
+al.}~\cite{brown_discovery_2018} characterized the set of possible behaviors
 that can be obtained using primordial control strategies based on a simple
 `if/then/else' structure, binary sensors, and differential-drive robots. Gauci
 \emph{et al.} provided the specific conditions for the emergence of
 aggregation~\cite{gauci_evolving_2014} and object
 clustering~\cite{gauci_clustering_2014}, while St.-Onge \emph{et
-  al.}~\cite{StOnge:IROS2018} studied the emergence of circular
+al.}~\cite{StOnge:IROS2018} studied the emergence of circular
 formations. While more efficient control strategies have been proposed to
 achieve these behaviors, studying the minimal assumptions required for their emergence is
 an important step towards principled `swarm engineering' practices. In addition,
@@ -178,490 +178,405 @@ equations, shown in Equation \eqref{eq:motion}.
   \draw[draw=#2,->,-Stealth,rotate around={0:(#1)}] (#1) -- +(5mm,0);
   \fill[fill=gray!20] ($(#1)+(5mm,0)$) -- +( 45:1cm) -- +(-45:1cm) -- cycle;%
   \fill[fill=#2] ($(#1)+(5mm,0)$) circle (1mm);%
-}
-\begin{figure}[t]
-  \centering
-  \begin{tikzpicture}
-    \coordinate (s0) at (0  cm,0cm);
-    \coordinate (s1) at (1.5cm,0cm);
-    \coordinate (s2) at (3  cm,0cm);
-    \robot{s0}{red};
-    \robot{s1}{red};
-    \robot{s2}{blue};
-    \node[below=of s0]{\texttt{S=1}};
-    \node[below=of s1]{\texttt{S=2}};
-    \node[below=of s2]{\texttt{S=0}};
-  \end{tikzpicture}
-  \caption{A diagram of the ternary sensor in which classes are depicted
+  }
+  \begin{figure}[t]
+    \centering
+    \begin{tikzpicture}
+      \coordinate (s0) at (0  cm,0cm);
+      \coordinate (s1) at (1.5cm,0cm);
+      \coordinate (s2) at (3  cm,0cm);
+      \robot{s0}{red};
+      \robot{s1}{red};
+      \robot{s2}{blue};
+      \node[below=of s0]{\texttt{S=1}};
+      \node[below=of s1]{\texttt{S=2}};
+      \node[below=of s2]{\texttt{S=0}};
+    \end{tikzpicture}
+    \caption{A diagram of the ternary sensor in which classes are depicted
     as colors. The left red robot detects a kin robot, so its sensor
     returns 1. The middle red robot detects a blue robot, so its sensor
     returns 2. The right robot detects no robot, so its sensor returns
     0.}
-  \label{fig:sensor}
-\end{figure}
-\begin{algorithm}[t]
-  \begin{algorithmic}
-    \If {$S=0$} \State set wheel speeds to $\vPN{left}{0}$, $\vPN{right}{0}$
-    \ElsIf {$S=1$} \State set wheel speeds to $\vPN{left}{1}$, $\vPN{right}{1}$
-    \Else \State set wheel speeds to $\vPN{left}{2}$, $\vPN{right}{2}$
-    \EndIf
-  \end{algorithmic}
-  \caption{The segregation control algorithm.}
-  \label{alg:controller}
-\end{algorithm}
+    \label{fig:sensor}
+  \end{figure}
+  \begin{algorithm}[t]
+    \begin{algorithmic}
+      \If {$S=0$} \State set wheel speeds to $\vPN{left}{0}$, $\vPN{right}{0}$
+      \ElsIf {$S=1$} \State set wheel speeds to $\vPN{left}{1}$, $\vPN{right}{1}$
+      \Else \State set wheel speeds to $\vPN{left}{2}$, $\vPN{right}{2}$
+      \EndIf
+    \end{algorithmic}
+    \caption{The segregation control algorithm.}
+    \label{alg:controller}
+  \end{algorithm}
 
-\myparagraph{Sensor model}
-The robots are also equipped with a ternary sensor that is able to detect the
-presence of nearby robots and their ``kinness''. Two robots are \emph{kin} if
-they belong to the same class (denoted by color in our experiments); they are
-\emph{non-kin} otherwise. The sensor is assumed to have infinite range (we
-consider non-infinite range in Sec.~\ref{section:beam_range}). As depicted in
-Fig.~\ref{fig:sensor}, the sensor returns a reading $S=0$ when no robot is
-detected, $S=1$ when a kin robot is detected, and $S=2$ when a non-kin robot is
-detected. We allow for any number of classes, but the sensor need not
-distinguish between different non-kin classes---it only detects whether a nearby
-robot belongs to the same class or not.
+  \myparagraph{Sensor model}
+  The robots are also equipped with a ternary sensor that is able to detect the
+  presence of nearby robots and their ``kinness''. Two robots are \emph{kin} if
+  they belong to the same class (denoted by color in our experiments); they are
+  \emph{non-kin} otherwise. The sensor is assumed to have infinite range (we
+  consider non-infinite range in Sec.~\ref{section:beam_range}). As depicted in
+  Fig.~\ref{fig:sensor}, the sensor returns a reading $S=0$ when no robot is
+  detected, $S=1$ when a kin robot is detected, and $S=2$ when a non-kin robot is
+  detected. We allow for any number of classes, but the sensor need not
+  distinguish between different non-kin classes---it only detects whether a nearby
+  robot belongs to the same class or not.
 
-\myparagraph{Control logic}
-The control logic followed by the robots is formalized in
-Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
-the sensor readings $S$ directly into normalized wheel speeds $[\,\vL\;\vR\,]$. The
-latter are the parameters whose value we intend to study, and they can be
-encoded as a six-dimensional vector
-$$
-[\,
-\vPN{left}{0}\;
-\vPN{right}{0}\;
-\vPN{left}{1}\;
-\vPN{right}{1}\;
-\vPN{left}{2}\;
-\vPN{right}{2}\;
-\,].
-$$
+  \myparagraph{Control logic}
+  The control logic followed by the robots is formalized in
+  Alg.~\ref{alg:controller}. It is a simple `if/then/else' structure, which maps
+  the sensor readings $S$ directly into normalized wheel speeds $[\,\vL\;\vR\,]$. The
+  latter are the parameters whose value we intend to study, and they can be
+  encoded as a six-dimensional vector
+  $$
+  [\,
+  \vPN{left}{0}\;
+  \vPN{right}{0}\;
+  \vPN{left}{1}\;
+  \vPN{right}{1}\;
+  \vPN{left}{2}\;
+  \vPN{right}{2}\;
+  \,].
+  $$
 
-\myparagraph{Objective}
-The objective of our study is to find the values of the speed parameters for
-which the robots group into clusters, such that all the robots of the same class
-are packed into one cluster with no non-kin robots.
+  \myparagraph{Objective}
+  The objective of our study is to find the values of the speed parameters for
+  which the robots group into clusters, such that all the robots of the same class
+  are packed into one cluster with no non-kin robots.
 
-\subsection{Simulation Environment and Robots}
+  \subsection{Simulation Environment and Robots}
 
-\myparagraph{Simulation platform} We utilized the ARGoS multi-robot
-simulator~\cite{pinciroli_argos:_2012} to search for controller parameters and
-evaluate them. ARGoS offers accurate models for several differential-drive
-robots, such as the foot-bot~\cite{Bonani2010}, the Khepera
-IV\footnote{https://www.k-team.com/khepera-iv}, and the
-Kilobot~\cite{Rubenstein2012}.
+  \myparagraph{Simulation platform} We utilized the ARGoS multi-robot
+  simulator~\cite{pinciroli_argos:_2012} to search for controller parameters and
+  evaluate them. ARGoS offers accurate models for several differential-drive
+  robots, such as the foot-bot~\cite{Bonani2010}, the Khepera
+  IV\footnote{https://www.k-team.com/khepera-iv}, and the
+  Kilobot~\cite{Rubenstein2012}.
 
-\myparagraph{Simulated Robot platform}
-For the simulated experiments we opted to use the foot-bot, because of the
-possibility to utilize its range-and-bearing communication system as a base for
-the ternary sensor. The advantage of using the range-and-bearing system is that
-its model is simple and, as a consequence, a large number of simulations could
-be completed in a short time. The range-and-bearing system allows two robots to
-exchange messages when they are in direct line-of-sight; upon receiving a
-message, a robot can also estimate the relative position of the sender. This
-sensor, in principle, receives messages from all the nearby robots. To simulate
-the ternary sensor, our robot controller kept the message of the closest
-robot. The message payload was an integer that encoded the id of the group to
-which the sender belonged. The range-and-bearing sensor is simulated through ray
-casting. This allowed us to assume that the sensor reading is infinitely thin, a
-choice that simplifies the mathematical analysis presented in
-Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
-expected to cast a cone-shaped sensory range with non-zero aperture angle. We
-explore the performance effect of various angles in
-Sec.~\ref{sec:aperture_angle}.
+  \myparagraph{Simulated Robot platform}
+  For the simulated experiments we opted to use the foot-bot, because of the
+  possibility to utilize its range-and-bearing communication system as a base for
+  the ternary sensor. The advantage of using the range-and-bearing system is that
+  its model is simple and, as a consequence, a large number of simulations could
+  be completed in a short time. The range-and-bearing system allows two robots to
+  exchange messages when they are in direct line-of-sight; upon receiving a
+  message, a robot can also estimate the relative position of the sender. This
+  sensor, in principle, receives messages from all the nearby robots. To simulate
+  the ternary sensor, our robot controller kept the message of the closest
+  robot. The message payload was an integer that encoded the id of the group to
+  which the sender belonged. The range-and-bearing sensor is simulated through ray
+  casting. This allowed us to assume that the sensor reading is infinitely thin, a
+  choice that simplifies the mathematical analysis presented in
+  Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
+  expected to cast a cone-shaped sensory range with non-zero aperture angle. We
+  explore the performance effect of various angles in
+  Sec.~\ref{sec:aperture_angle}.
 
-\myparagraph{Real Robot platform}
-We used the Turtlebot 3 robots equipped with Raspberry Pi cameras.
-To implement the ternary sensor, we placed bightly color skirts on each robot
-and used OpenCV blob-detection to identify the color of the robot. Each robot
-knows it's own color, this way kin versus non-kin robots can be identified.
-We use a threshold on blob size and color values to distinguish whether there
-are any robots in our line of sight.
+  \myparagraph{Real Robot platform}
+  We used the Turtlebot 3 robots equipped with Raspberry Pi cameras.
+  To implement the ternary sensor, we placed bightly color skirts on each robot
+  and used OpenCV blob-detection to identify the color of the robot. Each robot
+  knows it's own color, this way kin versus non-kin robots can be identified.
+  We use a threshold on blob size and color values to distinguish whether there
+  are any robots in our line of sight.
 
-\subsection{Grid Search}
-\label{sec:gridsearch}
+  \subsection{Grid Search}
+  \label{sec:gridsearch}
 
-\myparagraph{Trial setup}
-In order to exhaustively search the space of possible controllers, we conducted
-a grid search of the 6-dimensional parameter space. Due to limited computational
-resources, we were only able to search with a resolution of $7$ values per
-parameter: $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.
-In total we evaluated $7^6=117,649$ parameter sets. For
-each parameter set, we tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20 with 4-class),
-with 100 simulated seconds for each trial. These initial configurations consisted of
-uniformly random placement, clusters, and lines of robots distributed throughout
-the environment. We chose to include some structured configurations (clusters
-and lines) because we discovered that they affected significantly the
-performance with respect to uniform random configurations. Hence, by explicitly
-evaluating diverse initial configurations, we could better estimate the best
-parameter values in the general case. Examples of these starting configurations
-can be seen in our supplementary videos~\footnote{\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}}.
+  \myparagraph{Trial setup}
+  In order to exhaustively search the space of possible controllers, we conducted
+  a grid search of the 6-dimensional parameter space. Due to limited computational
+  resources, we were only able to search with a resolution of $7$ values per
+  parameter: $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.
+  In total we evaluated $7^6=117,649$ parameter sets. For
+  each parameter set, we tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20 with 4-class),
+  with 100 simulated seconds for each trial. These initial configurations consisted of
+  uniformly random placement, clusters, and lines of robots distributed throughout
+  the environment. We chose to include some structured configurations (clusters
+  and lines) because we discovered that they affected significantly the
+  performance with respect to uniform random configurations. Hence, by explicitly
+  evaluating diverse initial configurations, we could better estimate the best
+  parameter values in the general case. Examples of these starting configurations
+  can be seen in our supplementary videos~\footnote{\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}}.
 
-\myparagraph{Clusters}
-To define our cost function, we first establish the notion of a cluster.
-A cluster can be intuitively defined as an island of connected kin robots.
-Formally, a cluster is a set of kin robots which are \emph{connected}.
-Denoting with $r$ the radius of the body of a robot, and defining
-$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot at time $t$, we consider any two kin robots to be
-connected if
-\begin{equation} \label{eq:connected}
-\lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+)
-\end{equation}
-In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.
-We find clusters by first constructing an adjacency matrix and then performing a depth-first search.
-Since we are interested in segregating the robots in $N$ classes,
-the final result of a trial is expected to be a set of $N$ distinct clusters composed of kin robots.
-
-\myparagraph{Cost function}
-To measure the difference between the ideal, perfectly segregated result and any
-configuration achieved by the robots over time, we first calculate, for every
-class $i$, the number of robots in the largest cluster $c_i(t)$ formed by robots of class $i$.  Since,
-in principle, different classes might involve different numbers of robots, in
-our cost function we employ the ratio
-$$
-\gamma_i(t) = -\frac{c_i(t)}{C_i}
-$$
-This ratio should be maximized, so the negative sign assigns larger clusters a lower, more negative, cost.
-Here $C_i$ is the number of robots that belongs to class $i$. At each time step, the cost is
-$$
-\gamma(t) = \frac{1}{N}\sum_{i=1}^N\gamma_i(t)
-$$
-Our complete cost function is then
-\begin{equation}
-  \label{eq:cost_function}
-  c_{\text{total}} =  \sum_{t=0}^{T-1} t\gamma(t)
-\end{equation}
-in which we denote the total trial time (100 seconds) with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
-emergence of clusters as the trial time proceeds: we cannot expect large
-clusters to be present at the beginning of a trial, but good parameter settings
-should grow (and maintain) clusters over time. In our experiments, we found that
-$c_{\text{total}}$ correctly assigns cost in most scenarios, thus fitting
-well our analysis purposes. However, this cost function considers a straight
-line of robots to be a cluster, and as such it might not be ideal for scenarios
-in which the clusters are required to be tight.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.32\linewidth]{./images/0_1_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/4_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_2_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/3_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_2_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/3_5_grid_img}
-  \caption{Heatmaps that relate relevant pairs of wheel speeds. Darker is worse.}
-  \label{fig:gridsearch}
-\end{figure}
-
-\section{The Emergent Behavior}
-\myparagraph{Visualizing grid search}
-The results of grid search are reported in Fig.~\ref{fig:gridsearch}. Because
-the search space is six-dimensional, we chose to visualize it by plotting every
-pair of parameters against each other. For example, we consider how the cost
-changes as $\vPN{left}{0}$ and $\vPN{right}{0}$ change. As an example of reading
-these plots, we can tell from the plot of $\vPN{left}{1}$ and $\vPN{right}{1}$
-that there were no good controllers where the left and right wheel speeds were
-equal and negative (dark squares in the upper left), and that the best
-controllers had unequal values close to 1 (lightest squares in the
-bottom left). These plots also convey the presence of sharp discontinuities
-where performance changes dramatically.
-
-\myparagraph{The emergent behavior}
-After running the grid search, the parameters with the lowest mean cost across all 36
-configurations
-\begin{equation}
-\label{eq:controller}
-[-1, \sfrac{1}{3}, \sfrac{1}{3}, 1, -1, 1].
-\tag{C}
-\end{equation}
-
-The resulting behavior is for a robot to turn sharply until it detects a kin,
-then turn less sharply while it sees the kin. This change in the radius of rotation
-moves the robot closer to its kin. When a non-kin is seen, the robot turns in place.
-In isolation, the emergent behavior between kin and non-kin is similar to the aggregation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
-in that the robots are always turning in the same direction (counter-clockwise for our parameters).
-To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
-This was not only true for the best parameters, but for all of the top-scoring parameters we observed.
-To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
-\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
-
-\section{Behavior Analysis}
-\label{sec:analysis}
-Using the parameter settings~\eqref{eq:controller}, we now analyze
-the emerging behavior and explain how and why it emerges.
-In particular, we discuss the conditions under which segregation is guaranteed
-in the ideal sensor case with just two robots.
-\newcommand{\ICC}{\ensuremath{\text{ICC}}}
-
-In the proofs, we employ the well-known equations that govern the instantaneous
-radius of curvature $R$ and rotation speed $\omega$ of the path followed a
-differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek2010}:
-\begin{equation} \label{eq:motion}
-  \begin{aligned}
-    R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
-    \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
-  \end{aligned}
-\end{equation}
-
-\begin{theorem}[Scouting]
-  When a robot $i$ does not detect a kin, it turns clockwise until it finds one.
-\end{theorem}
-\begin{proof}
-  The proof derives from the observation of the speeds in
-  \eqref{eq:controller}. When $S=0$ (no robot detected) and $S=2$ (non-kin
-  detected), the left wheel speed is larger than the right one, producing a
-  circular clockwise motion. Conversely, when $S=1$ (a kin is detected), the
-  right wheel speed is larger than the left one, and the robot turns
-  counterclockwise.
-\end{proof}
-
-\begin{figure}[t]
-  \centering
-  \begin{tikzpicture}
-    % Coordinates
-    \coordinate(Pi)  at (0,0);
-    \coordinate(Pj)  at ($(Pi)+(5cm,0cm)$);
-    \coordinate(ICC) at ($(Pi)+(0cm,2cm)$);
-    \coordinate(Qi)  at ($(Pj)!5cm!-21.812:(ICC)$);
-    % Label R
-    \draw (ICC) -- (Pi) node[left,midway]{$R$};
-    % Label delta
-    \draw (Pi) -- (Pj) node[below,midway]{$D$};
-    % Label theta
-    \draw ($(ICC)-(0,1cm)$) arc (-90:46.376:1cm) node[pos=0.75,below right]{$\bar{\theta}$};
-    % Qi to ICC
-    \draw (Qi) -- (ICC);
-    % Pj to ICC
-    \draw (Pj) -- (ICC);
-    % Pj to Qi
-    \draw (Pj) -- (Qi);
-    % Trajectory and ICC
-    \draw[dashed,very thick,green!60!black,-{Stealth[]},shorten >=2mm] ($(ICC)-(0,2cm)$) arc (-90:46.376:2cm);
-    \fill (ICC) circle (1mm);
-    \node[left] at (ICC) {$\ICC$};
-    % Blue robot
-    \draw[very thick,blue] (Pi) circle (5mm);
-    \fill[blue] (Pi) circle (1mm);
-    \node[below] at (Pi) {$\vec{p}_i$};
-    % Qi
-    \fill[blue] (Qi) circle (1mm);
-    \node[right] at (Qi) {$\vec{q}_i$};
-    % Red robot
-    \draw[very thick,red] ($(Pj)-(0,5mm)$) circle (5mm);
-    \fill[red] (Pj) circle (1mm);
-    \node[below] at (Pj) {$\vec{p}_j$};
-  \end{tikzpicture}
-  \caption{A diagram for the geometry of motion towards kin robots. The red
-    circle ($\vec{p}_j$) depicts the detected kin neighbor; the blue circle
-    indicates the robot whose motion is being modeled ($\vec{p}_i$); the dashed
-    green arc is the path followed by the robot, up to the limit point
-    $\vec{q}_i$. Beyond the latter point, the blue robot is further from the red robot
-    then it was initially.}
-  \label{fig:movetokin}
-\end{figure}
-\begin{lemma}[Motion towards kin when kin detected]
-  A robot moves towards a kin robot if
-  \begin{equation}
-    \label{eq:movetokin}
-    \VM\Delta t \le 3l\tan^{-1}\left[\frac{\sqrt{3}r}{l}\right].
-    \tag{S1}
+  \myparagraph{Clusters}
+  To define our cost function, we first establish the notion of a cluster.
+  A cluster can be intuitively defined as an island of connected kin robots.
+  Formally, a cluster is a set of kin robots which are \emph{connected}.
+  Denoting with $r$ the radius of the body of a robot, and defining
+  $\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot at time $t$, we consider any two kin robots to be
+  connected if
+  \begin{equation} \label{eq:connected}
+    \lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+)
   \end{equation}
-\end{lemma}
-\begin{proof}
-  When a robot encounters a kin, it picks the speeds
-  $\vPN{left}{1} = \sfrac{1}{3}$ and $\vPN{right}{1} = 1$. This corresponds to a
-  path that arcs counterclockwise, as reported in the diagram of
-  Fig.~\ref{fig:movetokin}. We indicate the position of the moving robot as
-  $\vec{p}_i$ and the position of the kin as $\vec{p}_j$. For robot $i$ to move
-  towards $j$, its path must be an arc that does not move past a
-  limit point $\vec{q}_i$ because, beyond this point, the distance between $i$
-  and $j$ would be greater than the initial distance. We can express this condition as
-  $$|\omega|\Delta t\le \bar{\theta}$$
-  where $\bar{\theta}$ is the angle of the arc connecting $\vec{p}_i$ and $\vec{q}_i$.
+  In our experiments, we set $\epsilon = \SI{5}{\centi\meter}$.
+  We find clusters by first constructing an adjacency matrix and then performing a depth-first search.
+  Since we are interested in segregating the robots in $N$ classes,
+  the final result of a trial is expected to be a set of $N$ distinct clusters composed of kin robots.
 
-  Reasoning on the triangle formed by $\vec{p}_i$, $\vec{p}_j$ and the $\ICC$,
-  we can calculate
+  \myparagraph{Cost function}
+  To measure the difference between the ideal, perfectly segregated result and any
+  configuration achieved by the robots over time, we first calculate, for every
+  class $i$, the number of robots in the largest cluster $c_i(t)$ formed by robots of class $i$.  Since,
+  in principle, different classes might involve different numbers of robots, in
+  our cost function we employ the ratio
+  $$
+  \gamma_i(t) = -\frac{c_i(t)}{C_i}
+  $$
+  This ratio should be maximized, so the negative sign assigns larger clusters a lower, more negative, cost.
+  Here $C_i$ is the number of robots that belongs to class $i$. At each time step, the cost is
+  $$
+  \gamma(t) = \frac{1}{N}\sum_{i=1}^N\gamma_i(t)
+  $$
+  Our complete cost function is then
   \begin{equation}
-    \label{eq:theta2}
-    \bar{\theta} = 2\tan^{-1}\frac{D}{|R|}
+    \label{eq:cost_function}
+    c_{\text{total}} =  \sum_{t=0}^{T-1} t\gamma(t)
   \end{equation}
-  where we defined $D = \lVert\vec{p}_i - \vec{p}_j\rVert$. The right hand side of this
-  inequality monotonically increases with $D$, hence to find the most strict
-  condition we need to consider the smallest value of $D$ possible. This value
-  corresponds to the situation in which $i$ and $j$ are tangent to each other;
-  in this case, $D=\sqrt{3}r$, where $r$ indicates the robot radius (assumed
-  identical for both robots). Using \eqref{eq:motion} with the values of
-  $\vPN{left}{1}$ and $\vPN{right}{1}$, we obtain:
-  \begin{align*}
-    R &= \frac{l}{2}\frac{1+\sfrac{1}{3}}{1-\sfrac{1}{3}} = l\\
-    \omega &= \frac{\VM(1-\sfrac{1}{3})}{l} = \frac{2}{3}\frac{\VM}{l}.
-  \end{align*}
-  Plugging these expressions in \eqref{eq:theta2}, we obtain the statement.
-\end{proof}
+  in which we denote the total trial time (100 seconds) with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
+  emergence of clusters as the trial time proceeds: we cannot expect large
+  clusters to be present at the beginning of a trial, but good parameter settings
+  should grow (and maintain) clusters over time. In our experiments, we found that
+  $c_{\text{total}}$ correctly assigns cost in most scenarios, thus fitting
+  well our analysis purposes. However, this cost function considers a straight
+  line of robots to be a cluster, and as such it might not be ideal for scenarios
+  in which the clusters are required to be tight.
 
-\begin{lemma}[Motion towards kin when nothing detected]
-  Assume that a robot $i$ saw a kin $j$ at time $t-1$, has performed one step
-  with $\vPN{left}{1}$ and $\vPN{right}{1}$, and at time $t$ it detects no robot.
-  Robot $i$ moves towards the kin robot if
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=0.32\linewidth]{./images/0_1_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/2_3_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/4_5_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/0_3_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/0_5_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/1_4_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/1_2_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/3_4_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/2_5_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/0_4_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/1_5_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/0_2_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/1_3_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/2_4_grid_img}
+    \includegraphics[width=0.32\linewidth]{./images/3_5_grid_img}
+    \caption{Heatmaps that relate relevant pairs of wheel speeds. Darker is worse.}
+    \label{fig:gridsearch}
+  \end{figure}
+
+  \section{The Emergent Behavior}
+  \myparagraph{Visualizing grid search}
+  The results of grid search are reported in Fig.~\ref{fig:gridsearch}. Because
+  the search space is six-dimensional, we chose to visualize it by plotting every
+  pair of parameters against each other. For example, we consider how the cost
+  changes as $\vPN{left}{0}$ and $\vPN{right}{0}$ change. As an example of reading
+  these plots, we can tell from the plot of $\vPN{left}{1}$ and $\vPN{right}{1}$
+  that there were no good controllers where the left and right wheel speeds were
+  equal and negative (dark squares in the upper left), and that the best
+  controllers had unequal values close to 1 (lightest squares in the
+  bottom left). These plots also convey the presence of sharp discontinuities
+  where performance changes dramatically.
+
+  \myparagraph{The emergent behavior}
+  After running the grid search, the parameters with the lowest mean cost across all 36
+  configurations
   \begin{equation}
-    \label{eq:movetonone}
-    \VM\Delta t \le \frac{6}{5}l\tan^{-1}\left[\frac{10\sqrt{3}r}{l}\right].
-    \tag{S0}
+    \label{eq:controller}
+    [-1, \sfrac{1}{3}, \sfrac{1}{3}, 1, -1, 1].
+    \tag{C}
   \end{equation}
-\end{lemma}
-\begin{proof}
-  This proof follows the same reasoning as in Lemma 1 with the wheel speeds
-  $\vPN{left}{0} = 1$ and $\vPN{right}{0} = -\sfrac{2}{3}$.
-\end{proof}
 
-\begin{lemma}[Motion towards kin when non-kin detected]
-  Assume that a robot $i$ saw a kin $j$ at time $t-1$, has performed one step
-  with $\vPN{left}{1}$ and $\vPN{right}{1}$, and at time $t$ it detects a non-kin.
-  Robot $i$ moves towards the kin robot if
-  \begin{equation}
-    \label{eq:movetononkin}
-    \VM\Delta t \le 2l\tan^{-1}\left[\frac{2\sqrt{3}r}{l}\right].
-    \tag{S2}
+  The resulting behavior is for a robot to turn sharply until it detects a kin,
+  then turn less sharply while it sees the kin. This change in the radius of rotation
+  moves the robot closer to its kin. When a non-kin is seen, the robot turns in place.
+  In isolation, the emergent behavior between kin and non-kin is similar to the aggregation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
+  in that the robots are always turning in the same direction (counter-clockwise for our parameters).
+  To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
+  This was not only true for the best parameters, but for all of the top-scoring parameters we observed.
+  To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
+  \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
+
+  \section{Behavior Analysis}
+  \label{sec:analysis}
+  Using the parameter settings~\eqref{eq:controller}, we now analyze
+  the emerging behavior and explain how and why it emerges.
+  Proving segregation among an arbitrary number of robots is difficult, so instead
+  we consider simplified scenarios with two robots. In this section, we provide 
+  simple conditions under which two kin robots in isolation are guaranteed to aggregate
+  with each other. We also show that non-kin robots also aggregate, and provide the condition under which this occurs.
+  From these two conditions, we can then hypothesize that large numbers of kin and non-kin robots also aggregate,
+  which partially explains the emergent behavior observed in our experiments.
+
+  Critical to this analysis is the assumption that the sensor is an infinitely thin beam, and that both robot controller are synchronized, such that both robots take sensor readings at the same time and act for the same $\Delta t$ time step. Lastly, we assume the robots have the same radius.
+  % TODO: better explain these assumptions
+
+  \newcommand{\ICC}{\ensuremath{\text{ICC}}}
+
+  In the proofs, we employ the well-known equations that govern the instantaneous
+  radius of curvature $R$ and rotation speed $\omega$ of the path followed a
+  differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek2010}:
+  \begin{equation} \label{eq:motion}
+    \begin{aligned}
+      R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
+      \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
+    \end{aligned}
   \end{equation}
-\end{lemma}
-\begin{proof}
-  This proof follows the same reasoning as in Lemma 1 with the wheel speeds
-  $\vPN{left}{2} = 1$ and $\vPN{right}{2} = 0$.
-\end{proof}
 
-\section{Experimental Results}
+  In all of the proofs of aggregation, the general strategy is proof by exhaustion. We consider all of the possible sensor states ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$. In order to prove that they aggregate regardless of the position or orientation of the robots, we find a worst case configuration. This means finding the configuration of the robot $j$ relative to robot $i$ for which the condition on the angle of rotation $\bar{\theta}$ is smallest (see \ref{fig:config}). We then derive a condition for this worst case by taking advantage of the special geometry in each case. Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These points are exactly distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would stick out of the radius of the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
 
-\subsection{Real Robot Study} \label{section:real_robots}
-\subsection{Scalability Study} \label{section:scalability}
+  \begin{theorem}[Nothing Detected]
+    Two robots seeing nothing will not separate, and will eventually transition to another state.
+  \end{theorem}
+  \begin{proof}
+    In this state, the robots rotate around the points $c_i$ and $c_j$. Since these points are stationary, they do not move further apart. In order to aggregate, the robots must eventually exit this state. The condition under which this is guaranteed is %TODO: derive this condition
+  \end{proof}
 
-In this experiment we investigate how the segregation behavior scales with the
-number of classes and the number of robots in the environment. We varied the
-number of classes from 1 to 25 and ran 100 trials with robots uniformly randomly
-distributed. All trials lasted 180 seconds.
+  \begin{theorem}[Non-Kin Robots (1)]
+    In the state where robot $i$ sees robot $j$ and robot $j$ sees nothing, the robots aggregate when %TODO: derive this condition
+  \end{theorem}
+  \begin{proof}
+  \end{proof}
 
-\myparagraph{Fixed number of robots per class}
-We studied the case in which every class has 10 robots. The results of this are
-plotted in Fig.~\ref{fig:num_classes_10}. We observe that the cost increases
-with the number of classes. As the number of classes increases,
-the density of the robots increases too. Hence, line-of-sight occlusions between robots are more likely,
-navigation is more difficult, and the clusters do not have a chance to coalesce.
-The important trend is that as the number of robots increases, the cost increase sublinearly.
-This suggests that our method scales well with the total number of robots.
+  \begin{theorem}[Non-Kin Robots (2)]
+    In the state where robot $i$ sees non-kin robot $j$ and robot $j$ sees robot $i$, the robots aggregate when %TODO: derive this condition
+  \end{theorem}
+  \begin{proof}
+  \end{proof}
 
-\myparagraph{Fixed total number of robots}
-We considered the scenario in which a fixed number of robots is split into an
-increasing number of classes. We set the number of robots to 100, so with 25
-classes 4 robots were still assigned to each class. As reported in
-Fig.~\ref{fig:num_classes_100}, the cost is very low for small numbers of classes
-and above 5 classes has no trend in cost. The initial low cost is due to the fact that
-with 100 robots to divided among few classes, line-of-sight to a kin is highly likely.
-Here the trend indicates that our methods scaled well with the number of classes.
+  \begin{theorem}[Kin Robots (1)]
+    In the state where robot $i$ sees kin robot $j$ and robot $j$ sees nothing, the robots aggregate when %TODO: derive this condition
+  \end{theorem}
+  \begin{proof}
+  \end{proof}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class.png}
-  \caption{The average cost over 100 trials with $N$ classes, 10 robots per class.}
-  \label{fig:num_classes_10}
-\end{figure}
+  \begin{theorem}[Kin Robots (2)]
+    In the state where robot $i$ sees kin robot $j$ and robot $j$ sees robot $i$, the robots aggregate when %TODO: derive this condition
+  \end{theorem}
+  \begin{proof}
+  \end{proof}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
-  \caption{The average cost over 100 trials with 100 robots divided into $N$ classes.}
-  \label{fig:num_classes_100}
-\end{figure}
+  \section{Experimental Results}
 
-\subsection{The Effect of Implementation Details of the Sensor} \label{section:sensor_impl}
+  \subsection{Real Robot Study} \label{section:real_robots}
+  \subsection{Scalability Study} \label{section:scalability}
 
-We observed that the implementation details of the sensor have a significant
-effect on the behavior of the controller.
+  In this experiment we investigate how the segregation behavior scales with the
+  number of classes and the number of robots in the environment. We varied the
+  number of classes from 1 to 25 and ran 100 trials with robots uniformly randomly
+  distributed. All trials lasted 180 seconds.
 
-Initially, our method for determining sensor state from the simulated
-range-and-bearing system was to consider all the robots within some small angle
-in front of the robot and pick the closest one. This is very similar to what
-would be provided by a real-world camera that uses colored skirts on each robot
-and picks the largest blob as the robot to be detected. This sensor
-implementation works well and was used in all our experiments. However,
-we found later that, if the robots instead always prefer to react to kin over
-non-kin, clusters form more quickly and robustly. For example, if there are
-two robots within the field of view of a robot's sensor and the non-kin robot is
-closer, the robot would ignore it and execute the $S=1$ logic, which drives the
-robot towards the farther kin robot. Exploring exactly which of the various
-implementation details have what effect on cost is left for future work.
+  \myparagraph{Fixed number of robots per class}
+  We studied the case in which every class has 10 robots. The results of this are
+  plotted in Fig.~\ref{fig:num_classes_10}. We observe that the cost increases
+  with the number of classes. As the number of classes increases,
+  the density of the robots increases too. Hence, line-of-sight occlusions between robots are more likely,
+  navigation is more difficult, and the clusters do not have a chance to coalesce.
+  The important trend is that as the number of robots increases, the cost increase sublinearly.
+  This suggests that our method scales well with the total number of robots.
 
-\subsection{The Effect of the Beam Angle} \label{sec:aperture_angle}
+  \myparagraph{Fixed total number of robots}
+  We considered the scenario in which a fixed number of robots is split into an
+  increasing number of classes. We set the number of robots to 100, so with 25
+  classes 4 robots were still assigned to each class. As reported in
+  Fig.~\ref{fig:num_classes_100}, the cost is very low for small numbers of classes
+  and above 5 classes has no trend in cost. The initial low cost is due to the fact that
+  with 100 robots to divided among few classes, line-of-sight to a kin is highly likely.
+  Here the trend indicates that our methods scaled well with the number of classes.
 
-On a real robot, there must be some finite beam angle to the theoretically
-line-of-sight sensor. We ran 100 trials 180 seconds each in simulation with uniformly random
-initial distributions of 40 robots with various beam
-angles. Fig.~\ref{fig:beam_angle} shows the results, along with a diagram
-showing how we define beam angle. The best beam angle we tested was \ang{20},
-and angles smaller or larger became progressively worse. We found that at lower
-beam angles, it was possible for a robot to become stuck in groups of two or
-three, and the robots spent all their time looking at each other instead of
-peeking around them to find kin. At larger angles, we suspect the behavior fails
-because larger beam angles cause the rings to enlarge faster. When the rings become
-% FIXME %
-too large and the space between robots exceeds $2r+\epsilon$
-and are no longer a cluster as defined by \eqref{eq:connected}.
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class.png}
+    \caption{The average cost over 100 trials with $N$ classes, 10 robots per class.}
+    \label{fig:num_classes_10}
+  \end{figure}
 
-\begin{figure}[t]
-  \centering
-  \begin{tikzpicture}[scale=0.75]
-    \draw (0,0) circle (0.75);
-    \draw (0,0) -- (5,0.7);
-    \draw[dashed] (0,0) -- (5,0);
-    \draw (0,0) -- (5,-0.7);
-    \draw (4,0) arc [radius=4, start angle=0, end angle=8];
-    \node at (4.25,0.25) {$\beta$};
-  \end{tikzpicture}
-  \includegraphics[width=1\linewidth]{./images/beam_angle.png}
-  \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost is better.}
-  \label{fig:beam_angle}
-\end{figure}
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
+    \caption{The average cost over 100 trials with 100 robots divided into $N$ classes.}
+    \label{fig:num_classes_100}
+  \end{figure}
 
-\subsection{The Effect of Beam Length} \label{section:beam_range}
+  \subsection{The Effect of Implementation Details of the Sensor} \label{section:sensor_impl}
 
-We consider what happens if the theoretically infinite-range sensor has finite
-range. We use \ang{15} half beam angle and the same experimental setup as with
-the beam angle experiments. We consider the maximum range of the sensor as the
-diagonal length of the square in which the robot are initially distributed. In
-all our experiments, this square was \SI{5}{\meter} on each side, so we consider
-a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs
-for beam ranges as a fraction of this maximum range. As shown in
-Fig.~\ref{fig:beam_range}, a beam range of 25\% of the theoretical maximum
-performs just as well as an infinite sensor. Below this, the performance
-degrades.
+  We observed that the implementation details of the sensor have a significant
+  effect on the behavior of the controller.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=1\linewidth]{./images/beam_length.png}
-  \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
-  \label{fig:beam_range}
-\end{figure}
+  Initially, our method for determining sensor state from the simulated
+  range-and-bearing system was to consider all the robots within some small angle
+  in front of the robot and pick the closest one. This is very similar to what
+  would be provided by a real-world camera that uses colored skirts on each robot
+  and picks the largest blob as the robot to be detected. This sensor
+  implementation works well and was used in all our experiments. However,
+  we found later that, if the robots instead always prefer to react to kin over
+  non-kin, clusters form more quickly and robustly. For example, if there are
+  two robots within the field of view of a robot's sensor and the non-kin robot is
+  closer, the robot would ignore it and execute the $S=1$ logic, which drives the
+  robot towards the farther kin robot. Exploring exactly which of the various
+  implementation details have what effect on cost is left for future work.
 
-\section{Conclusion}
+  \subsection{The Effect of the Beam Angle} \label{sec:aperture_angle}
 
-In this paper, we show how robots with only a ternary sensor and a controller
-which maps sensor readings to wheel speeds is capable of $N$-class segregation.
-This controller is invariant to the number of classes, and using the best found parameters
-we are able to construct theoretical guarantees on the emergent behavior in a simplified setting.
-We performed a grid search to learn about the full parameter space, and we
-investigated the effect of sensor implementation details and the number of
-robots and classes on performance. Our findings indicate that robust segregation
-with non-ideal sensors in reality is possible, although not guaranteed.
+  On a real robot, there must be some finite beam angle to the theoretically
+  line-of-sight sensor. We ran 100 trials 180 seconds each in simulation with uniformly random
+  initial distributions of 40 robots with various beam
+  angles. Fig.~\ref{fig:beam_angle} shows the results, along with a diagram
+  showing how we define beam angle. The best beam angle we tested was \ang{20},
+  and angles smaller or larger became progressively worse. We found that at lower
+  beam angles, it was possible for a robot to become stuck in groups of two or
+  three, and the robots spent all their time looking at each other instead of
+  peeking around them to find kin. At larger angles, we suspect the behavior fails
+  because larger beam angles cause the rings to enlarge faster. When the rings become
+  % FIXME %
+  too large and the space between robots exceeds $2r+\epsilon$
+  and are no longer a cluster as defined by \eqref{eq:connected}.
 
-\bibliographystyle{IEEEtran}
-\bibliography{RBE595.bib}
+  \begin{figure}[t]
+    \centering
+    \begin{tikzpicture}[scale=0.75]
+      \draw (0,0) circle (0.75);
+      \draw (0,0) -- (5,0.7);
+      \draw[dashed] (0,0) -- (5,0);
+      \draw (0,0) -- (5,-0.7);
+      \draw (4,0) arc [radius=4, start angle=0, end angle=8];
+      \node at (4.25,0.25) {$\beta$};
+    \end{tikzpicture}
+    \includegraphics[width=1\linewidth]{./images/beam_angle.png}
+    \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost is better.}
+    \label{fig:beam_angle}
+  \end{figure}
+
+  \subsection{The Effect of Beam Length} \label{section:beam_range}
+
+  We consider what happens if the theoretically infinite-range sensor has finite
+  range. We use \ang{15} half beam angle and the same experimental setup as with
+  the beam angle experiments. We consider the maximum range of the sensor as the
+  diagonal length of the square in which the robot are initially distributed. In
+  all our experiments, this square was \SI{5}{\meter} on each side, so we consider
+  a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs
+  for beam ranges as a fraction of this maximum range. As shown in
+  Fig.~\ref{fig:beam_range}, a beam range of 25\% of the theoretical maximum
+  performs just as well as an infinite sensor. Below this, the performance
+  degrades.
+
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{./images/beam_length.png}
+    \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
+    \label{fig:beam_range}
+  \end{figure}
+
+  \section{Conclusion}
+
+  In this paper, we show how robots with only a ternary sensor and a controller
+  which maps sensor readings to wheel speeds is capable of $N$-class segregation.
+  This controller is invariant to the number of classes, and using the best found parameters
+  we are able to construct theoretical guarantees on the emergent behavior in a simplified setting.
+  We performed a grid search to learn about the full parameter space, and we
+  investigated the effect of sensor implementation details and the number of
+  robots and classes on performance. Our findings indicate that robust segregation
+  with non-ideal sensors in reality is possible, although not guaranteed.
+
+  \bibliographystyle{IEEEtran}
+  \bibliography{RBE595.bib}
 
 \end{document}
