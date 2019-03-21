@@ -61,10 +61,6 @@
   convergence and a study of non-ideal aspects in the robot design.
 \end{abstract}
 
-% \begin{IEEEkeywords}
-%   TBD
-% \end{IEEEkeywords}
-
 \section{Introduction}
 
 Group formation is one of the most fundamental mechanisms a robot swarm must
@@ -391,12 +387,11 @@ configurations
 
 The resulting behavior is for a robot to turn sharply until it detects a kin,
 then turn less sharply while it sees the kin. This change in the radius of rotation
-moves the robot closer to its kin. When a non-kin is seed, the robot turns in place,
-and therefore it does not advance as rapidly towards the non-kin as it does towards the kin.
-In isolation, the emergent behavior is similar to the aggergation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
+moves the robot closer to its kin. When a non-kin is seen, the robot turns in place.
+In isolation, the emergent behavior between kin and non-kin is similar to the aggregation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
 in that the robots are always turning in the same direction (counter-clockwise for our parameters).
 To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
-This was not only true for the best parameters, but for all of the top-scoring paramters settings we observed.
+This was not only true for the best parameters, but for all of the top-scoring parameters we observed.
 To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
