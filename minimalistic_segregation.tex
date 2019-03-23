@@ -15,13 +15,21 @@
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{tikz}
+\usepackage{pgf,tikz,pgfplots}
 \usepackage{units}
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
-\usetikzlibrary{arrows.meta,automata,calc,intersections,positioning}
+%\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows,arrows.meta,automata,calc,intersections,positioning}
+\definecolor{sexdts}{rgb}{0.1803921568627451,0.49019607843137253,0.19607843137254902}
+\definecolor{dtsfsf}{rgb}{0.8274509803921568,0.1843137254901961,0.1843137254901961}
+\definecolor{wrwrwr}{rgb}{0.3803921568627451,0.3803921568627451,0.3803921568627451}
+\definecolor{rvwvcq}{rgb}{0.08235294117647059,0.396078431372549,0.7529411764705882}
+\definecolor{cqcqcq}{rgb}{0.7529411764705882,0.7529411764705882,0.7529411764705882}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 
@@ -410,6 +418,11 @@ which partially explains the emergent behavior observed in our experiments.
 Critical to this analysis is the assumption that the sensor is an infinitely thin beam, and that both robot controller are synchronized, such that both robots take sensor readings at the same time and act for the same $\Delta t$ time step. Lastly, we assume the robots have the same radius.
 % TODO: better explain these assumptions
 
+\begin{figure}[t]
+  \centering
+  \input{non_kin_aggregation.tex}
+\end{figure}
+
 \newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
 In the proofs, we employ the well-known equations that govern the instantaneous
@@ -444,6 +457,7 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
   \end{equation}
 \end{theorem}
 \begin{proof}
+  To find a condition underwhich $c_i$ moves towards $c_j$ for any configuration $(x,y,\alpha)$, we first find the configuration which gives the tighted bound on the angle $\bar{\theta}$. 
 \end{proof}
 
 \begin{theorem}[Non-Kin Robots \#1]
