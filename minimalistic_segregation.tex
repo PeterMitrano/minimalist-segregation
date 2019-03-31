@@ -406,16 +406,17 @@ To better appreciate the dynamics of this behavior, we invite the interested rea
 
 \section{Behavior Analysis}
 \label{sec:analysis}
-Using the parameter settings~\eqref{eq:controller}, we now analyze
-the emerging behavior and explain how and why it emerges.
-Proving segregation among an arbitrary number of robots is difficult, so instead
-we consider simplified scenarios with two robots. In this section, we provide
+Using the parameter settings~\eqref{eq:controller}, we now break down
+and analyze the emerging behavior.
+While we are not able to formally explain the segregation behavior among an arbitrary number of robots,
+we can instead consider simplified scenarios with two robots. In this section, we provide
 simple conditions under which two kin robots in isolation are guaranteed to aggregate
-with each other. We also show that non-kin robots also aggregate, and provide the condition under which this occurs.
+with each other. Interestingly, we also show that non-kin robots aggregate, and provide the condition under which this occurs.
 From these two conditions, we can then hypothesize that large numbers of kin and non-kin robots also aggregate,
 which partially explains the emergent behavior observed in our experiments.
 
-Critical to this analysis is the assumption that the sensor is an infinitely thin beam, and that both robot controller are synchronized, such that both robots take sensor readings at the same time and act for the same $\Delta t$ time step. Lastly, we assume the robots have the same radius.
+Critical to this analysis are the assumptions that the sensor is an infinitely thin beam, and that both robot controller are synchronized such that both robots take sensor readings at the same time and act for the same $\Delta t$ time step.
+Lastly, we assume the robots have the same radius.
 % TODO: better explain these assumptions
 
 \newcommand{\ICC}{\ensuremath{\text{ICC}}}
@@ -430,9 +431,11 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
   \end{aligned}
 \end{equation}
 
-In all of the proofs of aggregation, the general strategy is proof by exhaustion that for one time step the robots aggregate. We consider all of the possible sensor states ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$. In order to prove that they aggregate regardless of the position or orientation of the robots, we find a worst case configuration. This means finding the configuration of the robot $j$ relative to robot $i$ for which the condition on the angle of rotation $\theta$ is smallest (see \ref{fig:config}). We then derive a condition for this worst case by taking advantage of the special geometry in each case.
+Table \ref{tab:distances} shows values of $R$ and $\omega$ for each sensor state, which we then use in our proofs.
 
-Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These points are exactly distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would stick out of the radius of the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
+We derive conditions under which the robots eventually step closer to each other regardless of configuration or sensor state. We consider all of the possible sensor states ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$ in seperate cases. To describe the positions and orientations of the robots, we use $x$, $y$, and $\alpha$ to describe the location of robot $j$ relative to robot $i$. In order to prove that they aggregate for any valid $x$, $y$, and $\alpha$, we define a worst case configuration and derive the conditions under this configuration. We define worst case to be when the condition on the angle of rotation $\theta$ is smallest (see \ref{fig:config}).
+
+Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These are the points around which the robot rotates in the $S=0$ state, and they are exactly distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would stick out of the radius of the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
 
 \begin{theorem}[Nothing Detected]
   Two robots seeing nothing will not separate, and will eventually transition to another state if
@@ -440,9 +443,10 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
     6\pi l \not\equiv 0 (\text{mod}\ 4V\Delta t)
   \end{equation}
   % TODO: what's the deal with the S1 tags? should I have a period at the end?
+  % actually this proof is incorrect
 \end{theorem}
 \begin{proof}
-  In this state, the robots rotate around the points $c_i$ and $c_j$. In order for these points to eventually aggregate, the robots must eventually exit this state. This will occur if one or both of the robots eventually detect each other, which is guaranteed if the angle of rotation for a robot in the nothing state (S=0) is does not evenly divide $2\pi$.
+  In this state, the robots rotate around the points $c_i$ and $c_j$. In order for these points to eventually aggregate, the robots must eventually exit this state. This will occur if one or both of the robots eventually detect each other. A sufficient but not nessecary condition for this is if the angle of rotation for a robot in the nothing state (S=0) is does not evenly divide $2\pi$.
 \end{proof}
 
 \begin{theorem}[Kin Robots \#1]
@@ -456,9 +460,22 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
   \begin{figure}[t]
     \centering
     \includegraphics[width=1\linewidth]{./images/kin_aggregation_1.png}
-    \caption{Two kin in an arbitrary valid configuration, where robot $i$ and robot $j$ see each other.}
+    \caption{Two kin in an arbitrary valid configuration, where robot $i$ and robot $j$ see each other. The robots are shown as red circles. The dashed line is the beam of the robot. $p_i$ and $p_j$ are the positions of robots $i$, and $j$ respectively. The robots rotate around the points $c_i$,$c_j$ when $S=0$ and around the points $q_i$,$q_j$ when $S=1$.}
     \label{fig:kin_aggregation_1}
   \end{figure}
+
+  \begin{table}[b]
+    \centering
+    \begin{tabular}{|c|c|c|c|} \hline
+      & $S=0$ & $S=1$ & $S=2$ \\ \hline
+      $v_l$ & $-1$ & $\sfrac{1}{3}$ & $-1$ \\ \hline
+      $v_r$ & $\sfrac{1}{3}$ & $1$ & $1$ \\ \hline
+      $R$ & $\sfrac{-l}{4}$ & $l$ & $0$ \\ \hline
+      $\omega$ & $\frac{4V}{3l}$ & $\frac{4V}{3l}$ & $\sfrac{4V}{3l}$ \\ \hline
+    \end{tabular}
+    \label{tab:distances}
+    \caption{turning Radii and rotational velocities for the best parameters.}
+  \end{table}
 
   \begin{figure}[t]
     \centering
@@ -467,14 +484,14 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
     \label{fig:kin_aggregation_1_worst_case}
   \end{figure}
 
-  To find a condition under which $c_i$ moves towards $c_j$ for any configuration $(x,y,\alpha)$, we first find the configuration which gives the tightest bound on the angle $\theta$. We defined $\theta$ to be the maximum angle through which $c_i$ and $c_j$ may rotate such that the distance $d'$ between $c'_i$ and $c'_j$ (the blue line) is no greater than the original distance $d$ (the red line). Unfortunately, the analytic equation for $\theta$ as a function of $x, y, \alpha$ as complex and cannot be used to derive the worst-case configuration, and therefore we do so graphically. The worst-case configuration is found by letting $\alpha$ be such that the beam of robot $j$ is tangent to the bottom of robot $i$, setting $y=-r$, and $x=\sqrt{3}r$. To understand why this is the case, observe that as $\alpha$ is constrained to lie between the orange lines because this proof considers the case where robot $j$ sees robot $i$. As $\alpha$ increase within this range, $d$ strictly decreases. Clearly $\theta$ decreases as $d$ decreases, and therefore the worst case for $\alpha$ is when it obtains it's maximum value, which occurs when it is tangent to the bottom of robot $j$.
-  Next, we observe that $\theta$ also strictly decreases as $y$ decreases and $x$ decreases. Since $y\in[-r,r]$ take y to be the minimum value of $y=-r$. In this case, the minimum value of $x$ is then $x=-\sqrt{3}r$. This worst-case configuration is shown in Figure \ref{fig:kin_aggregation_1_worst_case}. From this worst case, we can now defined the exact positions $q_i=[0,0]$, $p_i=[0,-l]$, $v=[\sqrt{3}r,-l-\sfrac{r}{2}]$. Reasoning on a right triangle with vertices $q_i$ and $v$, we find that
+  To find a condition under which $c_i$ moves towards $c_j$ for any configuration $(x,y,\alpha)$, we first find the configuration which gives the tightest bound on the angle $\theta$. We defined $\theta$ to be the maximum angle through which $c_i$ and $c_j$ may rotate such that the distance $d'$ between $c'_i$ and $c'_j$ (the blue line) is no greater than the original distance $d$ (the red line). The worst-case configuration is found by letting $\alpha$ be such that the beam of robot $j$ is tangent to the bottom of robot $i$, setting $y=-r$, and $x=\sqrt{3}r$. To understand why this is the case, observe that as $\alpha$ is constrained to lie between the orange lines because this proof considers the case where robot $j$ sees robot $i$. As $\alpha$ increase within this range, the point $c_j$ moves counter clockwise towards $c_i$ and therefore $d$ strictly decreases. Furthermore, as $d$ decreases $\theta$ must also decrease to maintain the defining property of $\theta$ -- which is that $d'\leq d$. Therefore the worst case for $\alpha$ is when it obtains it's maximum value, which occurs when the beam of robot $j$ is tangent to the bottom of robot $i$.
+  Next, we observe that $\theta$ also strictly decreases as $y$ decreases and $x$ decreases. Since $y\in[-r,r]$ take y to be the minimum value of $y=-r$. In this case, the minimum value of $x$ is then $x=\sqrt{3}r$. This worst-case configuration is shown in Figure \ref{fig:kin_aggregation_1_worst_case}. From this worst case, we can now define the exact positions $q_i=[0,0]$, $p_i=[0,-l]$, $v=[\sqrt{3}r,-l-\sfrac{r}{2}]$. Reasoning on a right triangle with vertices $q_i$ and $v$, we find that
   \begin{equation}
     \frac{\theta}{2} = \tan^{-1}\Bigg(\frac{|v_x|}{|v_y - q_{iy}|}\Bigg)
                      = \tan^{-1}\Bigg(\frac{\sqrt{3}r}{2l+r}\Bigg)
   \end{equation}
 
-  From this we require that the angle the robot rotates be less than this angle, and thus the condition under which the kin aggregate in this scenario is
+  From this we require that the angle the robot rotates in one time step be less than this angle, and thus the condition under which the kin aggregate in this scenario is
   \begin{equation}
     V\Delta t \leq 3l\tan^{-1}\Bigg(\frac{\sqrt{3}r}{2l+r}\Bigg)
   \end{equation}
@@ -488,6 +505,26 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
   \end{equation}
 \end{theorem}
 \begin{proof}
+
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{./images/non_kin_aggregation_1_worst_case.png}
+    \caption{Two non-kin in the worst-case configuration for which $\theta$ is minimized.}
+    \label{fig:non_kin_aggregation_1_worst_case}
+  \end{figure}
+
+  This proof follows the same logic and geometry as the previous case (Kin-Robots \#1) so for brevity we omit the full proof. Ultimately, we arrive at the worst case configuration shown in Figure \ref{fig:non_kin_aggregation_1_worst_case}. The coordinates are now $p_i = [0,0]$ and $v=[\sfrac{\sqrt{3}r}{2}, \sfrac{r}{2}]$, which gives
+  \begin{equation}
+      \frac{\theta}{2} = \tan^{-1}\Bigg(\frac{|v_x|}{|v_y - p_{iy}|}\Bigg)
+                       = \tan^{-1}\Bigg(\frac{\frac{\sqrt{3}r}{2}}{\frac{r}{2}}\Bigg)
+                       = \frac{\pi}{3}
+  \end{equation}
+  \begin{equation}
+    \begin{split}
+      \frac{4V}{3l}\Delta t &\leq \frac{2\pi}{3} \\
+      2V\Delta t &\leq l\pi
+    \end{split}
+  \end{equation}
 \end{proof}
 
 \begin{theorem}[Kin Robots \#2]
