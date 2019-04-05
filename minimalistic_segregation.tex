@@ -433,7 +433,9 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
 
 Table \ref{tab:distances} shows values of $R$ and $\omega$ for each sensor value, which we then use in our proofs.
 
-We derive conditions under which the robots eventually step closer to each other regardless of robot positions or sensor value. We consider all of the possible sensor values ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$ in separate cases. However, the cases ($S_i=1$, $S_j=0$) and ($S_i=0$, $S_j=1$) and the cases ($S_i=2$, $S_j=0$) and ($S_i=0$, $S_j=2$) are equivalent so we need only prove it for one of each pair. Furthermore, for two isolated robots the cases where one robot sees a kin and the other sees a non-kin ($S_i=1$, $S_j=2$) and ($S_i=1$, $S_j=2$) are impossible. This leaves just 5 cases, and we derive a condition for each. We use $x$, $y$, and $\alpha$, collectively called a configuration, to indicate the location of robot $j$ relative to robot $i$. In order to prove that robots aggregate for any $x$, $y$, and $\alpha$, we define a worst-case configuration and derive the conditions under this configuration. We define worst-case to be when the condition on the angle of rotation $\theta$ is smallest.
+We derive conditions under which the robots eventually step closer to each other regardless of robot positions or sensor value. We consider all of the possible sensor values ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$ in separate cases. However, the cases ($S_i=1$, $S_j=0$) and ($S_i=0$, $S_j=1$) and the cases ($S_i=2$, $S_j=0$) and ($S_i=0$, $S_j=2$) are equivalent so we need only prove it for one of each pair. Furthermore, for two isolated robots, the cases where one robot sees a kin and the other sees a non-kin ($S_i=1$, $S_j=2$) and ($S_i=1$, $S_j=2$) are impossible. This leaves just 5 cases, and we derive a condition for each. We use $x$, $y$, and $\alpha$, collectively called a configuration, to indicate the location of robot $j$ relative to robot $i$. In order to prove that robots aggregate for any $x$, $y$, and $\alpha$, we define a worst-case configuration and derive the conditions under this configuration.
+
+We define worst-case based on the angle $\theta$, where $\theta$ is defined as the angle at which the distance between $c'_i$ and $c'_j$ equals the distance between $c_i$ and $c_j$. In detail, the distance from $c_i$ and $c_j$ initially decreases, reaches a minimum, and then increases. At some point, this distance will be equal to the original distance, and the angle at which this occurs is defined as $\theta$. For there to be aggregation, we require $\omega\Delta t \leq \theta$. Therefore, the stricted condition on the amounts the robot can rotate $\omega\Delta t$ is worst when the condition on the angle of rotation $\theta$ is smallest.
 
 Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These are the points around which the robot rotates in the $S=0$ case. These points are at a distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would protrude from the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
 
@@ -552,7 +554,7 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
     \label{fig:kin_aggregation_2_worst_case}
   \end{figure}
 
-\begin{theorem}[Non-Kin Robots \#2]
+\begin{theorem}[Non-Kin Robots \#2]\label{thm:non_kin_robots_2}
   In the case where robot $i$ sees robot $j$ and robot $j$ sees nothing, the robots aggregate when
   \begin{equation}\label{eq:two_non_kin_condition}
     \begin{split}
@@ -563,6 +565,16 @@ Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregat
   \end{equation}
 \end{theorem}
 \begin{proof}
+
+  This proofs is the same as the proof of Theorem \ref{thm:kin_robots_2}, and the worst-case configuration is shown in Figure \ref{fig:non_kin_aggregation_2_worst_case}
+
+  \begin{figure}[t]
+    \centering
+    \includegraphics[height=5cm]{./images/non_kin_aggregation_2_worst_case.png}
+    \caption{Theorem \ref{thm:non_kin_robots_2}: Two non-kin in the worst-case configuration for which $\theta$ is minimized.}
+    \label{fig:non_kin_aggregation_2_worst_case}
+  \end{figure}
+
 \end{proof}
 
 \section{Experimental Results}
