@@ -336,7 +336,7 @@ Our complete cost function is then
   \label{eq:cost_function}
   c_{\text{total}} =  \sum_{t=0}^{T-1} t\gamma(t)
 \end{equation}
-in which we denote the total trial time (100 seconds) with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
+in which we denote the total trial time with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
 emergence of clusters as the trial time proceeds: we cannot expect large
 clusters to be present at the beginning of a trial, but good parameter settings
 should grow (and maintain) clusters over time. In our experiments, we found that
@@ -378,6 +378,18 @@ equal and negative (dark squares in the upper left), and that the best
 controllers had unequal values close to 1 (lightest squares in the
 bottom left). These plots also convey the presence of sharp discontinuities
 where performance changes dramatically.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_1_class_small}
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_2_class_small}
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_3_class_small}
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_4_class_small}
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_5_class_small}
+  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_6_class_small}
+  \caption{Random examples of segregation after 180 seconds in the 40 robots with random initial placements of robots at a density of 10 robots per square meter.}
+  \label{fig:segregation_examples}
+\end{figure}
 
 \myparagraph{The emergent behavior}
 After running the grid search, the parameters with the lowest mean cost across all 36
