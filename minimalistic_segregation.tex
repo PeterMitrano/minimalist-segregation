@@ -109,7 +109,7 @@ $N$-class segregation to emerge from local, decentralized interactions among
 robots. The term `$N$-class' refers to the creation of $N$ spatially distinct
 groups. We show that, for segregation to emerge, it is sufficient to equip an
 `if/then/else', differential drive robot with a \emph{ternary} sensor. This
-sensor detects the presence of a robot in range. When a robot is detected, the
+sensor detects the presence of a robot along a line-of-sight. When a robot is detected, the
 sensor can distinguish whether it is a \emph{kin}, i.e., it belongs to the same
 group as the sensing robot, or a \emph{non-kin}, i.e., it belongs to a different
 group. When multiple robots are in range, the sensor returns information on the
@@ -117,7 +117,7 @@ closest one of them.
 
 The main contributions of this paper are \emph{(i)} A study of the parameter
 space that enables the emergence of $N$-class segregation; \emph{(ii)} A study
-of why convergence is guaranteed for the best parameter choice found; and
+of why certain behavior is guaranteed for the best parameter choice found; and
 \emph{(iii)} An analysis of the robustness of the algorithm to non-idealities in
 the robot design.
 
@@ -307,7 +307,7 @@ To define our cost function, we first establish the notion of a cluster.
 A cluster can be intuitively defined as an island of connected kin robots.
 Formally, a cluster is a set of kin robots which are \emph{connected}.
 Denoting with $r$ the radius of the body of a robot, and defining
-$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot at time $t$, we consider any two kin robots to be
+$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot $i$ at time $t$, we consider any two kin robots to be
 connected if
 \begin{equation} \label{eq:connected}
   \lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+)
@@ -339,11 +339,10 @@ Our complete cost function is then
 in which we denote the total trial time with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
 emergence of clusters as the trial time proceeds: we cannot expect large
 clusters to be present at the beginning of a trial, but good parameter settings
-should grow (and maintain) clusters over time. In our experiments, we found that
-$c_{\text{total}}$ correctly assigns cost in most scenarios, thus fitting
-well our analysis purposes. However, this cost function considers a straight
-line of robots to be a cluster, and as such it might not be ideal for scenarios
-in which the clusters are required to be tight.
+should grow (and maintain) clusters over time. In our experiments, we found from visual inspection that
+$c_{\text{total}}$ correctly assigns cost in most scenarios.
+However, this cost function considers a straight line of robots to be a cluster,
+and as such it might not be ideal for scenarios in which the clusters are required to be tight.
 
 \begin{figure}[t]
   \centering
@@ -434,10 +433,10 @@ differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek20
     $v_l$ & $-1$ & $\sfrac{1}{3}$ & $-1$ \\ \hline
     $v_r$ & $\sfrac{1}{3}$ & $1$ & $1$ \\ \hline
     $R$ & $\sfrac{-l}{4}$ & $l$ & $0$ \\ \hline
-    $\omega$ & $\frac{4V}{3l}$ & $\frac{4V}{3l}$ & $\sfrac{4V}{3l}$ \\ \hline
+    $\omega$ & $\frac{4V}{3l}$ & $\frac{2V}{3l}$ & $\frac{2V}{l}$ \\ \hline
   \end{tabular}
-  \label{tab:omega_and_r}
-  \caption{turning Radii and rotational velocities for the best parameters.}
+  
+  \caption{turning Radii and rotational velocities for the best parameters.\label{tab:omega_and_r}}
 \end{table}
 
 Table \ref{tab:omega_and_r} shows values of $R$ and $\omega$ for each sensor value, which we then use in our proofs.
