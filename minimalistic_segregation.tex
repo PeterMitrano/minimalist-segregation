@@ -347,21 +347,21 @@ in which the clusters are required to be tight.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.32\linewidth]{./images/0_1_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/4_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_2_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/3_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_5_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/0_2_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/1_3_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/2_4_grid_img}
-  \includegraphics[width=0.32\linewidth]{./images/3_5_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/0_1_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/2_3_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/4_5_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/0_3_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/0_5_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/1_4_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/1_2_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/3_4_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/2_5_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/0_4_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/1_5_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/0_2_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/1_3_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/2_4_grid_img}
+  \includegraphics[width=0.24\linewidth]{./images/3_5_grid_img}
   \caption{Heatmaps that relate relevant pairs of wheel speeds. Darker is worse.}
   \label{fig:gridsearch}
 \end{figure}
@@ -381,12 +381,12 @@ where performance changes dramatically.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_1_class_small}
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_2_class_small}
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_3_class_small}
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_4_class_small}
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_5_class_small}
-  \includegraphics[width=0.49\columnwidth]{./images/segregation_example_6_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_1_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_2_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_3_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_4_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_5_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_6_class_small}
   \caption{Random examples of segregation after 180 seconds in the 40 robots with random initial placements of robots at a density of 10 robots per square meter.}
   \label{fig:segregation_examples}
 \end{figure}
@@ -407,6 +407,7 @@ In isolation, the emergent behavior between kin and non-kin is similar to the ag
 in that the robots are always turning in the same direction (counter-clockwise for our parameters).
 To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
 This was not only true for the best parameters, but for all of the top-scoring parameters we observed.
+Examples of the results are shown in Figure \ref{fig:segregation_examples}.
 To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
@@ -461,7 +462,7 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
 
   \begin{figure}[t]
     \centering
-    \includegraphics[width=1\columnwidth]{./images/thm1}
+    \includegraphics[width=0.8\columnwidth]{./images/thm1}
     \caption{Two robots at the maximum distance at which the robots will not skip over seeing each other. Robot $i$ moves from $p_i$ to $p'_i$, and likewise for robot $j$. Without loss of generality, we place $p_i$ at the origin initially facing the positive $x$-axis. Figure is accurate up to a scale.}
     \label{fig:nothing}
   \end{figure}
@@ -474,13 +475,13 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
   \begin{figure}[t]
     \centering
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/kin_1}
+      \includegraphics[width=0.9\columnwidth]{./images/kin_1}
       \caption{kin}
       \label{fig:kin_1}
     \end{subfigure}
 
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/non_kin_1}
+      \includegraphics[width=0.9\columnwidth]{./images/non_kin_1}
       \caption{non kin}
       \label{fig:non_kin_1}
     \end{subfigure}
@@ -507,13 +508,13 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
   \begin{figure}
     \centering
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/kin_2}
+      \includegraphics[width=0.9\columnwidth]{./images/kin_2}
       \caption{kin robots}
       \label{fig:kin_2}
     \end{subfigure}
 
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/non_kin_2}
+      \includegraphics[width=0.9\columnwidth]{./images/non_kin_2}
       \caption{non kin robots}
       \label{fig:non_kin_2}
     \end{subfigure}
@@ -522,7 +523,7 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
 
   \begin{figure}[t]
     \centering
-    \includegraphics[width=1\columnwidth]{./images/min_max_alpha}
+    \includegraphics[width=.7\columnwidth]{./images/min_max_alpha}
     \caption{Visualization of the minimum and maximum value for $\alpha$ for the sensor cases ($S_i=1$, $S_j=1$) and ($S_i=2$, $S_j=2$).}
     \label{fig:min_max_alpha}
   \end{figure}
@@ -569,14 +570,14 @@ Here the trend indicates that our methods scaled well with the number of classes
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class}
+  \includegraphics[width=0.9\linewidth]{./images/num_classes_vs_cost_10_per_class}
   \caption{The average cost over 100 trials with $N$ classes, 10 robots per class.}
   \label{fig:num_classes_10}
 \end{figure}
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots}
+  \includegraphics[width=0.9\linewidth]{./images/num_classes_vs_cost_100_robots}
   \caption{The average cost over 100 trials with 100 robots divided into $N$ classes.}
   \label{fig:num_classes_100}
 \end{figure}
@@ -625,7 +626,7 @@ and are no longer a cluster as defined by \eqref{eq:connected}.
     \draw (4,0) arc [radius=4, start angle=0, end angle=8];
     \node at (4.25,0.25) {$\beta$};
   \end{tikzpicture}
-  \includegraphics[width=1\linewidth]{./images/beam_angle}
+  \includegraphics[width=0.9\linewidth]{./images/beam_angle}
   \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost is better.}
   \label{fig:beam_angle}
 \end{figure}
@@ -645,7 +646,7 @@ degrades.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/beam_length}
+  \includegraphics[width=0.9\linewidth]{./images/beam_length}
   \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
   \label{fig:beam_range}
 \end{figure}
