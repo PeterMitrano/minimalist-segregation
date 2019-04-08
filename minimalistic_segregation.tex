@@ -320,7 +320,7 @@ the final result of a trial is expected to be a set of $N$ distinct clusters com
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
 configuration achieved by the robots over time, we first calculate, for every
-class $i$, the number of robots in the largest cluster $c_i(t)$ formed by robots of class $i$.  Since,
+class $i$, the number of robots in the largest cluster $c_i(t)$ formed by robots of class $i$. Since,
 in principle, different classes might involve different numbers of robots, in
 our cost function we employ the ratio
 $$
@@ -400,13 +400,7 @@ To better appreciate the dynamics of this behavior, we invite the interested rea
 
 \section{Behavior Analysis}
 \label{sec:analysis}
-Using the parameter settings~\eqref{eq:controller}, we now break down
-and analyze the emerging behavior.
-While we are not able to formally explain the segregation behavior among an arbitrary number of robots,
-we can instead consider simplified scenarios with two robots. In this section, we provide
-prove that, for the robot parameters considered in our experiments, two kin robots in isolation are guaranteed to aggregate.
-Interestingly, we also show that two isolated non-kin robots are also guaranteed to aggregate.
-These two guarantees partially explains the emergent behavior observed in our experiments.
+Using the parameter settings~\eqref{eq:controller}, we now break down and analyze the emerging behavior. While we are not able to formally explain the segregation behavior among an arbitrary number of robots, we can instead consider simplified scenarios with two robots. We prove that, for the robot parameters considered in our experiments, two kin robots in isolation are guaranteed to aggregate. Interestingly, we also show that two isolated non-kin robots are also guaranteed to aggregate. We hypothesize that this aggregation of non-kin is actually essential for segregation with this sensor model, since by keeping robots close we ensure that kin robots are not initially repelled by non-kin and fail to discover each other. This is supported by our grid search results, for which we found that the vast majority of the top scoring parameters showed aggregation between isolated non-kin. These two guarantees partially explains the emergent behavior observed in our experiments.
 
 \newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
