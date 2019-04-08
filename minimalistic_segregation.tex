@@ -455,45 +455,45 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
 
   \begin{figure}[t]
     \centering
-    \includegraphics[width=1\columnwidth]{./images/thm1.png}
+    \includegraphics[width=1\columnwidth]{./images/thm1}
     \caption{Two robots at the maximum distance at which the robots will not skip over seeing each other. Robot $i$ moves from $p_i$ to $p'_i$, and likewise for robot $j$. Without loss of generality, we place $p_i$ at the origin initially facing the positive $x$-axis. Figure is accurate up to a scale.}
     \label{fig:nothing}
   \end{figure}
 \end{proof}
 
-\begin{theorem}[Kin Robots \#2]\label{thm:kin_2}
+\begin{theorem}[Kin Robots \#1]\label{thm:kin_1}
   In the case ($S_i=1$, $S_j=0$), the robots aggregate.
 \end{theorem}
 \begin{proof}
   \begin{figure}[t]
     \centering
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/kin_2.png}
-      \label{fig:kin_2}
+      \includegraphics[width=1\columnwidth]{./images/kin_1}
       \caption{kin}
+      \label{fig:kin_1}
     \end{subfigure}
 
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/non_kin_2.png}
+      \includegraphics[width=1\columnwidth]{./images/non_kin_1}
       \caption{non kin}
-      \label{fig:non_kin_2}
+      \label{fig:non_kin_1}
     \end{subfigure}
 
     \caption{Robot $i$ sees robot $j$ and robot $j$ sees nothing. $c_i$ moves to $c'_i$ and is closer to $c_j$. The point $p_x$ must be in the yellow region (which extends past the right of this image up to \SI{0.888}{\meter}, and $\alpha$ is such that the beam of robot $j$ must not intersect robot $i$. The dashed lines represent the sensor beams. In this figure, one example $p_j$ and $\alpha$ is shown.}
   \end{figure}
 
-  Robot $j$ is in state $S=0$, rotating around the point $c_j$. Therefore $c_j$ is stationary, so we require $||c_j- c'_i|| < ||c_j- c_i||$. We draw the perpendicular bisector between $c_i$ and $c'_i$ (thick black line, Figures \ref{fig:kin_2},\ref{fig:non_kin_2}) and note that $c_j$ is always on the left side of this line, and therefore $||c_j- c'_i|| < ||c_j- c_i||$ holds.
+  Robot $j$ is in state $S=0$, rotating around the point $c_j$. Therefore $c_j$ is stationary, so we require $||c_j- c'_i|| < ||c_j- c_i||$. We draw the perpendicular bisector between $c_i$ and $c'_i$ (thick black line, Figures \ref{fig:kin_1}, \ref{fig:non_kin_1}) and note that $c_j$ is always on the left side of this line, and therefore $||c_j- c'_i|| < ||c_j- c_i||$ holds.
 \end{proof}
 
-\begin{theorem}[Non-Kin Robots \#2]\label{thm:non_kin_2}
+\begin{theorem}[Non-Kin Robots \#1]\label{thm:non_kin_1}
   In the case ($S_i=2$, $S_j=0$), the robots aggregate.
 \end{theorem}
 \begin{proof}
 
-  This proof follows the reasoning from Theorem \ref{thm:kin_2}, and is illustrated in Figure \ref{fig:non_kin_2}.
+  This proof follows the reasoning from Theorem \ref{thm:kin_1}, and is illustrated in Figure \ref{fig:non_kin_1}.
 \end{proof}
 
-\begin{theorem}[Kin Robots \#1]\label{thm:kin_1}
+\begin{theorem}[Kin Robots \#2]\label{thm:kin_2}
   In the case ($S_i=1$, $S_j=1$), the robots aggregate.
 \end{theorem}
 \begin{proof}
@@ -501,34 +501,37 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
   \begin{figure}
     \centering
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/kin_1_proof_viz.png}
+      \includegraphics[width=1\columnwidth]{./images/kin_2}
       \caption{kin robots}
-      \label{fig:kin_1}
+      \label{fig:kin_2}
     \end{subfigure}
 
     \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=1\columnwidth]{./images/non_kin_1_proof_viz.png}
+      \includegraphics[width=1\columnwidth]{./images/non_kin_2}
       \caption{non kin robots}
-      \label{fig:non_kin_1}
+      \label{fig:non_kin_2}
     \end{subfigure}
     \caption{A numerical check visualizing how much closer the two robots are after one time step. All values are positive because aggregation occurs everywhere, yellow means more aggregation. The dashed lines represent the sensor beams.}
   \end{figure}
 
   \begin{figure}[t]
     \centering
-    \includegraphics[width=0.8\columnwidth]{./images/min_max_alpha.png}
+    \includegraphics[width=1\columnwidth]{./images/min_max_alpha}
     \caption{Visualization of the minimum and maximum value for $\alpha$ for the sensor cases ($S_i=1$, $S_j=1$) and ($S_i=2$, $S_j=2$).}
     \label{fig:min_max_alpha}
   \end{figure}
 
-  As in the previous proofs, the region of possible configurations $(x, y, \alpha)$ of robot $j$ is bounded for this sensor case. This range for $x$ is bounded on the left by collision with the kin and on the right by a distance \SI{0.888}{\meter}. In $y$, the range is bounded by $-r$ and $r$ because in this case we require robot $i$ to see robot $j$. Finally, the $\alpha$ value is bounded by \ang{120} and \ang{240} because in this sensor case robot $j$ sees robot $i$. This minimum and maximum $\alpha$ are shown in Figure \ref{fig:min_max_alpha}. We then numerically check exhaustively over this space with a fine resolution, shown in Figure \ref{fig:kin_1}.
+  As in the previous proofs, the region of possible configurations $(x, y, \alpha)$ of robot $j$ is bounded for this sensor case. This range for $x$ is bounded on the left by collision with the kin and on the right by a distance \SI{0.888}{\meter}. In $y$, the range is bounded by $-r$ and $r$ because in this case we require robot $i$ to see robot $j$. Finally, the $\alpha$ value is bounded by \ang{120} and \ang{240} because in this sensor case robot $j$ sees robot $i$. This minimum and maximum $\alpha$ are shown in Figure \ref{fig:min_max_alpha}. We then numerically check exhaustively over this space with a fine resolution, shown in Figure \ref{fig:kin_2}.
 
 \end{proof}
 
-\begin{theorem}[Non-Kin Robots \#1]\label{thm:non_kin_1}
+\begin{theorem}[Non-Kin Robots \#3]\label{thm:non_kin_2}
   In the case ($S_i=2$, $S_j=2$), the robots aggregate.
 \end{theorem}
 \begin{proof}
+
+  This proof follows the reasoning from Theorem \ref{thm:kin_2}, and is illustrated in Figure \ref{fig:non_kin_2}.
+
 \end{proof}
 
 \section{Experimental Results}
@@ -560,14 +563,14 @@ Here the trend indicates that our methods scaled well with the number of classes
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class.png}
+  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_10_per_class}
   \caption{The average cost over 100 trials with $N$ classes, 10 robots per class.}
   \label{fig:num_classes_10}
 \end{figure}
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots.png}
+  \includegraphics[width=1\linewidth]{./images/num_classes_vs_cost_100_robots}
   \caption{The average cost over 100 trials with 100 robots divided into $N$ classes.}
   \label{fig:num_classes_100}
 \end{figure}
@@ -616,7 +619,7 @@ and are no longer a cluster as defined by \eqref{eq:connected}.
     \draw (4,0) arc [radius=4, start angle=0, end angle=8];
     \node at (4.25,0.25) {$\beta$};
   \end{tikzpicture}
-  \includegraphics[width=1\linewidth]{./images/beam_angle.png}
+  \includegraphics[width=1\linewidth]{./images/beam_angle}
   \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost is better.}
   \label{fig:beam_angle}
 \end{figure}
@@ -636,7 +639,7 @@ degrades.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=1\linewidth]{./images/beam_length.png}
+  \includegraphics[width=1\linewidth]{./images/beam_length}
   \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
   \label{fig:beam_range}
 \end{figure}
