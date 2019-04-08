@@ -65,10 +65,9 @@ in Robot Swarms}
   sensing robot; (ii) The robots move according to a differential drive model;
   and (iii) The structure of the control system is purely reactive, and it maps
   directly the sensor readings to the wheel speeds with a simple `if' statement.
-  We present a thorough analysis of the parameter space
-  that enables this behavior to emerge, along with idealized conditions for
-  convergence and a study of non-ideal aspects in the robot design.
-  % TODO change this if the proofs work out
+  We present a thorough analysis of the parameter space that enables this behavior to emerge,
+  along with proofs explaining some of the emergent behavior.
+  Finally, we study the non-ideal aspects in the robot design.
 \end{abstract}
 
 \section{Introduction}
@@ -443,16 +442,16 @@ We consider all of the possible sensor values ($S=0$, $S=1$, $S=2$) for a robot 
 We use $x$, $y$, and $\alpha$, collectively called a configuration, to indicate the location of robot $j$ relative to robot $i$. Without loss of generality, we will always consider robot $i$ to be at the origin and facing the positive $x$-axis. Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These are the points around which the robot rotates in the $S=0$ case. These points are at a distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would protrude from the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
 
 % TODO: is this paragraph necessary?
-As discussed above, there are 5 sensor cases to be considered for two robots. In the ``see nothing'' case ($S_i=0$, $S_j=0$), we will prove that the points $c_i$ and $c_j$ remain at constant distance. We then prove that in the other 4 cases the points aggregate. Finally, if $c_i$ and $c_j$ are guaranteed to exit the ``see nothing'' case into one of the other four cases where they aggregate, then they must eventually aggregate regardless of when and how often they may transition between the different sensor cases.
+As discussed above, there are 5 sensor cases to be considered for two robots. In the ``see nothing'' case ($S_i=0$, $S_j=0$), we will prove that the points $c_i$ and $c_j$ remain at constant distance. We then prove that in the other 4 cases the points aggregate. Finally, if $c_i$ and $c_j$ are guaranteed to exit the ``see nothing'' case into one of the other four sensor cases where they aggregate, then they must eventually aggregate regardless of when and how often they may transition between the different sensor cases.
 
 \begin{theorem}[Nothing Detected]\label{thm:nothing}
-  In the case ($S_i=0$, $S_j=0$), the robots will transition to another case if
+  In the sensor case ($S_i=0$, $S_j=0$), the robots will transition to another sensor case if
   \begin{equation}\label{eq:nothing}
     ||p_j - p_i|| \lessapprox 0.888\text{\SI{}{m}}
   \end{equation}
 \end{theorem}
 \begin{proof}
-  In this case the robots rotate around the points $c_i$ and $c_j$, and therefore these points are stationary. To prove that $c_i$ and $c_j$ eventually aggregate we must prove that the robots exit this case. In other words, we prove that one robot will eventually see the other. For this, the distance between the robots must be bounded. If the robots are too far away, then the beam could ``skip'' over the other robot. Figure \ref{fig:nothing} shows the robots in the configuration where this maximum distance is attained. All figures are accurate up to a scale. We used the Geometry package Geogebra \cite{geogebra5} to solve for the bound in this equation.
+  In this sensor case the robots rotate around the points $c_i$ and $c_j$, and therefore these points are stationary. To prove that $c_i$ and $c_j$ eventually aggregate we must prove that the robots exit this sensor case. In other words, we prove that one robot will eventually see the other. For this, the distance between the robots must be bounded. If the robots are too far away, then the beam could ``skip'' over the other robot. Furthermore, we account for the fact that robot $j$ is also moving. Figure \ref{fig:nothing} shows the robots in the configuration where this maximum distance is attained. In this worst-case configuration, the bottom of robot $j$ is tangent to the beam of robot $i$ at $t=0$. Then at $t=0.1$, the top of robot $j$ is tangent to the new beam of robot $i$. Since we know the angles the robots rotate, this fully constraints the geometry to the configuration shown. We used the Geometry package Geogebra \cite{geogebra5} to solve for the bound in this equation.
 
   \begin{figure}[t]
     \centering
@@ -480,7 +479,7 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
       \label{fig:non_kin_2}
     \end{subfigure}
 
-    \caption{Robot $i$ sees robot $j$ and robot $j$ sees nothing. $c_i$ moves to $c'_i$ and is closer to $c_j$. The point $p_x$ must be in the yellow region (which extends past the right of this image up to \SI{0.888}{\meter}, and $\alpha$ is such that the beam of robot $j$ must not intersect robot $i$. In this figure, one example $p_j$ and $\alpha$ is shown.}
+    \caption{Robot $i$ sees robot $j$ and robot $j$ sees nothing. $c_i$ moves to $c'_i$ and is closer to $c_j$. The point $p_x$ must be in the yellow region (which extends past the right of this image up to \SI{0.888}{\meter}, and $\alpha$ is such that the beam of robot $j$ must not intersect robot $i$. The dashed lines represent the sensor beams. In this figure, one example $p_j$ and $\alpha$ is shown.}
   \end{figure}
 
   Robot $j$ is in state $S=0$, rotating around the point $c_j$. Therefore $c_j$ is stationary, so we require $||c_j- c'_i|| < ||c_j- c_i||$. We draw the perpendicular bisector between $c_i$ and $c'_i$ (thick black line, Figures \ref{fig:kin_2},\ref{fig:non_kin_2}) and note that $c_j$ is always on the left side of this line, and therefore $||c_j- c'_i|| < ||c_j- c_i||$ holds.
@@ -512,12 +511,12 @@ As discussed above, there are 5 sensor cases to be considered for two robots. In
       \caption{non kin robots}
       \label{fig:non_kin_1}
     \end{subfigure}
-    \caption{A numerical check visualizing how much closer the two robots are after one time step. All values are positive because aggregation occurs everywhere, yellow means more aggregation.}
+    \caption{A numerical check visualizing how much closer the two robots are after one time step. All values are positive because aggregation occurs everywhere, yellow means more aggregation. The dashed lines represent the sensor beams.}
   \end{figure}
 
   \begin{figure}[t]
     \centering
-    \includegraphics[width=1\columnwidth]{./images/min_max_alpha.png}
+    \includegraphics[width=0.8\columnwidth]{./images/min_max_alpha.png}
     \caption{Visualization of the minimum and maximum value for $\alpha$ for the sensor cases ($S_i=1$, $S_j=1$) and ($S_i=2$, $S_j=2$).}
     \label{fig:min_max_alpha}
   \end{figure}
