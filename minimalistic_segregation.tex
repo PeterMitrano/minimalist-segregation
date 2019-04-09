@@ -97,13 +97,17 @@ that can be obtained using primordial control strategies based on a simple
 `if/then/else' structure, binary sensors, and differential-drive robots. Gauci
 \emph{et al.} analyzed the emergence of aggregation~\cite{gauci_evolving_2014}
 and object clustering~\cite{gauci_clustering_2014}, while St.-Onge \emph{et
-  al.}~\cite{StOnge:IROS2018} studied the emergence of circular
-formations. While more efficient control strategies have been proposed to
-achieve these behaviors, studying the minimal assumptions required for their
-emergence is an important step towards principled `swarm engineering'
-practices. In addition, these minimal behaviors might offer last-resort
-solutions in case of sensor failures in remote environments such as in planetary
-exploration missions.
+  al.}~\cite{StOnge:IROS2018} studied the emergence of circular formations. In
+the nascent field of active matter, Lavergne \emph{et al.}~\cite{Lavergne2019}
+studied aggregation with active particles equipped with conical sensors capable
+of counting the number of detected particles. They analyzed the effect of the
+cone angle on the behavior of a swarm of such particles.
+
+While more efficient control strategies have been proposed to achieve these
+behaviors, studying the minimal assumptions required for their emergence is an
+important step towards principled `swarm engineering' practices. In addition,
+these minimal behaviors might offer last-resort solutions in case of sensor
+failures in remote environments such as in planetary exploration missions.
 
 This paper furthers this line of inquiry by studying the minimal assumptions for
 $N$-class segregation to emerge from local, decentralized interactions among
@@ -699,7 +703,7 @@ line-of-sight sensor. We ran 100 trials with a duration of 180 simulated seconds
 with uniformly random initial distributions of 40 robots and various beam
 angles. The results are reported in Fig.~\ref{fig:beam_angle}, along with a
 diagram showing how we define beam angle. The best beam angle we tested was
-\ang{20}, and angles smaller or larger became progressively worse. We found that
+\ang{15}, and angles smaller or larger became progressively worse. We found that
 at lower beam angles, it was possible for a robot to become stuck in groups of
 two or three, and the robots spent all their time looking at each other instead
 of peeking around them to find kin. At larger angles, we suspect the behavior
@@ -720,7 +724,8 @@ and are no longer a cluster as defined by \eqref{eq:connected}.
     \node at (4.25,0.25) {$\beta$};
   \end{tikzpicture}
   \includegraphics[width=0.9\linewidth]{./images/beam_angle}
-  \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost is better.}
+  \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost
+    is better.}
   \label{fig:beam_angle}
 \end{figure}
 
@@ -740,7 +745,8 @@ degrades.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.9\linewidth]{./images/beam_length}
-  \caption{Segregation is robust to small sensor beam ranges. The performance at 25\% of maximum range is indistinguishable from infinite range.}
+  \caption{Segregation is robust to small sensor beam ranges. The performance at
+    25\% of maximum range is indistinguishable from infinite range.}
   \label{fig:beam_range}
 \end{figure}
 
@@ -748,12 +754,13 @@ degrades.
 
 In this paper, we show how robots with only a ternary sensor and a controller
 which maps sensor readings to wheel speeds is capable of $N$-class segregation.
-This controller is invariant to the number of classes, and using the best found parameters
-we are able to construct theoretical guarantees on the emergent behavior in a simplified setting.
-We performed a grid search to learn about the full parameter space, and we
-investigated the effect of sensor implementation details and the number of
-robots and classes on performance. Our findings indicate that robust segregation
-with non-ideal sensors in reality is possible, although not guaranteed.
+This controller is invariant to the number of classes, and using the best found
+parameters we are able to construct theoretical guarantees on the emergent
+behavior in a simplified setting.  We performed a grid search to learn about the
+full parameter space, and we investigated the effect of sensor implementation
+details and the number of robots and classes on performance. Our findings
+indicate that, despite the simplicity of our approach, $N$-class segregation
+emerges and is robust.
 
 \bibliographystyle{IEEEtran}
 \bibliography{RBE595.bib}
