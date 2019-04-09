@@ -466,30 +466,34 @@ vast majority of the top-scoring parameters showed aggregation between isolated
 non-kin.
 
 \paragraph{$S_i = 0$}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.8\columnwidth]{./images/thm1}
+  \caption{Limit case for $S_i = 0$ and $\Delta t = \unit[100]{ms}$. Robot $i$
+    is located at $\vec{p}_i$ and it rotates to $\vec{p}'_i$ around $c_i$. Robot
+    $j$ is located at $\vec{p}_j$ and it rotates to $\vec{p}'_j$ around
+    $c_j$. The dashed lines indicate the sensor beams of the robots.}
+  \label{fig:nothing}
+\end{figure}
 A sensor value $S_i = 0$ corresponds to the case in which robot $i$ sees
 nothing. In the ideal case in which the length of the sensor beam is infinite
 and $\Delta t \rightarrow 0$, the beam spans the entire plane. Therefore, the
-robot is guaranteed to discover robot $j$. In the non-ideal
-case in which $\Delta t$ is not infinitesimally small, the sensor beams are
-oriented tangentially and equally distributed along the circular trajectory. For
-a robot $j$ to be missed, the arc spanned in $\Delta t$ by $i$'s sensor beam
-must be larger than the body of robot $j$, taking into account the fact that $j$
-moves. The limit case is when, at time $t$, $j$ looks upwards, $S_j = 0$, and
-$i$'s beam is tangent to the bottom of $j$'s body. In this case, at
-$t + \Delta t$ robot $i$'s beam moves upwards, while $j$'s body moves
-downwards. For $i$ to miss $j$, the beam at time $t + \Delta t$ must be tangent
-to the top of $j$'s body. The distance between the two tangent points is given
-by $2r - b$, where $b$ is the chord beneath the arc covered by $j$ in
-$\Delta t$. From trigonometry, we have that
-$b = 2R^{S=0}\sin(\omega^{S=0}\Delta t / 2)$. Therefore, for robot $i$ to never
-miss a robot $j$ at distance $D$, we must impose that
-\begin{align*}
-  2 D \sin(\omega^{S=0}\Delta t / 2) &< 2r - 2R^{S=0} \sin(\omega^{S=0}\Delta t / 2) \\
-  D &< \dfrac{r - R^{S=0} \sin(\omega^{S=0}\Delta t / 2)}{\sin(\omega^{S=0}\Delta t / 2)}.
-\end{align*}
-Using the settings in our simulations, $r = \unit[8.5]{cm}$,
-$\Delta t = \unit[100]{ms}$, and $\VM = \unit[10]{cm/s}$, we have
-$D < \unit[97.3]{cm}$.
+robot is guaranteed to discover robot $j$. In the non-ideal case in which
+$\Delta t$ is not infinitesimally small, the sensor beams are oriented
+tangentially and equally distributed along the circular trajectory. For a robot
+$j$ to be missed, the arc spanned in $\Delta t$ by $i$'s sensor beam must be
+larger than the body of robot $j$, taking into account the fact that $j$
+moves. The limit case is reported in Fig.~\ref{fig:nothing} when, at time $t$,
+$j$ looks upwards at a certain angle, $S_j = 0$, and $i$'s beam is tangent to
+the bottom of $j$'s body. In this case, at $t + \Delta t$ robot $i$'s beam moves
+upwards, while $j$'s body moves downwards. For $i$ to miss $j$, the beam at time
+$t + \Delta t$ must be tangent to the top of $j$'s body. We used the
+\emph{Geometry} package of the GeoGebra
+software\footnote{\url{https://www.geogebra.org/}} to numerically solve this
+setup, exploiting the fact that we know that both robots rotate by
+$\omega^{S=0}\Delta t$. Using the settings in our simulations,
+$r = \unit[8.5]{cm}$, $\Delta t = \unit[100]{ms}$, and $\VM = \unit[10]{cm/s}$,
+we found the condition $D < \unit[88.8]{cm}$.
 
 \paragraph{$S_i = 1$}
 When $i$ sees a kin robot $j$, robot $i$ covers a forwards counter-clockwise
@@ -748,15 +752,17 @@ degrades.
 
 \section{Conclusion}
 
-In this paper, we show how robots with only a ternary sensor and a controller
-which maps sensor readings to wheel speeds is capable of $N$-class segregation.
-This controller is invariant to the number of classes, and using the best found
-parameters we are able to construct theoretical guarantees on the emergent
-behavior in a simplified setting.  We performed a grid search to learn about the
-full parameter space, and we investigated the effect of sensor implementation
-details and the number of robots and classes on performance. Our findings
-indicate that, despite the simplicity of our approach, $N$-class segregation
-emerges and is robust.
+In this paper, we show how robots with a simple ternary sensor capable of
+detecting kinness and a controller which maps sensor readings to wheel speeds
+reactively is capable of $N$-class segregation. We performed a grid search to
+characterize the parameter space, and we investigated the effect of sensor
+implementation details and the number of robots and classes on performance. Our
+findings indicate that, despite the simplicity of our approach, $N$-class
+segregation emerges and is fairly robust to these non-idealities in the
+morphology of the robot. In addition, we observed that our approach scales well
+with the number of robots and the number of classes considered. Building upon
+these results, future work will investigate the coordinated behaviors that
+emerge when the robots are allowed to change their class dynamically.
 
 \bibliographystyle{IEEEtran}
 \bibliography{RBE595.bib}
