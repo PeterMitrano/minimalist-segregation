@@ -65,9 +65,10 @@ in Robot Swarms}
   sensing robot; (ii) The robots move according to a differential drive model;
   and (iii) The structure of the control system is purely reactive, and it maps
   directly the sensor readings to the wheel speeds with a simple `if' statement.
-  We present a thorough analysis of the parameter space that enables this behavior to emerge,
-  along with proofs explaining some of the emergent behavior.
-  Finally, we study the non-ideal aspects in the robot design.
+  We present a thorough analysis of the parameter space that enables this
+  behavior to emerge, along with an analysis that explains the emergent
+  behavior. Finally, we study the effect on segregation performance of some
+  non-ideal aspects in the robot morphology.
 \end{abstract}
 
 \section{Introduction}
@@ -89,20 +90,20 @@ aggregation~\cite{shlyakhov_survey_2017}, pattern
 formation~\cite{Pinciroli:DARS2016}, self-assembly~\cite{gross2008self}).
 
 A recent line of research in spatially organizing behaviors focuses on the
-\emph{minimal} assumptions a swarm of robots must fulfill in order to perform the
-task. Johnson and Brown~\cite{johnson_evolving_2016} and Brown \emph{et
-al.}~\cite{brown_discovery_2018} characterized the set of possible behaviors
+\emph{minimal} assumptions a swarm of robots must fulfill in order to perform
+the task. Johnson and Brown~\cite{johnson_evolving_2016} and Brown \emph{et
+  al.}~\cite{brown_discovery_2018} characterized the set of possible behaviors
 that can be obtained using primordial control strategies based on a simple
 `if/then/else' structure, binary sensors, and differential-drive robots. Gauci
-\emph{et al.} provided the specific conditions for the emergence of
-aggregation~\cite{gauci_evolving_2014} and object
-clustering~\cite{gauci_clustering_2014}, while St.-Onge \emph{et
-al.}~\cite{StOnge:IROS2018} studied the emergence of circular
+\emph{et al.} analyzed the emergence of aggregation~\cite{gauci_evolving_2014}
+and object clustering~\cite{gauci_clustering_2014}, while St.-Onge \emph{et
+  al.}~\cite{StOnge:IROS2018} studied the emergence of circular
 formations. While more efficient control strategies have been proposed to
-achieve these behaviors, studying the minimal assumptions required for their emergence is
-an important step towards principled `swarm engineering' practices. In addition,
-these minimal behaviors might offer last-resort solutions in case of sensor
-failures in remote environments such as in planetary exploration missions.
+achieve these behaviors, studying the minimal assumptions required for their
+emergence is an important step towards principled `swarm engineering'
+practices. In addition, these minimal behaviors might offer last-resort
+solutions in case of sensor failures in remote environments such as in planetary
+exploration missions.
 
 This paper furthers this line of inquiry by studying the minimal assumptions for
 $N$-class segregation to emerge from local, decentralized interactions among
@@ -117,9 +118,9 @@ closest one of them.
 
 The main contributions of this paper are \emph{(i)} A study of the parameter
 space that enables the emergence of $N$-class segregation; \emph{(ii)} A study
-of why certain behavior is guaranteed for the best parameter choice found; and
-\emph{(iii)} An analysis of the robustness of the algorithm to non-idealities in
-the robot design.
+of why convergence is guaranteed for the best parameter choice found; and
+\emph{(iii)} An analysis of robustness to non-idealities in the robot
+morphology.
 
 \section{Related Work}
 Segregation is a common behavior in nature, and it can be observed across
@@ -264,51 +265,50 @@ robots, such as the foot-bot~\cite{Bonani2010}, the Khepera
 IV\footnote{https://www.k-team.com/khepera-iv}, and the
 Kilobot~\cite{Rubenstein2012}.
 
-\myparagraph{Simulated Robot platform}
-For the simulated experiments we opted to use the foot-bot, because of the
-possibility to utilize its range-and-bearing communication system as a base for
-the ternary sensor. The advantage of using the range-and-bearing system is that
-its model is simple and, as a consequence, a large number of simulations could
-be completed in a short time. The range-and-bearing system allows two robots to
-exchange messages when they are in direct line-of-sight; upon receiving a
-message, a robot can also estimate the relative position of the sender. This
-sensor, in principle, receives messages from all the nearby robots. To simulate
-the ternary sensor, our robot controller kept the message of the closest
-robot. The message payload was an integer that encoded the id of the group to
-which the sender belonged. The range-and-bearing sensor is simulated through ray
-casting. This allowed us to assume that the sensor reading is infinitely thin, a
-choice that simplifies the mathematical analysis presented in
-Sec.~\ref{sec:analysis}. However, in practical applications, the sensor can be
-expected to cast a cone-shaped sensory range with non-zero aperture angle. We
-explore the performance effect of various angles in
+\myparagraph{Simulated Robot platform} For the simulated experiments we opted to
+use the foot-bot, because of the possibility to utilize its range-and-bearing
+communication system as a base for the ternary sensor. The advantage of using
+the range-and-bearing system is that its model is simple and, as a consequence,
+a large number of simulations could be completed in a short time. The
+range-and-bearing system allows two robots to exchange messages when they are in
+direct line-of-sight; upon receiving a message, a robot can also estimate the
+relative position of the sender. This sensor, in principle, receives messages
+from all the nearby robots. To simulate the ternary sensor, our robot controller
+kept the message of the closest robot. The message payload was an integer that
+encoded the id of the group to which the sender belonged. The range-and-bearing
+sensor is simulated through ray casting. This allowed us to assume that the
+sensor reading is infinitely thin, a choice that simplifies the mathematical
+analysis presented in Sec.~\ref{sec:analysis}. However, in practical
+applications, the sensor can be expected to cast a cone-shaped sensory range
+with non-zero aperture angle. We explore the effect of various angles in
 Sec.~\ref{sec:aperture_angle}.
 
 \subsection{Grid Search}
 \label{sec:gridsearch}
 
-\myparagraph{Trial setup}
-In order to exhaustively search the space of possible controllers, we conducted
-a grid search of the 6-dimensional parameter space. Due to limited computational
-resources, we were only able to search with a resolution of $7$ values per
-parameter: $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.
-In total we evaluated $7^6=117,649$ parameter sets. For
-each parameter set, we tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20 with 4-class),
-with 100 simulated seconds for each trial. These initial configurations consisted of
-uniformly random placement, clusters, and lines of robots distributed throughout
-the environment. We chose to include some structured configurations (clusters
-and lines) because we discovered that they affected significantly the
-performance with respect to uniform random configurations. Hence, by explicitly
-evaluating diverse initial configurations, we could better estimate the best
-parameter values in the general case. Examples of these starting configurations
-can be seen in our supplementary videos~\footnote{\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}}.
+\myparagraph{Trial setup} In order to exhaustively search the space of possible
+controllers, we conducted a grid search of the 6-dimensional parameter
+space. Due to limited computational resources, we were only able to search with
+a resolution of $7$ values per parameter:
+$[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.  In
+total we evaluated $7^6=117,649$ parameter sets. For each parameter set, we
+tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20
+with 4-class), with 100 simulated seconds for each trial. These initial
+configurations consisted of uniformly random placement, clusters, and lines of
+robots distributed throughout the environment. We chose to include some
+structured configurations (clusters and lines) because we discovered that they
+affected significantly the performance with respect to uniform random
+configurations. Hence, by explicitly evaluating diverse initial configurations,
+we could better estimate the best parameter values in the general case. Examples
+of these starting configurations can be seen in our supplementary
+videos.\footnote{\href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}}
 
 \myparagraph{Clusters}
-To define our cost function, we first establish the notion of a cluster.
-A cluster can be intuitively defined as an island of connected kin robots.
-Formally, a cluster is a set of kin robots which are \emph{connected}.
+To define our cost function, we first establish the notion of a cluster.  A
+cluster can be intuitively defined as an island of connected kin robots.
 Denoting with $r$ the radius of the body of a robot, and defining
-$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot $i$ at time $t$, we consider any two kin robots to be
-connected if
+$\vec{p}_i(t) = [x_i(t)\;y_i(t)]$ as the $x$ and $y$ coordinates of the robot
+$i$ at time $t$, we consider any two kin robots to be connected if
 \begin{equation} \label{eq:connected}
   \lVert\vec{p}_i(t) - \vec{p}_j(t)\rVert \le 2r + \epsilon \qquad (i \ne j, \epsilon \in \mathbb{R}^+)
 \end{equation}
@@ -320,29 +320,31 @@ the final result of a trial is expected to be a set of $N$ distinct clusters com
 \myparagraph{Cost function}
 To measure the difference between the ideal, perfectly segregated result and any
 configuration achieved by the robots over time, we first calculate, for every
-class $i$, the number of robots in the largest cluster $c_i(t)$ formed by robots of class $i$. Since,
-in principle, different classes might involve different numbers of robots, in
-our cost function we employ the ratio
+class $i$, the number of robots in the largest cluster $K_i(t)$ formed by robots
+of class $i$. Since, in principle, different classes might involve different
+numbers of robots, in our cost function we employ the ratio
 $$
-\gamma_i(t) = -\frac{c_i(t)}{C_i}
+\gamma_i(t) = -\frac{k_i(t)}{K_i}
 $$
-This ratio should be maximized, so the negative sign assigns larger clusters a lower, more negative, cost.
-Here $C_i$ is the number of robots that belongs to class $i$. At each time step, the cost is
+where $k_i$ is the number of robots that belongs to class $i$. This ratio should
+be maximized, so the negative sign assigns larger clusters a lower, more
+negative, cost.  At each time step, the cost is
 $$
 \gamma(t) = \frac{1}{N}\sum_{i=1}^N\gamma_i(t)
 $$
 Our complete cost function is then
 \begin{equation}
   \label{eq:cost_function}
-  c_{\text{total}} =  \sum_{t=0}^{T-1} t\gamma(t)
+  k_{\text{total}} =  \sum_{t=0}^{T-1} t\gamma(t)
 \end{equation}
-in which we denote the total trial time with $T$. The effect of multiplying $\gamma_i(t)$ by $t$ is to highlight the
-emergence of clusters as the trial time proceeds: we cannot expect large
-clusters to be present at the beginning of a trial, but good parameter settings
-should grow (and maintain) clusters over time. In our experiments, we found from visual inspection that
-$c_{\text{total}}$ correctly assigns cost in most scenarios.
-However, this cost function considers a straight line of robots to be a cluster,
-and as such it might not be ideal for scenarios in which the clusters are required to be tight.
+in which we denote the total trial time with $T$. The effect of multiplying
+$\gamma_i(t)$ by $t$ is to highlight the emergence of clusters as the trial time
+proceeds: we cannot expect large clusters to be present at the beginning of a
+trial, but good parameter settings should grow (and maintain) clusters over
+time. In our experiments, we found from visual inspection that
+$k_{\text{total}}$ correctly assigns cost in most scenarios.  However, this cost
+function considers a straight line of robots to be a cluster, and as such it
+might not be ideal for scenarios in which the clusters are required to be tight.
 
 \begin{figure}[t]
   \centering
@@ -386,13 +388,14 @@ where performance changes dramatically.
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_4_class_small}
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_5_class_small}
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_6_class_small}
-  \caption{Random examples of segregation after 180 seconds in the 40 robots with random initial placements of robots at a density of 10 robots per square meter.}
+  \caption{Examples of segregation after $\unit[180]{sec}$ with 40 robots
+    initially placed at random at a density of 10 robots per square meter.}
   \label{fig:segregation_examples}
 \end{figure}
 
 \myparagraph{The emergent behavior}
 After running the grid search, the parameters with the lowest mean cost across all 36
-starting configurations
+starting configurations were
 \begin{equation}
   \label{eq:controller}
   [-1, \sfrac{1}{3}, \sfrac{1}{3}, 1, -1, 1].
@@ -400,154 +403,244 @@ starting configurations
 \end{equation}
 
 The resulting behavior is for a robot to turn sharply until it detects a kin,
-then turn less sharply while it sees the kin. This change in the radius of rotation
-moves the robot closer to its kin. When a non-kin is seen, the robot turns in place.
-In isolation, the emergent behavior between kin and non-kin is similar to the aggregation behavior found by Gauci \emph{et al.}~\cite{gauci_evolving_2014}
-in that the robots are always turning in the same direction (counter-clockwise for our parameters).
-To our surprise, we found that the best segregation behavior requires that non-kin also aggregate.
-This was not only true for the best parameters, but for all of the top-scoring parameters we observed.
-Examples of the results are shown in Figure \ref{fig:segregation_examples}.
-To better appreciate the dynamics of this behavior, we invite the interested reader to watch the videos at
+then turn less sharply while it sees the kin. This change in the radius of
+rotation moves the robot closer to its kin. When a non-kin is seen, the robot
+turns in place.  In isolation, the emergent behavior between kin and non-kin is
+similar to the aggregation behavior found by Gauci \emph{et
+  al.}~\cite{gauci_evolving_2014} in that the robots are always turning in the
+same direction (counter-clockwise for our parameters).  In addition, we found
+that the best segregation behavior requires that non-kin also aggregate.  This
+was not only true for the best parameters, but for all of the top-scoring
+parameters we observed.  Examples of the results are shown in Figure
+\ref{fig:segregation_examples}.  To better appreciate the dynamics of this
+behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
 \section{Behavior Analysis}
 \label{sec:analysis}
-Using the parameter settings~\eqref{eq:controller}, we now break down and analyze the emerging behavior. While we are not able to formally explain the segregation behavior among an arbitrary number of robots, we can instead consider simplified scenarios with two robots. We prove that, for the robot parameters considered in our experiments, two kin robots in isolation are guaranteed to aggregate. Interestingly, we also show that two isolated non-kin robots are also guaranteed to aggregate. We hypothesize that this aggregation of non-kin is actually useful for segregation with this sensor model, since by keeping robots close we ensure that kin robots are not initially repelled by non-kin and fail to discover each other. This is supported by our grid search results, for which we found that the vast majority of the top scoring parameters showed aggregation between isolated non-kin. These two guarantees partially explains the emergent behavior observed in our experiments.
+Using the parameter settings~\eqref{eq:controller}, we now break down and
+analyze the emerging behavior, with the aim of explaining why and how
+aggregation and segregation occur.
 
-\newcommand{\ICC}{\ensuremath{\text{ICC}}}
-
-In the proofs, we employ the well-known equations that govern the instantaneous
-radius of curvature $R$ and rotation speed $\omega$ of the path followed a
-differential-drive robot with $l$ denoting the interwheel distance~\cite{Dudek2010}:
+\begin{table}[tb]
+  \centering
+  \caption{Turning radii and rotational velocities corresponding to the
+    parameter settings~\eqref{eq:controller}.}
+  \label{tab:omega_and_r}
+  \begin{tabular}{c|c|c|c}
+             & $S=0$             & $S=1$            & $S=2$           \\
+    \hline
+    \hline
+    $R$       & $\sfrac{-l}{4}$  & $l$              & $0$             \\
+    $\omega$  & $\sfrac{4\VM}{3l}$ & $\sfrac{2\VM}{3l}$ & $\sfrac{2\VM}{l}$ \\
+    $R\omega$ & $-\sfrac{\VM}{3}$  & $\sfrac{2\VM}{3}$  & $0$             \\
+  \end{tabular}
+\end{table}
+In our analysis, we employ the well-known equations that govern the
+instantaneous radius of curvature $R$ and rotation speed $\omega$ of the path
+followed a differential-drive robot with $l$ denoting the interwheel
+distance~\cite{Dudek2010}:
 \begin{equation} \label{eq:motion}
   \begin{aligned}
     R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
     \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
   \end{aligned}
 \end{equation}
+The values of $R$ and $\omega$ corresponding to the
+parameters~\eqref{eq:controller} are reported in Table~\ref{tab:omega_and_r}.
 
-\begin{table}[b]
-  \centering
-  \begin{tabular}{|c|c|c|c|} \hline
-    & $S=0$ & $S=1$ & $S=2$ \\ \hline
-    $v_l$ & $-1$ & $\sfrac{1}{3}$ & $-1$ \\ \hline
-    $v_r$ & $\sfrac{1}{3}$ & $1$ & $1$ \\ \hline
-    $R$ & $\sfrac{-l}{4}$ & $l$ & $0$ \\ \hline
-    $\omega$ & $\frac{4V}{3l}$ & $\frac{2V}{3l}$ & $\frac{2V}{l}$ \\ \hline
-  \end{tabular}
-  
-  \caption{turning Radii and rotational velocities for the best parameters.\label{tab:omega_and_r}}
-\end{table}
+\subsection{Robots Aggregate Regardless of Sensor Values}
+\label{subsec:analysis_aggregate}
+Consider a scenario with two robots $i$ and $j$. For the robot parameters
+considered in our experiments, two kin robots in isolation always aggregate
+regardless of the value of the sensor reading $S$. Interestingly, two isolated
+non-kin robots are also guaranteed to aggregate. We hypothesize that this
+aggregation of non-kin is useful for segregation, since by keeping robots close,
+kin robots are not initially repelled by non-kin, risking to miss each
+other. This is supported by our grid search results, for which we found that the
+vast majority of the top-scoring parameters showed aggregation between isolated
+non-kin.
 
-Table \ref{tab:omega_and_r} shows values of $R$ and $\omega$ for each sensor value, which we then use in our proofs.
+\paragraph{$S_i = 0$}
+A sensor value $S_i = 0$ corresponds to the case in which robot $i$ sees
+nothing. In the ideal case in which the length of the sensor beam is infinite
+and $\Delta t \rightarrow 0$, the beam spans the entire plane. Therefore, the
+robot is guaranteed to discover at least another robot $j$. In the non-ideal
+case in which $\Delta t$ is not infinitesimally small, the sensor beams are
+oriented tangentially and equally distributed along the circular trajectory. For
+a robot $j$ to be missed, the arc spanned in $\Delta t$ by $i$'s sensor beam
+must be larger than the body of robot $j$, taking into account the fact that $j$
+moves. The limit case is when, at time $t$, $j$ looks upwards, $S_j = 0$, and
+$i$'s beam is tangent to the bottom of $j$'s body. In this case, at
+$t + \Delta t$ robot $i$'s beam moves upwards, while $j$'s body moves
+downwards. For $i$ to miss $j$, the beam at time $t + \Delta t$ must be tangent
+to the top of $j$'s body. The distance between the two tangent points is given
+by $2r - b$, where $b$ is the chord beneath the arc covered by $j$ in
+$\Delta t$. From trigonometry, we have that
+$b = 2R^{S=0}\sin(\omega^{S=0}\Delta t / 2)$. Therefore, for robot $i$ to never
+miss a robot $j$ at distance $D$, we must impose that
+\begin{align*}
+  2 D \sin(\omega^{S=0}\Delta t / 2) &< 2r - 2R^{S=0} \sin(\omega^{S=0}\Delta t / 2) \\
+  D &< \dfrac{r - R^{S=0} \sin(\omega^{S=0}\Delta t / 2)}{\sin(\omega^{S=0}\Delta t / 2)}.
+\end{align*}
+Using the settings in our simulations, $r = \unit[8.5]{cm}$,
+$\Delta t = \unit[100]{ms}$, and $\VM = \unit[10]{cm/s}$, we have
+$D < \unit[97.3]{cm}$.
 
-We simplify the geometry by assuming that the sensor is an infinitely thin beam, that both robots are synchronized such that they take sensor readings at the same time, and that both robots act for the same $\Delta t = 0.1$ time step. Lastly, we assume the robots a radius of $r=0.085$, interwheel distance $l=0.14$, and scaling velocity $\VM$.
+\paragraph{$S_i = 1$}
+When $i$ sees a kin robot $j$, robot $i$ covers a forwards counter-clockwise
+trajectory towards $j$. Along with $i$'s body, also the center of rotation
+$C^{S=0}_i$ corresponding to the case $S_i = 0$ moves towards robot $j$. If
+$S_j = 0$, its center of rotation $C^{S=0}_j$ stays constant. Therefore, if
+robot $i$ experiences $S_i = 0$ at $t + \Delta t$, its rotation around
+$C^{S=0}_i$ will be closer to $C^{S=0}_j$. Repeating this over time, the two
+robots will aggregate. If instead $S_j = 1$, because we are considering the case
+of two isolated robots, the robots move towards each other, again eventually
+forming an aggregate.
 
-We consider all of the possible sensor values ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$ in separate cases. However, the cases ($S_i=1$, $S_j=0$) and ($S_i=0$, $S_j=1$) and the cases ($S_i=2$, $S_j=0$) and ($S_i=0$, $S_j=2$) are equivalent so we need only prove aggregation for one of each pair. Furthermore, for two isolated robots, the cases where one robot sees a kin and the other sees a non-kin ($S_i=1$, $S_j=2$) and ($S_i=1$, $S_j=2$) are impossible. This leaves just 5 cases, and in each case we prove that the robots aggregate.
+\paragraph{$S_i = 2$}
+When $i$ sees a non-kin robot $j$, robot $i$ rotates counter-clockwise on the
+spot. Analogously to $S_i = 1$ case, the center of rotation $C^{S=0}_i$ moves
+towards robot $j$ due to this rotation, although much less than in the previous
+case. This fosters an aggregation process that is identical in style to the
+$S_i = 1$ case, but proceeding at a much slower rate.
 
-We use $x$, $y$, and $\alpha$, collectively called a configuration, to indicate the location of robot $j$ relative to robot $i$. Without loss of generality, we will always consider robot $i$ to be at the origin and facing the positive $x$-axis. Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These are the points around which the robot rotates in the $S=0$ case. These points are at a distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would protrude from the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
+\subsection{Robot Segregation}
+\label{subsec:analysis_aggregate}
 
-% TODO: is this paragraph necessary?
-As discussed above, there are 5 sensor cases to be considered for two robots. In the ``see nothing'' case ($S_i=0$, $S_j=0$), we will prove that the points $c_i$ and $c_j$ remain at constant distance. We then prove that in the other 4 cases the points aggregate. Finally, if $c_i$ and $c_j$ are guaranteed to exit the ``see nothing'' case into one of the other four sensor cases where they aggregate, then they must eventually aggregate regardless of when and how often they may transition between the different sensor cases.
+Proving analytically why segregation occurs is difficult. In this section, we
+provide a qualitative explanation, leaving a formal proof to future research.
 
-\begin{theorem}[Nothing Detected]\label{thm:nothing}
-  In the sensor case ($S_i=0$, $S_j=0$), the robots will transition to another sensor case if
-  \begin{equation}\label{eq:nothing}
-    ||p_j - p_i|| \lessapprox 0.888\text{\SI{}{m}}
-  \end{equation}
-\end{theorem}
-\begin{proof}
-  In this sensor case the robots rotate around the points $c_i$ and $c_j$, and therefore these points are stationary. To prove that $c_i$ and $c_j$ eventually aggregate we must prove that the robots exit this sensor case. In other words, we prove that one robot will eventually see the other. For this, the distance between the robots must be bounded. If the robots are too far away, then the beam could ``skip'' over the other robot. Furthermore, we account for the fact that robot $j$ is also moving. Figure \ref{fig:nothing} shows the robots in the configuration where this maximum distance is attained. In this worst-case configuration, the bottom of robot $j$ is tangent to the beam of robot $i$ at $t=0$. Then at $t=0.1$, the top of robot $j$ is tangent to the new beam of robot $i$. Since we know the angles the robots rotate, this fully constraints the geometry to the configuration shown. We used the Geometry package Geogebra \cite{geogebra5} to solve for the bound in this equation.
+First, consider the motion of an already formed aggregate of robots. Because of
+the counter-clockwise rotation that every robot experiences regardless of the
+sensor reading, an aggregate also rotates counter-clockwise.
 
-  \begin{figure}[t]
-    \centering
-    \includegraphics[width=0.8\columnwidth]{./images/thm1}
-    \caption{Two robots at the maximum distance at which the robots will not skip over seeing each other. Robot $i$ moves from $p_i$ to $p'_i$, and likewise for robot $j$. Without loss of generality, we place $p_i$ at the origin initially facing the positive $x$-axis. Figure is accurate up to a scale.}
-    \label{fig:nothing}
-  \end{figure}
-\end{proof}
+However, because of the different radii of rotation due to the different values
+of the sensor readings, the robots do not rotate in the same way. In particular,
+when $S=0$ and $S=1$, the robots rotate in opposite directions (respectively
+backwards counter-clockwise and forwards counter-clockwise), while when $S=2$
+the robots turn on the spot. These differences promote mixing among the robots.
 
-\begin{theorem}[Kin Robots \#1]\label{thm:kin_1}
-  In the case ($S_i=1$, $S_j=0$), the robots aggregate.
-\end{theorem}
-\begin{proof}
-  \begin{figure}[t]
-    \centering
-    \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=0.9\columnwidth]{./images/kin_1}
-      \caption{kin}
-      \label{fig:kin_1}
-    \end{subfigure}
+In addition, a robot with $S=1$ moves towards the kin robot detected. Therefore,
+when an aggregate comes in contact with another kin aggregate due to mixing, the
+two aggregates tend to merge. In contrast, a robot with $S=2$ rotates on the
+spot, thus staying with the current aggregate rather than moving away from
+it. As a consequence, kin aggregate merging is more effective than non-kin
+aggregate merging, i.e., aggregate disruption. The latter occurs occasionally
+only due to the random fluctuations caused by the mixing motion of the
+aggregate. Thus, in the long run, kin aggregates have a high probability of
+forming and maintaining their stability.
 
-    \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=0.9\columnwidth]{./images/non_kin_1}
-      \caption{non kin}
-      \label{fig:non_kin_1}
-    \end{subfigure}
+% \newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
-    \caption{Robot $i$ sees robot $j$ and robot $j$ sees nothing. $c_i$ moves to $c'_i$ and is closer to $c_j$. The point $p_x$ must be in the yellow region (which extends past the right of this image up to \SI{0.888}{\meter}, and $\alpha$ is such that the beam of robot $j$ must not intersect robot $i$. The dashed lines represent the sensor beams. In this figure, one example $p_j$ and $\alpha$ is shown.}
-  \end{figure}
 
-  Robot $j$ is in state $S=0$, rotating around the point $c_j$. Therefore $c_j$ is stationary, so we require $||c_j- c'_i|| < ||c_j- c_i||$. We draw the perpendicular bisector between $c_i$ and $c'_i$ (thick black line, Figures \ref{fig:kin_1}, \ref{fig:non_kin_1}) and note that $c_j$ is always on the left side of this line, and therefore $||c_j- c'_i|| < ||c_j- c_i||$ holds.
-\end{proof}
+% We simplify the geometry by assuming that the sensor is an infinitely thin beam, that both robots are synchronized such that they take sensor readings at the same time, and that both robots act for the same $\Delta t = 0.1$ time step. Lastly, we assume the robots a radius of $r=0.085$, interwheel distance $l=0.14$, and scaling velocity $\VM$.
 
-\begin{theorem}[Non-Kin Robots \#1]\label{thm:non_kin_1}
-  In the case ($S_i=2$, $S_j=0$), the robots aggregate.
-\end{theorem}
-\begin{proof}
+% We consider all of the possible sensor values ($S=0$, $S=1$, $S=2$) for a robot $i$ and a second robot $j$ in separate cases. However, the cases ($S_i=1$, $S_j=0$) and ($S_i=0$, $S_j=1$) and the cases ($S_i=2$, $S_j=0$) and ($S_i=0$, $S_j=2$) are equivalent so we need only prove aggregation for one of each pair. Furthermore, for two isolated robots, the cases where one robot sees a kin and the other sees a non-kin ($S_i=1$, $S_j=2$) and ($S_i=1$, $S_j=2$) are impossible. This leaves just 5 cases, and in each case we prove that the robots aggregate.
 
-  This proof follows the reasoning from Theorem \ref{thm:kin_1}, and is illustrated in Figure \ref{fig:non_kin_1}.
-\end{proof}
+% We use $x$, $y$, and $\alpha$, collectively called a configuration, to indicate the location of robot $j$ relative to robot $i$. Without loss of generality, we will always consider robot $i$ to be at the origin and facing the positive $x$-axis. Rather than showing that the center point of the robots $p_i$ and $p_j$ aggregate, we show that the points $c_i$ and $c_j$ aggregate. These are the points around which the robot rotates in the $S=0$ case. These points are at a distance $\frac{l}{4}$ from the center of the robot, and therefore when $c_i=c_j$ the points $p_i$ and $p_i$ are at most $\frac{l}{2}$ apart. On a real robot, the half of the inner wheel distance $l$ must be less than the robot radius $r$ (or the wheels would protrude from the robot). Hence aggregation of $c_i$ and $c_j$ is equivalent to the aggregation of $p_i$ and $p_j$.
 
-\begin{theorem}[Kin Robots \#2]\label{thm:kin_2}
-  In the case ($S_i=1$, $S_j=1$), the robots aggregate.
-\end{theorem}
-\begin{proof}
+% % TODO: is this paragraph necessary?
+% As discussed above, there are 5 sensor cases to be considered for two robots. In the ``see nothing'' case ($S_i=0$, $S_j=0$), we will prove that the points $c_i$ and $c_j$ remain at constant distance. We then prove that in the other 4 cases the points aggregate. Finally, if $c_i$ and $c_j$ are guaranteed to exit the ``see nothing'' case into one of the other four sensor cases where they aggregate, then they must eventually aggregate regardless of when and how often they may transition between the different sensor cases.
 
-  \begin{figure}
-    \centering
-    \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=0.9\columnwidth]{./images/kin_2}
-      \caption{kin robots}
-      \label{fig:kin_2}
-    \end{subfigure}
+% \begin{theorem}[Nothing Detected]\label{thm:nothing}
+%   In the sensor case ($S_i=0$, $S_j=0$), the robots will transition to another sensor case if
+%   \begin{equation}\label{eq:nothing}
+%     ||p_j - p_i|| \lessapprox 0.888\text{\SI{}{m}}
+%   \end{equation}
+% \end{theorem}
+% \begin{proof}
+%   In this sensor case the robots rotate around the points $c_i$ and $c_j$, and therefore these points are stationary. To prove that $c_i$ and $c_j$ eventually aggregate we must prove that the robots exit this sensor case. In other words, we prove that one robot will eventually see the other. For this, the distance between the robots must be bounded. If the robots are too far away, then the beam could ``skip'' over the other robot. Furthermore, we account for the fact that robot $j$ is also moving. Figure \ref{fig:nothing} shows the robots in the configuration where this maximum distance is attained. In this worst-case configuration, the bottom of robot $j$ is tangent to the beam of robot $i$ at $t=0$. Then at $t=0.1$, the top of robot $j$ is tangent to the new beam of robot $i$. Since we know the angles the robots rotate, this fully constraints the geometry to the configuration shown. We used the Geometry package Geogebra \cite{geogebra5} to solve for the bound in this equation.
 
-    \begin{subfigure}[t]{1\columnwidth}
-      \includegraphics[width=0.9\columnwidth]{./images/non_kin_2}
-      \caption{non kin robots}
-      \label{fig:non_kin_2}
-    \end{subfigure}
-    \caption{A numerical check visualizing how much closer the two robots are after one time step. All values are positive because aggregation occurs everywhere, yellow means more aggregation. The dashed lines represent the sensor beams.}
-  \end{figure}
+%   \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=0.8\columnwidth]{./images/thm1}
+%     \caption{Two robots at the maximum distance at which the robots will not skip over seeing each other. Robot $i$ moves from $p_i$ to $p'_i$, and likewise for robot $j$. Without loss of generality, we place $p_i$ at the origin initially facing the positive $x$-axis. Figure is accurate up to a scale.}
+%     \label{fig:nothing}
+%   \end{figure}
+% \end{proof}
 
-  \begin{figure}[t]
-    \centering
-    \includegraphics[width=.7\columnwidth]{./images/min_max_alpha}
-    \caption{Visualization of the minimum and maximum value for $\alpha$ for the sensor cases ($S_i=1$, $S_j=1$) and ($S_i=2$, $S_j=2$).}
-    \label{fig:min_max_alpha}
-  \end{figure}
+% \begin{theorem}[Kin Robots \#1]\label{thm:kin_1}
+%   In the case ($S_i=1$, $S_j=0$), the robots aggregate.
+% \end{theorem}
+% \begin{proof}
+%   \begin{figure}[t]
+%     \centering
+%     \begin{subfigure}[t]{1\columnwidth}
+%       \includegraphics[width=0.9\columnwidth]{./images/kin_1}
+%       \caption{kin}
+%       \label{fig:kin_1}
+%     \end{subfigure}
 
-  As in the previous proofs, the region of possible configurations $(x, y, \alpha)$ of robot $j$ is bounded for this sensor case. This range for $x$ is bounded on the left by collision with the kin and on the right by a distance \SI{0.888}{\meter}. In $y$, the range is bounded by $-r$ and $r$ because in this case we require robot $i$ to see robot $j$. Finally, the $\alpha$ value is bounded by \ang{120} and \ang{240} because in this sensor case robot $j$ sees robot $i$. This minimum and maximum $\alpha$ are shown in Figure \ref{fig:min_max_alpha}. We then numerically check exhaustively over this space with a fine resolution, shown in Figure \ref{fig:kin_2}.
+%     \begin{subfigure}[t]{1\columnwidth}
+%       \includegraphics[width=0.9\columnwidth]{./images/non_kin_1}
+%       \caption{non kin}
+%       \label{fig:non_kin_1}
+%     \end{subfigure}
 
-\end{proof}
+%     \caption{Robot $i$ sees robot $j$ and robot $j$ sees nothing. $c_i$ moves to $c'_i$ and is closer to $c_j$. The point $p_x$ must be in the yellow region (which extends past the right of this image up to \SI{0.888}{\meter}, and $\alpha$ is such that the beam of robot $j$ must not intersect robot $i$. The dashed lines represent the sensor beams. In this figure, one example $p_j$ and $\alpha$ is shown.}
+%   \end{figure}
 
-\begin{theorem}[Non-Kin Robots \#3]\label{thm:non_kin_2}
-  In the case ($S_i=2$, $S_j=2$), the robots aggregate.
-\end{theorem}
-\begin{proof}
+%   Robot $j$ is in state $S=0$, rotating around the point $c_j$. Therefore $c_j$ is stationary, so we require $||c_j- c'_i|| < ||c_j- c_i||$. We draw the perpendicular bisector between $c_i$ and $c'_i$ (thick black line, Figures \ref{fig:kin_1}, \ref{fig:non_kin_1}) and note that $c_j$ is always on the left side of this line, and therefore $||c_j- c'_i|| < ||c_j- c_i||$ holds.
+% \end{proof}
 
-  This proof follows the reasoning from Theorem \ref{thm:kin_2}, and is illustrated in Figure \ref{fig:non_kin_2}.
+% \begin{theorem}[Non-Kin Robots \#1]\label{thm:non_kin_1}
+%   In the case ($S_i=2$, $S_j=0$), the robots aggregate.
+% \end{theorem}
+% \begin{proof}
 
-\end{proof}
+%   This proof follows the reasoning from Theorem \ref{thm:kin_1}, and is illustrated in Figure \ref{fig:non_kin_1}.
+% \end{proof}
+
+% \begin{theorem}[Kin Robots \#2]\label{thm:kin_2}
+%   In the case ($S_i=1$, $S_j=1$), the robots aggregate.
+% \end{theorem}
+% \begin{proof}
+
+%   \begin{figure}
+%     \centering
+%     \begin{subfigure}[t]{1\columnwidth}
+%       \includegraphics[width=0.9\columnwidth]{./images/kin_2}
+%       \caption{kin robots}
+%       \label{fig:kin_2}
+%     \end{subfigure}
+
+%     \begin{subfigure}[t]{1\columnwidth}
+%       \includegraphics[width=0.9\columnwidth]{./images/non_kin_2}
+%       \caption{non kin robots}
+%       \label{fig:non_kin_2}
+%     \end{subfigure}
+%     \caption{A numerical check visualizing how much closer the two robots are after one time step. All values are positive because aggregation occurs everywhere, yellow means more aggregation. The dashed lines represent the sensor beams.}
+%   \end{figure}
+
+%   \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=.7\columnwidth]{./images/min_max_alpha}
+%     \caption{Visualization of the minimum and maximum value for $\alpha$ for the sensor cases ($S_i=1$, $S_j=1$) and ($S_i=2$, $S_j=2$).}
+%     \label{fig:min_max_alpha}
+%   \end{figure}
+
+%   As in the previous proofs, the region of possible configurations $(x, y, \alpha)$ of robot $j$ is bounded for this sensor case. This range for $x$ is bounded on the left by collision with the kin and on the right by a distance \SI{0.888}{\meter}. In $y$, the range is bounded by $-r$ and $r$ because in this case we require robot $i$ to see robot $j$. Finally, the $\alpha$ value is bounded by \ang{120} and \ang{240} because in this sensor case robot $j$ sees robot $i$. This minimum and maximum $\alpha$ are shown in Figure \ref{fig:min_max_alpha}. We then numerically check exhaustively over this space with a fine resolution, shown in Figure \ref{fig:kin_2}.
+
+% \end{proof}
+
+% \begin{theorem}[Non-Kin Robots \#3]\label{thm:non_kin_2}
+%   In the case ($S_i=2$, $S_j=2$), the robots aggregate.
+% \end{theorem}
+% \begin{proof}
+
+%   This proof follows the reasoning from Theorem \ref{thm:kin_2}, and is illustrated in Figure \ref{fig:non_kin_2}.
+
+% \end{proof}
 
 \section{Experimental Results}
 
 \subsection{Scalability Study} \label{section:scalability}
 
-In this experiment we investigate how the segregation behavior scales with the
-number of classes and the number of robots in the environment. We varied the
-number of classes from 1 to 25 and ran 100 trials with robots uniformly randomly
-distributed. All trials lasted 180 seconds.
+We investigated how the segregation behavior scales with the number of classes
+and the number of robots in the environment. We varied the number of classes
+from 1 to 25 and ran 100 trials with robots uniformly randomly distributed. All
+trials lasted 180 seconds.
 
 \myparagraph{Fixed number of robots per class}
 We studied the case in which every class has 10 robots. The results of this are
@@ -564,8 +657,8 @@ increasing number of classes. We set the number of robots to 100, so with 25
 classes 4 robots were still assigned to each class. As reported in
 Fig.~\ref{fig:num_classes_100}, the cost is very low for small numbers of classes
 and above 5 classes has no trend in cost. The initial low cost is due to the fact that
-with 100 robots to divided among few classes, line-of-sight to a kin is highly likely.
-Here the trend indicates that our methods scaled well with the number of classes.
+with 100 robots to divide among few classes, line-of-sight to a kin is highly likely.
+This trend indicates that our algorithm scales well with the number of classes.
 
 \begin{figure}[t]
   \centering
@@ -584,33 +677,34 @@ Here the trend indicates that our methods scaled well with the number of classes
 \subsection{The Effect of Implementation Details of the Sensor} \label{section:sensor_impl}
 
 We observed that the implementation details of the sensor have a significant
-effect on the behavior of the controller.
+effect on the robot behavior.
 
 Initially, our method for determining sensor value from the simulated
 range-and-bearing system was to consider all the robots within some small angle
 in front of the robot and pick the closest one. This is very similar to what
 would be provided by a real-world camera that uses colored skirts on each robot
 and picks the largest blob as the robot to be detected. This sensor
-implementation works well and was used in all our experiments. However,
-we found later that, if the robots instead always prefer to react to kin over
-non-kin, clusters form more quickly and robustly. For example, if there are
-two robots within the field of view of a robot's sensor and the non-kin robot is
-closer, the robot would ignore it and execute the $S=1$ logic, which drives the
-robot towards the farther kin robot. Exploring exactly which of the various
+implementation works well and was used in all our experiments. However, we found
+later that, if the robots instead always prefer to react to kin over non-kin,
+clusters form more quickly and robustly. For example, if there are two robots
+within the field of view of a robot's sensor and the non-kin robot is closer,
+the robot would ignore it and execute the $S=1$ logic, which drives the robot
+towards the farther kin robot. Exploring exactly which of the various
 implementation details have what effect on cost is left for future work.
 
 \subsection{The Effect of the Beam Angle} \label{sec:aperture_angle}
 
 On a real robot, there must be some finite beam angle to the theoretically
-line-of-sight sensor. We ran 100 trials 180 seconds each in simulation with uniformly random
-initial distributions of 40 robots with various beam
-angles. Fig.~\ref{fig:beam_angle} shows the results, along with a diagram
-showing how we define beam angle. The best beam angle we tested was \ang{20},
-and angles smaller or larger became progressively worse. We found that at lower
-beam angles, it was possible for a robot to become stuck in groups of two or
-three, and the robots spent all their time looking at each other instead of
-peeking around them to find kin. At larger angles, we suspect the behavior fails
-because larger beam angles cause the rings to enlarge faster. When the rings become
+line-of-sight sensor. We ran 100 trials with a duration of 180 simulated seconds
+with uniformly random initial distributions of 40 robots and various beam
+angles. The results are reported in Fig.~\ref{fig:beam_angle}, along with a
+diagram showing how we define beam angle. The best beam angle we tested was
+\ang{20}, and angles smaller or larger became progressively worse. We found that
+at lower beam angles, it was possible for a robot to become stuck in groups of
+two or three, and the robots spent all their time looking at each other instead
+of peeking around them to find kin. At larger angles, we suspect the behavior
+fails because larger beam angles cause the rings to enlarge faster. When the
+rings become
 % FIXME %
 too large and the space between robots exceeds $2r+\epsilon$
 and are no longer a cluster as defined by \eqref{eq:connected}.
