@@ -457,7 +457,7 @@ parameters~\eqref{eq:controller} are reported in Table~\ref{tab:omega_and_r}.
 \label{subsec:analysis_aggregate}
 Consider a scenario with two robots $i$ and $j$. For the robot parameters
 considered in our experiments, two kin robots in isolation always aggregate
-regardless of the value of the sensor reading $S$. Interestingly, two isolated
+regardless of the value of the sensor readings $S_i$ and $S_j$. Interestingly, two isolated
 non-kin robots are also guaranteed to aggregate. We hypothesize that this
 aggregation of non-kin is useful for segregation, since by keeping robots close,
 kin robots are not initially repelled by non-kin, risking to miss each
@@ -469,7 +469,7 @@ non-kin.
 A sensor value $S_i = 0$ corresponds to the case in which robot $i$ sees
 nothing. In the ideal case in which the length of the sensor beam is infinite
 and $\Delta t \rightarrow 0$, the beam spans the entire plane. Therefore, the
-robot is guaranteed to discover at least another robot $j$. In the non-ideal
+robot is guaranteed to discover robot $j$. In the non-ideal
 case in which $\Delta t$ is not infinitesimally small, the sensor beams are
 oriented tangentially and equally distributed along the circular trajectory. For
 a robot $j$ to be missed, the arc spanned in $\Delta t$ by $i$'s sensor beam
@@ -703,15 +703,11 @@ line-of-sight sensor. We ran 100 trials with a duration of 180 simulated seconds
 with uniformly random initial distributions of 40 robots and various beam
 angles. The results are reported in Fig.~\ref{fig:beam_angle}, along with a
 diagram showing how we define beam angle. The best beam angle we tested was
-\ang{15}, and angles smaller or larger became progressively worse. We found that
-at lower beam angles, it was possible for a robot to become stuck in groups of
-two or three, and the robots spent all their time looking at each other instead
-of peeking around them to find kin. At larger angles, we suspect the behavior
-fails because larger beam angles cause the rings to enlarge faster. When the
-rings become
-% FIXME %
-too large and the space between robots exceeds $2r+\epsilon$
-and are no longer a cluster as defined by \eqref{eq:connected}.
+\ang{20}, and angles smaller or larger became progressively worse. We found that
+at lower beam angles, the robots would segregate very slowly. This is because a narrow beam
+means kin are only sensed for one or two consucutive steps.
+For larger beam angles, once a robot finds a kin is can almost always reads $S=1$
+and gets ``stuck'' with the kin instead of peeking around them to find other kin.
 
 \begin{figure}[t]
   \centering
@@ -724,7 +720,7 @@ and are no longer a cluster as defined by \eqref{eq:connected}.
     \node at (4.25,0.25) {$\beta$};
   \end{tikzpicture}
   \includegraphics[width=0.9\linewidth]{./images/beam_angle}
-  \caption{A \ang{15} degree half beam angle is best for segregation. Lower cost
+  \caption{A \ang{20} degree half beam angle is best for segregation. Lower cost
     is better.}
   \label{fig:beam_angle}
 \end{figure}
