@@ -280,8 +280,12 @@ Sec.~\ref{sec:aperture_angle}.
 
 \myparagraph{Trial setup} In order to exhaustively search the space of possible
 controllers, we conducted a grid search of the 6-dimensional parameter
-space. Due to limited computational resources, we were only able to search with
-a resolution of $7$ values per parameter:
+space. With respect to a pure optimization approach meant to find the best
+parameter setting, grid search has the advantage of characterizing the
+segregation performance of the entire parameter space. This, in turn, allows one
+to establish how ``easy'' it is to find segregation behaviors, and how they
+compare. Due to limited computational resources, we were only able to search
+with a resolution of $7$ values per parameter:
 $[-1, \sfrac{-2}{3}, \sfrac{-1}{3}, 0, \sfrac{1}{3}, \sfrac{2}{3}, 1]$.  In
 total we evaluated $7^6=117,649$ parameter sets. For each parameter set, we
 tested 36 different initial configurations (8 with 1-class, 8 with 2-class, 20
@@ -316,7 +320,7 @@ class $i$, the number of robots in the largest cluster $K_i(t)$ formed by robots
 of class $i$. Since, in principle, different classes might involve different
 numbers of robots, in our cost function we employ the ratio
 $$
-\gamma_i(t) = -\frac{k_i(t)}{K_i}
+\gamma_i(t) = -\frac{K_i(t)}{k_i}
 $$
 where $k_i$ is the number of robots that belongs to class $i$. This ratio should
 be maximized, so the negative sign assigns larger clusters a lower, more
@@ -376,7 +380,7 @@ where performance changes dramatically.
   \centering
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_1_class_small}
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_2_class_small}
-  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_3_class_small}
+  \includegraphics[width=0.32\columnwidth]{./images/segregation_example_3_class_small}\\[1mm]
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_4_class_small}
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_5_class_small}
   \includegraphics[width=0.32\columnwidth]{./images/segregation_example_6_class_small}
@@ -524,8 +528,8 @@ spot, thus staying with the current aggregate rather than moving away from
 it. As a consequence, kin aggregate merging is more effective than non-kin
 aggregate merging, i.e., aggregate disruption. The latter occurs occasionally
 only due to the random fluctuations caused by the mixing motion of the
-aggregate. Thus, in the long run, kin aggregates have a high probability of
-forming and maintaining their stability.
+aggregate. Thus, in the long run, kin aggregates are likely to form and maintain
+their stability.
 
 % \newcommand{\ICC}{\ensuremath{\text{ICC}}}
 
@@ -659,14 +663,18 @@ This trend indicates that our algorithm scales well with the number of classes.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.9\linewidth]{./images/num_classes_vs_cost_10_per_class}
-  \caption{The average cost over 100 trials with $N$ classes, 10 robots per class.}
+  \caption{The cost over 100 trials with $N$ classes, 10 robots per class. The
+    boxplots indicate the minimum, maximum, interquartile range and median of
+    the data distribution. The continuous line connects the medians.}
   \label{fig:num_classes_10}
 \end{figure}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.9\linewidth]{./images/num_classes_vs_cost_100_robots}
-  \caption{The average cost over 100 trials with 100 robots divided into $N$ classes.}
+  \caption{The cost over 100 trials with 100 robots divided into $N$
+    classes. The boxplots indicate the minimum, maximum, interquartile range and
+    median of the data distribution. The continuous line connects the medians.}
   \label{fig:num_classes_100}
 \end{figure}
 
@@ -697,7 +705,7 @@ angles. The results are reported in Fig.~\ref{fig:beam_angle}, along with a
 diagram showing how we define beam angle. The best beam angle we tested was
 \ang{20}, and angles smaller or larger became progressively worse. We found that
 at lower beam angles, the robots would segregate very slowly. This is because a narrow beam
-means kin are only sensed for one or two consucutive steps.
+means kin are only sensed for one or two consecutive steps.
 For larger beam angles, once a robot finds a kin is can almost always reads $S=1$
 and gets ``stuck'' with the kin instead of peeking around them to find other kin.
 
