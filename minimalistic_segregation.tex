@@ -4,7 +4,6 @@
 \usepackage{cite}
 \usepackage{xcolor}
 \usepackage{mathtools}
-\usepackage{subcaption}
 \usepackage{footnote}
 \usepackage{cancel}
 \usepackage{xfrac}
@@ -364,6 +363,16 @@ might not be ideal for scenarios in which the clusters are required to be tight.
   \label{fig:gridsearch}
 \end{figure}
 
+\begin{figure}[b]
+  \centering
+  \includegraphics[width=0.9\linewidth]{./images/parameters_distribution.png}
+  \caption{The cost of the parameters tested sorted from lowest to (left) highest cost (right).
+           The blue line shows the mean cost over all the runs for those parameters, and the graw lines show one standard deviation error bars.
+           The black line is the mean of the best paramter setting, the red shows the line above which there is statisticantly significant difference,
+           the green line shows one standard deviation, and the darker green line shows two standard devitations.}
+  \label{fig:param_dist}
+\end{figure}
+
 \section{The Emergent Behavior}
 \myparagraph{Visualizing grid search}
 The results of grid search are reported in Fig.~\ref{fig:gridsearch}. Because
@@ -390,6 +399,11 @@ where performance changes dramatically.
   \label{fig:segregation_examples}
 \end{figure}
 
+We show the cost of the parameters tested in grid search in Fig.~\ref{fig:param_dist}.
+This indicates that most of parameters have statistically significantly higher cost than the best parameters.
+However, out of the 117,649 total parameters tested, we found that 126 are not statistically significantly worse.
+These include the left-right flipped parameters and as well as controllers which form loops and rings instead of tight clusters.
+
 \myparagraph{The emergent behavior}
 After running the grid search, the parameters with the lowest mean cost across all 36
 starting configurations were
@@ -408,8 +422,7 @@ similar to the aggregation behavior found by Gauci \emph{et
 same direction (counter-clockwise for our parameters).  In addition, we found
 that the best segregation behavior requires that non-kin also aggregate.  This
 was not only true for the best parameters, but for all of the top-scoring
-parameters we observed.  Examples of the results are shown in Figure
-\ref{fig:segregation_examples}.  To better appreciate the dynamics of this
+parameters we observed.  Examples of the results are shown in Fig.~\ref{fig:segregation_examples}.  To better appreciate the dynamics of this
 behavior, we invite the interested reader to watch the videos at
 \href{https://www.youtube.com/playlist?list=PL9HqYJ1IkIKVX9EsT5BY9LnBsBPTjc5bB}{https://goo.gl/z8UAuB}.
 
@@ -433,16 +446,19 @@ aggregation and segregation occur.
     $R\omega$ & $-\sfrac{\VM}{3}$  & $\sfrac{2\VM}{3}$  & $0$             \\
   \end{tabular}
 \end{table}
+
 In our analysis, we employ the well-known equations that govern the
 instantaneous radius of curvature $R$ and rotation speed $\omega$ of the path
 followed a differential-drive robot with $l$ denoting the interwheel
 distance~\cite{Dudek2010}:
+
 \begin{equation} \label{eq:motion}
   \begin{aligned}
     R &= \frac{l}{2}\frac{\vaR + \vaL}{\vaR - \vaL} = \frac{l}{2}\frac{\vR + \vL}{\vR - \vL}\\
     \omega &= \frac{\vaR - \vaL}{l} = \frac{\VM(\vR - \vL)}{l}.
   \end{aligned}
 \end{equation}
+
 The values of $R$ and $\omega$ corresponding to the
 parameters~\eqref{eq:controller} are reported in Table~\ref{tab:omega_and_r}.
 
@@ -643,13 +659,6 @@ degrades.
   \caption{Segregation is robust to small sensor beam ranges. The performance at
     25\% of maximum range is indistinguishable from infinite range.}
   \label{fig:beam_range}
-\end{figure}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.9\linewidth]{./images/parameters_distribution.png}
-  \caption{TODO}
-  \label{fig:param_dist}
 \end{figure}
 
 \section{Conclusion}
