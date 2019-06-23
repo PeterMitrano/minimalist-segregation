@@ -616,7 +616,8 @@ implementation details have what effect on cost is left for future work.
 On a real robot, there must be some finite beam angle to the theoretically
 line-of-sight sensor. We ran 100 trials with a duration of 180 simulated seconds
 with uniformly random initial distributions of 40 robots and various beam
-angles. The results are reported in Fig.~\ref{fig:beam_angle}, along with a
+angles\footnote{In grid search and in all other experiments, we used a \ang{15} beam angle because prior to these final results it showed good performance.}.
+The results are reported in Fig.~\ref{fig:beam_angle}, along with a
 diagram showing how we define beam angle. The best beam angle we tested was
 \ang{20}, and angles smaller or larger became progressively worse. We found that
 at lower beam angles, the robots would segregate very slowly. This is because a narrow beam
@@ -643,8 +644,7 @@ and gets ``stuck'' with the kin instead of peeking around them to find other kin
 \subsection{The Effect of Beam Length} \label{section:beam_range}
 
 We consider what happens if the theoretically infinite-range sensor has finite
-range. We use \ang{15} half beam angle and the same experimental setup as with
-the beam angle experiments. We consider the maximum range of the sensor as the
+range. We consider the maximum range of the sensor as the
 diagonal length of the square in which the robot are initially distributed. In
 all our experiments, this square was \SI{5}{\meter} on each side, so we consider
 a range of \SI{7.07}{\meter} to be effectively unlimited. We report the costs
